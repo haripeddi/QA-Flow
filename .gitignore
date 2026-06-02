@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+data/runs.json
+*.log
+.DS_Store
+.vite/

@@ -1,0 +1,17 @@
+{
+  "name": "qa-flow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BPMN-driven QA automation platform (walking skeleton)",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "npm-run-all --parallel dev:backend dev:frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "typecheck": "npm run typecheck --prefix backend"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

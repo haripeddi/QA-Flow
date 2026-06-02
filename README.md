@@ -1,3 +1,13 @@
+---
+title: QA Flow Backend
+emoji: 🎯
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 4000
+pinned: false
+---
+
 # QA Flow
 
 A BPMN-driven QA automation platform — solution architects model business processes as BPMN, QA engineers tag test cases against BPMN elements, and an engine executes the model and overlays pass/fail directly on the diagram.

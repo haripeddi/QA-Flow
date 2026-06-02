@@ -1,93 +1,141 @@
-# Deploying QA Flow
+# Deploying QA Flow (free tier)
 
 QA Flow needs a long-lived Node process that can spawn `python3` and Chromium.
 Vercel's serverless runtime can't do that, so the deployment splits in two:
 
 | Piece | Where | Why |
 | ----- | ----- | --- |
-| React frontend (`frontend/`) | **Vercel** | Static SPA, free, fast, gives you the public URL |
-| Node backend (`backend/` + `bpmn/`) | **Render** (Docker) | Long-lived server, persistent disk, Python + Chromium baked in |
+| React frontend (`frontend/`) | **Vercel** (free) | Static SPA, gives you the public URL |
+| Node backend (`backend/` + `bpmn/`) | **Hugging Face Spaces** (free, Docker SDK) | 16 GB RAM free — actually enough for Chrome + Python + Node together |
 
-Both deploy automatically from the same GitHub repository on every push to `main`.
+Both deploy automatically from git pushes.
+
+---
+
+## Heads-up before you start
+
+- HF Spaces **free tier is public** — anyone with the URL can use your backend.
+  That's fine for a demo. Private Spaces are paid.
+- HF Spaces free tier has **no persistent disk** — BPMN flows (`bpmn/*.bpmn`) live
+  in git and survive, but run history (`runs.json`) and screenshots reset when the
+  Space rebuilds.
+- HF Spaces sleeps after **48 hours of no traffic** — first request after that
+  takes ~30 seconds. Way less aggressive than Render Free's 15 minutes.
 
 ---
 
 ## 0. One-time prep (local)
 
+You already have the local commit. Push it to GitHub:
+
 ```bash
 cd "/Users/hari.peddi/QA Flow"
-git add .
-git commit -m "Add deployment configuration"
-# Create an empty repo on GitHub (no README/license), then:
-git remote add origin git@github.com:<your-user>/qa-flow.git
 git branch -M main
+git remote add origin https://github.com/haripeddi/QA-Flow.git
 git push -u origin main
 ```
 
----
-
-## 1. Deploy the backend on Render (~5 minutes)
-
-1. Sign in at [render.com](https://render.com) with your GitHub account.
-2. **New +** → **Blueprint**.
-3. Pick your `qa-flow` repository. Render will detect `render.yaml`.
-4. Confirm the service: `qa-flow-backend`, Docker runtime, Starter plan ($7/mo — Free 512 MB can OOM Chrome).
-5. Click **Apply**. First build takes ~3–4 minutes (it pulls the Playwright base image).
-6. When it goes green, copy the URL — looks like `https://qa-flow-backend.onrender.com`.
-7. Verify: `curl https://qa-flow-backend.onrender.com/api/health` should return `{"ok":true}`.
-
-The `render.yaml` already provisions a **1 GB persistent disk** mounted at `/data`,
-so run history and screenshots survive redeploys. BPMN process files (`bpmn/*.bpmn`,
-`bpmn/tags/*.json`) live in git and ship with the image.
+If GitHub prompts for credentials, use your username + a **personal access token**
+(GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+→ Generate new, scope `repo`).
 
 ---
 
-## 2. Deploy the frontend on Vercel (~2 minutes)
+## 1. Create a Hugging Face account + token (~2 min)
 
-1. Sign in at [vercel.com](https://vercel.com) with your GitHub account.
-2. **Add New…** → **Project** → import your `qa-flow` repo.
+1. Sign up at [huggingface.co](https://huggingface.co) (Google sign-in works).
+2. Click your avatar → **Settings** → **Access Tokens** → **New token**.
+   - Name: `qa-flow-push`
+   - Role: **Write**
+   - Click **Generate** and **copy** the token (starts with `hf_…`). You won't see it again.
+
+---
+
+## 2. Create the Space (~2 min)
+
+1. Top-right **+** → **New Space**.
+2. Fill in:
+   - **Owner**: your username (e.g. `haripeddi`)
+   - **Space name**: `qa-flow-backend`
+   - **License**: MIT
+   - **Select the Space SDK**: **Docker** → **Blank**
+   - **Space hardware**: **CPU basic - 2 vCPU - 16 GB** (free)
+   - **Visibility**: Public
+3. Click **Create Space**. You'll land on an empty Space page.
+4. Copy the Space URL — looks like `https://huggingface.co/spaces/haripeddi/qa-flow-backend`.
+
+---
+
+## 3. Push the code to the Space (~1 min + ~5–10 min build)
+
+The Space is itself a git repository. Add it as a second remote and push:
+
+```bash
+cd "/Users/hari.peddi/QA Flow"
+git remote add hf https://huggingface.co/spaces/haripeddi/qa-flow-backend
+git push hf main
+```
+
+When prompted:
+- **Username**: your HF username
+- **Password**: paste the `hf_…` token from step 1
+
+Go back to the Space page in your browser — the **Logs** tab will show:
+1. `Building Docker image…` (downloads Playwright + Chrome base image, ~5–8 min the first time)
+2. `Running on local URL: http://0.0.0.0:4000`
+3. **App** tab turns active.
+
+Your backend URL is `https://<username>-qa-flow-backend.hf.space` (lowercase, dashes).
+
+Verify: open `https://<username>-qa-flow-backend.hf.space/api/health` in a tab —
+should return `{"ok":true}`.
+
+---
+
+## 4. Deploy the frontend on Vercel (~2 min)
+
+1. Go to [vercel.com](https://vercel.com) → Sign in with GitHub (authorize when asked).
+2. **Add New…** → **Project** → import `QA-Flow`.
 3. **Configure Project**:
-   - **Root Directory**: `frontend`
    - **Framework Preset**: Vite (auto-detected)
-   - **Build Command**: `npm run build` (default)
-   - **Output Directory**: `dist` (default)
-4. Open **Environment Variables** and add:
-   - `VITE_API_BASE_URL` = `https://qa-flow-backend.onrender.com` (your Render URL from step 1)
-5. Click **Deploy**. You'll get a URL like `https://qa-flow-<hash>.vercel.app`.
+   - **Root Directory**: click **Edit** → select `frontend` → Continue
+4. Expand **Environment Variables** and add:
+   - **Name**: `VITE_API_BASE_URL`
+   - **Value**: paste the HF Space URL (e.g. `https://haripeddi-qa-flow-backend.hf.space`)
+5. Click **Deploy**. Done in ~30 s. URL looks like `https://qa-flow-<hash>.vercel.app`.
 
 ---
 
-## 3. Lock down CORS (recommended)
+## 5. Lock down CORS (recommended, ~1 min)
 
 By default the backend allows any origin. Once you have the Vercel URL:
 
-1. Back on Render → your service → **Environment** → add:
-   - `ALLOWED_ORIGIN` = `https://qa-flow-<hash>.vercel.app`
-   (Or comma-separate multiple: `https://app.example.com,https://staging.example.com`.
-   Regex patterns are supported with `/.../` wrappers.)
-2. Render redeploys automatically.
+1. Open your HF Space → **Settings** → **Variables and secrets**.
+2. **New variable** (not secret):
+   - **Name**: `ALLOWED_ORIGIN`
+   - **Value**: `https://qa-flow-<hash>.vercel.app` (your Vercel URL)
+3. The Space rebuilds automatically (~1 min).
 
 ---
 
-## 4. Future updates
+## 6. Future updates
 
-Every `git push origin main`:
-- Vercel rebuilds the frontend in ~30 seconds
-- Render rebuilds the backend Docker image in ~2–3 minutes
-
-No manual steps. Add/edit BPMN flows in the UI → click **Save** → use git from your
-machine to commit the updated files under `bpmn/` if you want them in the deployed
-image. (Saves from the UI only persist on the running server's disk; commit them
-to keep them in version control.)
+| Change to push | Command |
+| -------------- | ------- |
+| Update both at once | `git push origin main && git push hf main` |
+| Only frontend (UI tweaks) | `git push origin main` (Vercel rebuilds in 30 s) |
+| Only backend (engine/workers) | `git push hf main` (HF rebuilds in 2–3 min, cached after first build) |
 
 ---
 
-## Caveats running in the cloud
+## Caveats running on free tier
 
-- **Browser/Playwright tests on Google.com**: cloud IPs trigger bot detection
-  more often than your laptop. Your own apps and HTTP/Python tests are unaffected.
-- **Render Free tier**: spins down after 15 min of inactivity and cold-starts take
-  ~30 s. Starter plan ($7/mo) stays warm and gives you the RAM Chrome needs.
-- **Single backend instance**: run state is held in memory. If you scale to
-  multiple replicas, in-flight runs would not be visible across instances. Single
-  instance is fine for a team of engineers running tests interactively.
+- **Browser/Playwright on Google**: cloud IPs trigger bot detection more often.
+  Your own apps and HTTP/Python tests are unaffected.
+- **48-hour sleep**: first request wakes the Space in ~30 s — acceptable for a
+  demo, annoying for active use. Paid HF hardware ($0.05/hr CPU upgrade) skips this.
+- **Public by default**: the URL and backend logs are visible to anyone. Don't put
+  secrets (API keys) in Python test code without using HF's encrypted "Secrets"
+  (Settings → Variables and secrets → "New secret").
+- **Run history resets on rebuild**: BPMN flows survive (in git) but past
+  `runs.json` does not. Acceptable for QA — runs are usually short-lived state.

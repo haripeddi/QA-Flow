@@ -6,7 +6,7 @@
       "type": "http.api",
       "request": {
         "method": "POST",
-        "url": "http://localhost:4000/mock/orders",
+        "url": "{{BASE_URL}}/mock/orders",
         "headers": { "Content-Type": "application/json" },
         "body": { "orderId": 42, "sku": "WIDGET-1", "qty": 1 }
       },
@@ -23,7 +23,7 @@
       "type": "http.api",
       "request": {
         "method": "GET",
-        "url": "http://localhost:4000/mock/orders/42"
+        "url": "{{BASE_URL}}/mock/orders/42"
       },
       "expect": {
         "status": 200,
@@ -38,7 +38,7 @@
       "type": "http.api",
       "request": {
         "method": "POST",
-        "url": "http://localhost:4000/mock/confirmations",
+        "url": "{{BASE_URL}}/mock/confirmations",
         "body": { "orderId": 42 }
       },
       "expect": { "status": 200 }
@@ -48,7 +48,7 @@
       "type": "http.api",
       "request": {
         "method": "POST",
-        "url": "http://localhost:4000/mock/failures",
+        "url": "{{BASE_URL}}/mock/failures",
         "body": { "orderId": 42, "reason": "verify_order failed" }
       },
       "expect": { "status": 200 }

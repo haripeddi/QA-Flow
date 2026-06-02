@@ -1,5 +1,5 @@
 import { promises as fs } from "node:fs";
-import { TAGS_FILE } from "./config.ts";
+import { tagsPathFor } from "./config.ts";
 
 export interface HttpExpectation {
   status?: number;
@@ -21,20 +21,69 @@ export interface HttpTestDef {
   setVariables?: Record<string, string>;
 }
 
+export interface BrowserStep {
+  action:
+    | "goto"
+    | "click"
+    | "fill"
+    | "press"
+    | "waitForSelector"
+    | "waitForTimeout"
+    | "waitForLoadState"
+    | "screenshot"
+    | "assertContains"
+    | "assertVisible"
+    | "tryClick";
+  selector?: string;
+  url?: string;
+  value?: string;
+  state?: "load" | "domcontentloaded" | "networkidle";
+  timeoutMs?: number;
+  name?: string;
+  text?: string;
+  ignoreCase?: boolean;
+  optional?: boolean;
+}
+
+export interface BrowserTestDef {
+  name: string;
+  type: "browser.playwright";
+  steps: BrowserStep[];
+  setVariables?: Record<string, string>;
+}
+
+export interface ScriptTestDef {
+  name: string;
+  type: "script.python";
+  code: string;
+  timeoutMs?: number;
+}
+
+export type TestDef = HttpTestDef | BrowserTestDef | ScriptTestDef;
+
 export interface TagsFile {
   processKey: string;
-  elementTests: Record<string, HttpTestDef>;
+  elementTests: Record<string, TestDef>;
 }
 
-let cache: TagsFile | undefined;
+const cache = new Map<string, TagsFile>();
 
-export async function loadTags(): Promise<TagsFile> {
-  if (cache) return cache;
-  const raw = await fs.readFile(TAGS_FILE, "utf8");
-  cache = JSON.parse(raw) as TagsFile;
-  return cache;
+export async function loadTags(processKey: string): Promise<TagsFile> {
+  const cached = cache.get(processKey);
+  if (cached) return cached;
+  try {
+    const raw = await fs.readFile(tagsPathFor(processKey), "utf8");
+    const parsed = JSON.parse(raw) as TagsFile;
+    cache.set(processKey, parsed);
+    return parsed;
+  } catch {
+    const empty: TagsFile = { processKey, elementTests: {} };
+    cache.set(processKey, empty);
+    return empty;
+  }
 }
 
-export function clearTagsCache() {
-  cache = undefined;
+export function clearTagsCache(key?: string) {
+  if (key) cache.delete(key);
+  else cache.clear();
 }

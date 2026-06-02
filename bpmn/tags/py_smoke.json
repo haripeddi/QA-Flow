@@ -1,0 +1,15 @@
+{
+  "processKey": "py_smoke",
+  "elementTests": {
+    "py_task": {
+      "name": "Run python",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": ""
+        }
+      ]
+    }
+  }
+}

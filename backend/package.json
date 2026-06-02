@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch --experimental-strip-types src/index.ts",
+    "dev": "node --experimental-strip-types src/index.ts",
     "start": "node --experimental-strip-types src/index.ts",
     "typecheck": "tsc -p ."
   },
@@ -15,6 +15,7 @@
     "camunda-bpmn-moddle": "^7.0.1",
     "fastify": "^4.28.1",
     "jsonpath-plus": "^9.0.0",
+    "playwright": "^1.60.0",
     "undici": "^6.19.8"
   },
   "devDependencies": {

@@ -6,20 +6,18 @@ This repository is the **walking skeleton**: every architectural layer exists en
 
 ## Quick start
 
-You need only **Node.js 22+** (uses native TypeScript via `--experimental-strip-types`). No Docker, no Java, no Camunda server, no internet.
+You need **Node.js 22+** and (for the browser test) **Google Chrome** installed at `/Applications/Google Chrome.app`.
 
 ```bash
-# 1. install everything
 npm run install:all
-
-# 2. run backend + frontend together
 npm run dev
-
-# 3. open http://localhost:5173
-#    Click "Start Run". Watch the BPMN nodes light up.
+# open http://localhost:5173 and pick a process from the dropdown
 ```
 
-The backend runs on `:4000`, the frontend dev server on `:5173`.
+The backend runs on `:4000`, the frontend on `:5173`. Use the **process dropdown** in the header to switch between:
+
+- **Order Fulfillment (HTTP API)** — runs entirely offline against built-in mock endpoints.
+- **Google AI Mode Search (Browser)** — opens Chrome via Playwright, navigates to google.com, attempts to enter AI Mode, searches "what is BPMN", asserts the response contains "BPMN", and captures screenshots at every step. Chrome must be installed (Playwright uses `channel: "chrome"` so no separate browser download is needed).
 
 ## What you'll see
 

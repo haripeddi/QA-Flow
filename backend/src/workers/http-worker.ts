@@ -1,6 +1,7 @@
 import { request } from "undici";
 import { JSONPath } from "jsonpath-plus";
 import type { HttpTestDef } from "../tags.ts";
+import { API_BASE_URL } from "../config.ts";
 
 export interface ExecutionResult {
   passed: boolean;
@@ -23,7 +24,7 @@ export async function runHttpTest(test: HttpTestDef): Promise<ExecutionResult> {
   let status = 0;
   let text = "";
   try {
-    const res = await request(req.url, {
+    const res = await request(resolveUrl(req.url), {
       method: req.method as "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
       headers,
       body,
@@ -73,6 +74,10 @@ export async function runHttpTest(test: HttpTestDef): Promise<ExecutionResult> {
     durationMs: Date.now() - start,
     reasons,
   };
+}
+
+function resolveUrl(url: string): string {
+  return url.replaceAll("{{BASE_URL}}", API_BASE_URL);
 }
 
 function deepEqual(a: unknown, b: unknown): boolean {

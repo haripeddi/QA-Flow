@@ -3,7 +3,8 @@ dist/
 build/
 .env
 .env.local
-data/runs.json
+# Runtime data (lives on persistent disk in production):
+data/
 *.log
 .DS_Store
 .vite/

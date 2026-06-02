@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+backend/node_modules
+frontend
+data
+dist
+build
+.git
+.vite
+.DS_Store
+*.log
+.env
+.env.local
+README.md
+DEPLOY.md

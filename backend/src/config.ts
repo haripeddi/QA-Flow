@@ -10,6 +10,7 @@ export const TAGS_DIR = path.join(BPMN_DIR, "tags");
 export const DATA_DIR = process.env.DATA_DIR ?? path.join(ROOT, "data");
 export const SCREENSHOTS_DIR = path.join(DATA_DIR, "screenshots");
 export const SCRIPTS_DIR = path.join(DATA_DIR, "scripts");
+export const LOGS_DIR = path.join(DATA_DIR, "logs");
 export const RUNS_FILE = path.join(DATA_DIR, "runs.json");
 
 export const API_PORT = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);

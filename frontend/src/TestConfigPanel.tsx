@@ -197,6 +197,27 @@ function ScriptForm({
           />
         </div>
       </div>
+      <div className="field">
+        <h4>Environment variables</h4>
+        <KvEditor
+          label=""
+          placeholderK="NAME (e.g. RECORDING_PY_REPLAY)"
+          placeholderV="value (e.g. 1)"
+          value={test.env ?? {}}
+          onChange={(env) =>
+            onChange({
+              ...test,
+              env: Object.keys(env).length ? env : undefined,
+            })
+          }
+        />
+        <p className="hint">
+          Passed to the script process as real env vars. Use for flags like{" "}
+          <code>RECORDING_PY_REPLAY=1</code> or credentials like{" "}
+          <code>EXPLORER_USERNAME</code>. (For real secrets, prefer the host's
+          secret store over committing them here.)
+        </p>
+      </div>
     </>
   );
 }

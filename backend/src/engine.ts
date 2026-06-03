@@ -222,6 +222,7 @@ async function dispatch(
         stderr: result.stderr,
         durationMs: result.durationMs,
         parsedResult: result.parsedResult,
+        logUrl: result.logUrl,
       },
     };
   }

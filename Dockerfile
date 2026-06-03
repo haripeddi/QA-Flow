@@ -4,6 +4,14 @@ FROM mcr.microsoft.com/playwright:v1.60.0-noble
 
 WORKDIR /app
 
+# Python Playwright bindings (browsers already ship in the base image at
+# /ms-playwright; PLAYWRIGHT_BROWSERS_PATH is set by the base image).
+# Version must match the base image's Playwright version.
+RUN pip install --no-cache-dir --break-system-packages \
+      playwright==1.60.0 \
+      pyyaml \
+    && python3 -m playwright install chromium
+
 # Install backend dependencies first (better layer caching)
 COPY backend/package.json backend/package-lock.json* ./backend/
 RUN cd backend && npm install --omit=dev

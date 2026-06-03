@@ -56,6 +56,7 @@ export interface ScriptTestDef {
   type: "script.python";
   code: string;
   timeoutMs?: number;
+  env?: Record<string, string>;
 }
 
 export type TestDef = HttpTestDef | BrowserTestDef | ScriptTestDef;
@@ -106,6 +107,7 @@ export interface ScriptEvidence {
   stdout: string;
   stderr: string;
   durationMs: number;
+  logUrl?: string;
   parsedResult?: {
     message?: string;
     setVariables?: Record<string, unknown>;

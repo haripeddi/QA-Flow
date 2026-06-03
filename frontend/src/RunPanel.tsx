@@ -74,6 +74,16 @@ function ActivityCard({ a }: { a: ActivityState }) {
               </pre>
             </details>
           )}
+          {script.logUrl && (
+            <a
+              className="log-link"
+              href={resolveAssetUrl(script.logUrl)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Download full run log
+            </a>
+          )}
         </div>
       )}
       {browserSteps && browserSteps.length > 0 && (

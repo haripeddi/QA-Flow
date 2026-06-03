@@ -258,6 +258,12 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.log-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #60a5fa;
+}
 
 .djs-element.qa-passed   .djs-visual > :nth-child(1) { stroke: #10b981 !important; stroke-width: 3px !important; fill: #ecfdf5 !important; }
 .djs-element.qa-failed   .djs-visual > :nth-child(1) { stroke: #ef4444 !important; stroke-width: 3px !important; fill: #fef2f2 !important; }

@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { SCRIPTS_DIR } from "../config.ts";
+import { LOGS_DIR, SCRIPTS_DIR } from "../config.ts";
 import type { ScriptTestDef } from "../tags.ts";
 
 export interface ScriptResult {
@@ -14,6 +14,7 @@ export interface ScriptResult {
   timedOut: boolean;
   reasons: string[];
   parsedResult?: ParsedQaResult;
+  logUrl?: string;
 }
 
 export interface ParsedQaResult {
@@ -94,11 +95,17 @@ export async function runScriptTest(
 
   const env: NodeJS.ProcessEnv = {
     ...process.env,
+    ...(def.env ?? {}),
     QA_PROCESS_KEY: ctx.processKey,
     QA_ACTIVITY_ID: ctx.activityId,
     QA_RUN_ID: ctx.runId,
     QA_VARS: JSON.stringify(userVars),
   };
+
+  await fs.mkdir(LOGS_DIR, { recursive: true });
+  const safeName = `${ctx.runId}_${safeAct}_${Date.now()}`;
+  const logFile = path.join(LOGS_DIR, `${safeName}.log`);
+  const logUrl = `/api/logs/${safeName}.log`;
 
   const timeoutMs = Math.max(1000, Math.min(def.timeoutMs ?? 30_000, 600_000));
 
@@ -157,16 +164,36 @@ export async function runScriptTest(
           `process exited with code ${exitCode}${signal ? ` (signal ${signal})` : ""}`,
         );
       if (parsedResult?.message) reasons.push(parsedResult.message);
+      const durationMs = Date.now() - start;
+      const logText = [
+        `=== QA Flow script run ===`,
+        `process : ${ctx.processKey}`,
+        `activity: ${ctx.activityId}`,
+        `run     : ${ctx.runId}`,
+        `started : ${new Date(start).toISOString()}`,
+        `duration: ${durationMs}ms`,
+        `exitCode: ${exitCode}${signal ? ` (signal ${signal})` : ""}`,
+        `result  : ${passed ? "PASS" : "FAIL"}`,
+        ``,
+        `--- stdout ---`,
+        stdout || "(empty)",
+        ``,
+        `--- stderr ---`,
+        stderr || "(empty)",
+        ``,
+      ].join("\n");
+      void fs.writeFile(logFile, logText, "utf8").catch(() => {});
       resolve({
         passed,
         exitCode,
         signal,
         stdout,
         stderr,
-        durationMs: Date.now() - start,
+        durationMs,
         timedOut,
         reasons,
         parsedResult,
+        logUrl,
       });
     };
 

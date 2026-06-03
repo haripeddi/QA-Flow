@@ -5,6 +5,7 @@ import { promises as fs } from "node:fs";
 import {
   ALLOWED_ORIGIN,
   API_PORT,
+  LOGS_DIR,
   SCREENSHOTS_DIR,
 } from "./config.ts";
 import { getRun, listRuns } from "./store.ts";
@@ -24,10 +25,16 @@ export async function startServer() {
   const corsOrigin = parseAllowedOrigin(ALLOWED_ORIGIN);
   await app.register(cors, { origin: corsOrigin });
   await fs.mkdir(SCREENSHOTS_DIR, { recursive: true });
+  await fs.mkdir(LOGS_DIR, { recursive: true });
   await ensureDirs();
   await app.register(fastifyStatic, {
     root: SCREENSHOTS_DIR,
     prefix: "/api/screenshots/",
+    decorateReply: false,
+  });
+  await app.register(fastifyStatic, {
+    root: LOGS_DIR,
+    prefix: "/api/logs/",
     decorateReply: false,
   });
 

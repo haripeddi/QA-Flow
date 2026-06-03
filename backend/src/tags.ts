@@ -57,6 +57,7 @@ export interface ScriptTestDef {
   type: "script.python";
   code: string;
   timeoutMs?: number;
+  env?: Record<string, string>;
 }
 
 export type TestDef = HttpTestDef | BrowserTestDef | ScriptTestDef;

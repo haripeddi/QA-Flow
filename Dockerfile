@@ -1,6 +1,6 @@
 # QA Flow backend image
 # Playwright base image already includes Node 20, Chromium, system deps, and Python 3.
-FROM mcr.microsoft.com/playwright:v1.55.0-noble
+FROM mcr.microsoft.com/playwright:v1.60.0-noble
 
 WORKDIR /app
 

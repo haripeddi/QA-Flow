@@ -1,6 +1,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { chromium, type Browser, type Page } from "playwright";
+import {
+  chromium,
+  type Browser,
+  type BrowserContext,
+  type Page,
+} from "playwright";
 import { SCREENSHOTS_DIR } from "../config.ts";
 import type { BrowserStep, BrowserTestDef } from "../tags.ts";
 
@@ -22,6 +27,14 @@ export interface BrowserExecutionResult {
 }
 
 let sharedBrowser: Browser | undefined;
+const browserSessions = new Map<string, BrowserSession>();
+const SESSION_IDLE_MS = 2 * 60 * 1000;
+
+interface BrowserSession {
+  context: BrowserContext;
+  page: Page;
+  closeTimer?: NodeJS.Timeout;
+}
 
 async function getBrowser(): Promise<Browser> {
   if (sharedBrowser && sharedBrowser.isConnected()) return sharedBrowser;
@@ -48,6 +61,13 @@ async function getBrowser(): Promise<Browser> {
 }
 
 export async function closeBrowser() {
+  for (const session of browserSessions.values()) {
+    if (session.closeTimer) clearTimeout(session.closeTimer);
+    try {
+      await session.context.close();
+    } catch {}
+  }
+  browserSessions.clear();
   if (sharedBrowser) {
     try {
       await sharedBrowser.close();
@@ -61,6 +81,36 @@ interface RunCtx {
   activityId: string;
 }
 
+async function getSession(ctx: RunCtx): Promise<BrowserSession> {
+  const existing = browserSessions.get(ctx.runId);
+  if (existing && !existing.page.isClosed()) {
+    if (existing.closeTimer) clearTimeout(existing.closeTimer);
+    return existing;
+  }
+
+  const browser = await getBrowser();
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    locale: "en-US",
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  });
+  const page = await context.newPage();
+  const session = { context, page };
+  browserSessions.set(ctx.runId, session);
+  return session;
+}
+
+function scheduleSessionClose(runId: string) {
+  const session = browserSessions.get(runId);
+  if (!session) return;
+  if (session.closeTimer) clearTimeout(session.closeTimer);
+  session.closeTimer = setTimeout(() => {
+    browserSessions.delete(runId);
+    session.context.close().catch(() => {});
+  }, SESSION_IDLE_MS);
+}
+
 export async function runBrowserTest(
   test: BrowserTestDef,
   ctx: RunCtx,
@@ -72,14 +122,7 @@ export async function runBrowserTest(
 
   await fs.mkdir(SCREENSHOTS_DIR, { recursive: true });
 
-  const browser = await getBrowser();
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    locale: "en-US",
-    userAgent:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  });
-  const page = await context.newPage();
+  const { page } = await getSession(ctx);
 
   let stepIndex = 0;
   try {
@@ -109,9 +152,7 @@ export async function runBrowserTest(
       stepIndex++;
     }
   } finally {
-    try {
-      await context.close();
-    } catch {}
+    scheduleSessionClose(ctx.runId);
   }
 
   return {

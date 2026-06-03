@@ -95,6 +95,7 @@ export async function runScriptTest(
 
   const env: NodeJS.ProcessEnv = {
     ...process.env,
+    RECORDING_PY_HEADLESS: process.env.RECORDING_PY_HEADLESS ?? "1",
     ...(def.env ?? {}),
     QA_PROCESS_KEY: ctx.processKey,
     QA_ACTIVITY_ID: ctx.activityId,

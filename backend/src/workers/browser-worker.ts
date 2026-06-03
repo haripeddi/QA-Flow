@@ -25,10 +25,24 @@ let sharedBrowser: Browser | undefined;
 
 async function getBrowser(): Promise<Browser> {
   if (sharedBrowser && sharedBrowser.isConnected()) return sharedBrowser;
+  const isCloud =
+    process.env.HF_SPACE_ID !== undefined || process.env.NODE_ENV === "production";
+  const configuredChannel = process.env.PLAYWRIGHT_CHANNEL;
+  const channel =
+    configuredChannel === "none"
+      ? undefined
+      : configuredChannel ?? (isCloud ? undefined : "chrome");
+
   sharedBrowser = await chromium.launch({
-    channel: "chrome",
-    headless: false,
-    args: ["--disable-blink-features=AutomationControlled"],
+    ...(channel ? { channel } : {}),
+    headless: process.env.PLAYWRIGHT_HEADLESS
+      ? process.env.PLAYWRIGHT_HEADLESS !== "false"
+      : isCloud,
+    args: [
+      "--disable-blink-features=AutomationControlled",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+    ],
   });
   return sharedBrowser;
 }

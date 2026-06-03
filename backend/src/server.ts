@@ -33,6 +33,38 @@ export async function startServer() {
 
   app.get("/api/health", async () => ({ ok: true }));
 
+  app.get("/", async (_req, reply) => {
+    reply.type("text/html").send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QA Flow API</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+           background: #0f172a; color: #e2e8f0; display: grid; place-items: center;
+           min-height: 100vh; margin: 0; }
+    .card { text-align: center; max-width: 520px; padding: 32px; }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    p { color: #94a3b8; line-height: 1.6; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+           background: #10b981; margin-right: 8px; }
+    code { background: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1><span class="dot"></span>QA Flow API is running</h1>
+    <p>This is the <strong>backend</strong> service. The visual app lives in the
+       frontend (deployed separately on Vercel).</p>
+    <p>Health check: <a href="/api/health"><code>/api/health</code></a><br/>
+       Processes: <a href="/api/processes"><code>/api/processes</code></a></p>
+  </div>
+</body>
+</html>`);
+  });
+
   app.post("/mock/orders", async (req) => {
     const body = (req.body ?? {}) as { orderId?: number };
     return { orderId: body.orderId ?? 42, status: "created" };

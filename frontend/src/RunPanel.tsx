@@ -74,6 +74,33 @@ function ActivityCard({ a }: { a: ActivityState }) {
               </pre>
             </details>
           )}
+          {(() => {
+            const ev = script.parsedResult?.evidence as
+              | { screenshots?: Array<{ label?: string; url?: string }> }
+              | undefined;
+            const shots = Array.isArray(ev?.screenshots) ? ev.screenshots : [];
+            const valid = shots.filter((s) => s && s.url);
+            if (!valid.length) return null;
+            return (
+              <div className="script-shots">
+                {valid.map((s, i) => (
+                  <a
+                    key={i}
+                    href={resolveAssetUrl(s.url as string)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shot"
+                  >
+                    <img
+                      src={resolveAssetUrl(s.url as string)}
+                      alt={s.label ?? `screenshot ${i + 1}`}
+                    />
+                    {s.label && <span className="shot-label">{s.label}</span>}
+                  </a>
+                ))}
+              </div>
+            );
+          })()}
           {script.logUrl && (
             <a
               className="log-link"

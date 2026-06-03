@@ -264,6 +264,32 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
   font-size: 12px;
   color: #60a5fa;
 }
+.script-shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.script-shots .shot {
+  display: block;
+  max-width: 260px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+}
+.script-shots .shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.script-shots .shot-label {
+  display: block;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #94a3b8;
+  background: #0f172a;
+}
 
 .djs-element.qa-passed   .djs-visual > :nth-child(1) { stroke: #10b981 !important; stroke-width: 3px !important; fill: #ecfdf5 !important; }
 .djs-element.qa-failed   .djs-visual > :nth-child(1) { stroke: #ef4444 !important; stroke-width: 3px !important; fill: #fef2f2 !important; }

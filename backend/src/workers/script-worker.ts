@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { LOGS_DIR, SCRIPTS_DIR } from "../config.ts";
+import { LOGS_DIR, SCREENSHOTS_DIR, SCRIPTS_DIR } from "../config.ts";
 import type { ScriptTestDef } from "../tags.ts";
 
 export interface ScriptResult {
@@ -93,6 +93,8 @@ export async function runScriptTest(
     if (!k.startsWith("__")) userVars[k] = v;
   }
 
+  await fs.mkdir(SCREENSHOTS_DIR, { recursive: true });
+
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     RECORDING_PY_HEADLESS: process.env.RECORDING_PY_HEADLESS ?? "1",
@@ -101,6 +103,7 @@ export async function runScriptTest(
     QA_ACTIVITY_ID: ctx.activityId,
     QA_RUN_ID: ctx.runId,
     QA_VARS: JSON.stringify(userVars),
+    QA_SCREENSHOTS_DIR: SCREENSHOTS_DIR,
   };
 
   await fs.mkdir(LOGS_DIR, { recursive: true });

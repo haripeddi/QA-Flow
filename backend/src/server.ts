@@ -11,6 +11,21 @@ import {
 import { getRun, listRuns } from "./store.ts";
 import { startNewRun, isRunActive, getActiveRun } from "./engine.ts";
 import {
+  generateWorkflowFromPrompt,
+  modifyWorkflow,
+  recommendTestAssets,
+} from "./ai.ts";
+import { generateFakerRows } from "./faker.ts";
+import {
+  bulkUpsertCases,
+  compilePlanToElementTests,
+  findDataSetInPlan,
+  getPlan,
+  upsertPlan,
+  type BulkCaseInput,
+  type TestPlanFile,
+} from "./plans.ts";
+import {
   blankBpmnXml,
   deleteProcess,
   ensureDirs,
@@ -19,6 +34,8 @@ import {
   upsertProcess,
   validateKey,
 } from "./processes.ts";
+import { buildTraceability, type TraceabilityView } from "./traceability.ts";
+import { startTestRun, syncPlanToTags } from "./testRuns.ts";
 
 export async function startServer() {
   const app = Fastify({ logger: { level: "info" } });
@@ -180,6 +197,217 @@ export async function startServer() {
     },
   );
 
+  app.get<{ Params: { key: string } }>(
+    "/api/processes/:key/plan",
+    async (req, reply) => {
+      const proc = await getProcess(req.params.key);
+      if (!proc) return reply.code(404).send({ error: "not found" });
+      const plan = await getPlan(req.params.key);
+      return { plan };
+    },
+  );
+
+  app.put<{ Params: { key: string }; Body: { plan: TestPlanFile } }>(
+    "/api/processes/:key/plan",
+    async (req, reply) => {
+      try {
+        const plan = await upsertPlan({
+          ...req.body.plan,
+          processKey: req.params.key,
+        });
+        const elementTests = compilePlanToElementTests(plan);
+        const proc = await getProcess(req.params.key);
+        if (!proc) return reply.code(404).send({ error: "not found" });
+        await upsertProcess({
+          key: req.params.key,
+          bpmnXml: proc.bpmnXml,
+          tags: { processKey: req.params.key, elementTests },
+        });
+        return { plan, elementTests };
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.post<{
+    Params: { key: string; nodeId: string };
+    Body: {
+      suiteId: string;
+      scenarioId: string;
+      cases: BulkCaseInput[];
+    };
+  }>(
+    "/api/processes/:key/plan/nodes/:nodeId/cases",
+    async (req, reply) => {
+      try {
+        const plan = await bulkUpsertCases(
+          req.params.key,
+          req.params.nodeId,
+          req.body.suiteId,
+          req.body.scenarioId,
+          req.body.cases ?? [],
+        );
+        return { plan };
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.get<{ Params: { key: string } }>(
+    "/api/processes/:key/plan/export",
+    async (req, reply) => {
+      const proc = await getProcess(req.params.key);
+      if (!proc) return reply.code(404).send({ error: "not found" });
+      const plan = await getPlan(req.params.key);
+      return { plan, exportedAt: new Date().toISOString() };
+    },
+  );
+
+  app.post<{ Params: { key: string }; Body: { plan: TestPlanFile } }>(
+    "/api/processes/:key/plan/import",
+    async (req, reply) => {
+      try {
+        const plan = await upsertPlan({
+          ...req.body.plan,
+          processKey: req.params.key,
+        });
+        await syncPlanToTags(req.params.key);
+        return { plan };
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.post<{ Params: { key: string } }>(
+    "/api/processes/:key/plan/compile",
+    async (req, reply) => {
+      try {
+        await syncPlanToTags(req.params.key);
+        const plan = await getPlan(req.params.key);
+        return { elementTests: compilePlanToElementTests(plan) };
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.post<{
+    Params: {
+      key: string;
+      nodeId: string;
+      caseId: string;
+      dataSetId: string;
+    };
+    Body: { count?: number; locale?: string };
+  }>(
+    "/api/processes/:key/plan/nodes/:nodeId/cases/:caseId/datasets/:dataSetId/generate",
+    async (req, reply) => {
+      try {
+        const plan = await getPlan(req.params.key);
+        const found = findDataSetInPlan(plan, req.params.dataSetId);
+        if (!found) return reply.code(404).send({ error: "dataset not found" });
+        const schema = found.dataSet.fakerSchema ?? {};
+        const rows = await generateFakerRows({
+          schema,
+          count: req.body?.count ?? 5,
+          locale: req.body?.locale,
+        });
+        found.dataSet.rows = rows;
+        await upsertPlan(plan);
+        return { rows };
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.post<{
+    Body: {
+      scope: {
+        type: string;
+        processKey: string;
+        nodeId?: string;
+        suiteId?: string;
+        scenarioId?: string;
+        caseId?: string;
+      };
+      environment?: string;
+    };
+  }>("/api/test-runs", async (req, reply) => {
+    try {
+      const scope = req.body?.scope;
+      if (!scope?.processKey || !scope?.type) {
+        return reply.code(400).send({ error: "scope.processKey and scope.type required" });
+      }
+      const result = await startTestRun({
+        scope: scope as Parameters<typeof startTestRun>[0]["scope"],
+        environment: req.body?.environment,
+      });
+      return reply.code(201).send(result);
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
+  app.get<{ Querystring: { view?: string } }>(
+    "/api/traceability",
+    async (req) => {
+      const view = (req.query.view ?? "workflow_to_case") as TraceabilityView;
+      return buildTraceability(view);
+    },
+  );
+
+  app.post<{ Body: { processKey: string; prompt: string } }>(
+    "/api/ai/workflow",
+    async (req, reply) => {
+      try {
+        validateKey(req.body.processKey);
+        const result = await generateWorkflowFromPrompt(
+          req.body.processKey,
+          req.body.prompt,
+        );
+        return result;
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  app.post<{
+    Body: { processKey: string; bpmnXml: string; instruction: string };
+  }>("/api/ai/workflow/modify", async (req, reply) => {
+    try {
+      const result = await modifyWorkflow(
+        req.body.processKey,
+        req.body.bpmnXml,
+        req.body.instruction,
+      );
+      return result;
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
+  app.post<{
+    Body: {
+      processKey: string;
+      nodeId: string;
+      nodeName?: string;
+      bpmnXml: string;
+      planSummary?: string;
+    };
+  }>("/api/ai/recommend", async (req, reply) => {
+    try {
+      const result = await recommendTestAssets(req.body);
+      return result;
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
   app.post<{ Body?: { processKey?: string } }>(
     "/api/runs",
     async (req, reply) => {
@@ -211,15 +439,18 @@ export async function startServer() {
       status: "pending" | "running" | "passed" | "failed" | "executed";
       message?: string;
       evidence?: Record<string, unknown>;
+      traceability?: Record<string, unknown>;
     }> = [];
-    for (const activityId of visited) {
+    const resultIds =
+      visited.length > 0 ? visited : Object.keys(run.results);
+    for (const activityId of resultIds) {
       if (seen.has(activityId)) continue;
       seen.add(activityId);
       const r = run.results[activityId];
       activities.push({
         activityId,
-        activityName: activityId,
-        activityType: r ? "serviceTask" : "executed",
+        activityName: r?.traceability?.caseName ?? activityId,
+        activityType: r?.traceability?.caseId ? "testCase" : "serviceTask",
         startTime: r?.startedAt ?? run.startedAt,
         endTime: r?.finishedAt ?? null,
         durationInMillis:
@@ -230,9 +461,12 @@ export async function startServer() {
         status: r?.status ?? "executed",
         message: r?.message,
         evidence: r?.evidence,
+        traceability: r?.traceability as Record<string, unknown> | undefined,
       });
     }
-    return { run, active, activities };
+    const planActive =
+      run.kind === "plan" && run.finishedAt === undefined;
+    return { run, active: active || planActive, activities };
   });
 
   await app.listen({ port: API_PORT, host: "0.0.0.0" });

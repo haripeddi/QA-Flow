@@ -2,11 +2,13 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
   BPMN_DIR,
+  PLANS_DIR,
   PROCESS_KEY_RE,
   TAGS_DIR,
   bpmnPathFor,
   tagsPathFor,
 } from "./config.ts";
+import { deletePlan } from "./plans.ts";
 import { clearTagsCache } from "./tags.ts";
 
 export interface ProcessSummary {
@@ -52,6 +54,7 @@ async function readProcessMetaFromBpmn(filePath: string): Promise<{
 export async function ensureDirs() {
   await fs.mkdir(BPMN_DIR, { recursive: true });
   await fs.mkdir(TAGS_DIR, { recursive: true });
+  await fs.mkdir(PLANS_DIR, { recursive: true });
 }
 
 export async function listProcesses(): Promise<ProcessSummary[]> {
@@ -140,6 +143,7 @@ export async function deleteProcess(key: string) {
   validateKey(key);
   await fs.rm(bpmnPathFor(key), { force: true });
   await fs.rm(tagsPathFor(key), { force: true });
+  await deletePlan(key);
   clearTagsCache(key);
 }
 

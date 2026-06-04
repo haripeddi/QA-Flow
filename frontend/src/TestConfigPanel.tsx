@@ -133,7 +133,7 @@ export default function TestConfigPanel({
   );
 }
 
-function ScriptForm({
+export function ScriptForm({
   test,
   onChange,
 }: {
@@ -222,7 +222,7 @@ function ScriptForm({
   );
 }
 
-function HttpForm({
+export function HttpForm({
   test,
   onChange,
 }: {
@@ -330,7 +330,7 @@ function HttpForm({
   );
 }
 
-function BrowserForm({
+export function BrowserForm({
   test,
   onChange,
 }: {

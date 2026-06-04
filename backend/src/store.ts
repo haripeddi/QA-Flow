@@ -4,6 +4,16 @@ import { DATA_DIR, RUNS_FILE } from "./config.ts";
 
 export type TaskStatus = "pending" | "running" | "passed" | "failed" | "executed";
 
+export interface TraceabilityRef {
+  nodeId?: string;
+  suiteId?: string;
+  scenarioId?: string;
+  caseId?: string;
+  caseName?: string;
+  dataSetId?: string;
+  rowIndex?: number;
+}
+
 export interface TaskResult {
   activityId: string;
   status: TaskStatus;
@@ -11,12 +21,18 @@ export interface TaskResult {
   finishedAt?: string;
   message?: string;
   evidence?: Record<string, unknown>;
+  traceability?: TraceabilityRef;
 }
+
+export type RunKind = "workflow" | "plan";
 
 export interface RunRecord {
   runId: string;
   processInstanceId: string;
   processKey: string;
+  kind?: RunKind;
+  environment?: string;
+  scope?: string;
   startedAt: string;
   finishedAt?: string;
   results: Record<string, TaskResult>;

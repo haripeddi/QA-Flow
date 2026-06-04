@@ -14,6 +14,7 @@ RUN apt-get update \
     && python3 -m pip install --no-cache-dir --break-system-packages \
       playwright==1.60.0 \
       pyyaml \
+      Faker \
     && rm -rf /var/lib/apt/lists/*
 
 # Install backend dependencies first (better layer caching)

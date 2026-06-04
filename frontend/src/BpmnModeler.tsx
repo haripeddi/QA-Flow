@@ -31,6 +31,7 @@ interface Props {
   onSelection: (el: ElementInfo | null) => void;
   onChange?: () => void;
   onElementRename?: (oldId: string, newId: string) => void;
+  onElementDblClick?: (el: ElementInfo) => void;
 }
 
 function toElementInfo(element: {
@@ -47,7 +48,7 @@ function toElementInfo(element: {
 }
 
 const BpmnModeler = forwardRef<BpmnModelerHandle, Props>(function BpmnModeler(
-  { initialXml, onSelection, onChange, onElementRename },
+  { initialXml, onSelection, onChange, onElementRename, onElementDblClick },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -159,8 +160,14 @@ const BpmnModeler = forwardRef<BpmnModelerHandle, Props>(function BpmnModeler(
       if (evt.element) onSelection(toElementInfo(evt.element));
     };
 
+    const onElementDblClick = (e: unknown) => {
+      const evt = e as ElementEvent;
+      if (evt.element) onElementDblClick?.(toElementInfo(evt.element));
+    };
+
     eventBus.on("selection.changed", onSel);
     eventBus.on("element.click", onElementClick);
+    eventBus.on("element.dblclick", onElementDblClick);
     eventBus.on("commandStack.changed", onChanged);
     eventBus.on("element.changed", onElementChange);
     eventBus.on("element.updateProperties", onIdChange);
@@ -175,6 +182,7 @@ const BpmnModeler = forwardRef<BpmnModelerHandle, Props>(function BpmnModeler(
       try {
         eventBus.off("selection.changed", onSel);
         eventBus.off("element.click", onElementClick);
+        eventBus.off("element.dblclick", onElementDblClick);
         eventBus.off("commandStack.changed", onChanged);
         eventBus.off("element.changed", onElementChange);
         eventBus.off("element.updateProperties", onIdChange);

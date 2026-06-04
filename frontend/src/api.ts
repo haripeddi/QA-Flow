@@ -122,6 +122,16 @@ export interface HttpEvidence {
   durationMs?: number;
 }
 
+export interface TraceabilityRef {
+  nodeId?: string;
+  suiteId?: string;
+  scenarioId?: string;
+  caseId?: string;
+  caseName?: string;
+  dataSetId?: string;
+  rowIndex?: number;
+}
+
 export interface ActivityState {
   activityId: string;
   activityName: string | null;
@@ -131,6 +141,7 @@ export interface ActivityState {
   durationInMillis: number | null;
   status: "pending" | "running" | "passed" | "failed" | "executed";
   message?: string;
+  traceability?: TraceabilityRef;
   evidence?:
     | BrowserEvidence
     | HttpEvidence
@@ -138,11 +149,91 @@ export interface ActivityState {
     | Record<string, unknown>;
 }
 
+export interface TestStep {
+  id: string;
+  name: string;
+  action: string;
+  params?: Record<string, unknown>;
+  expectedResult?: string;
+  reusableStepId?: string;
+}
+
+export interface TestDataSet {
+  id: string;
+  name: string;
+  rows: Record<string, unknown>[];
+  fakerSchema?: Record<string, string>;
+}
+
+export interface PlanTestCase {
+  id: string;
+  name: string;
+  description?: string;
+  executable?: TestDef;
+  steps: TestStep[];
+  dataSets: TestDataSet[];
+  tags?: string[];
+}
+
+export interface PlanScenario {
+  id: string;
+  name: string;
+  description?: string;
+  cases: PlanTestCase[];
+}
+
+export interface PlanTestSuite {
+  id: string;
+  name: string;
+  description?: string;
+  scenarios: PlanScenario[];
+}
+
+export interface NodePlan {
+  nodeId: string;
+  nodeName?: string;
+  suites: PlanTestSuite[];
+  primaryCaseId?: string;
+}
+
+export interface TestPlanFile {
+  processKey: string;
+  version: 1;
+  nodes: Record<string, NodePlan>;
+  updatedAt: string;
+}
+
+export type TestRunScopeType =
+  | "case"
+  | "scenario"
+  | "suite"
+  | "workflow"
+  | "node";
+
+export interface TestRunScope {
+  type: TestRunScopeType;
+  processKey: string;
+  nodeId?: string;
+  suiteId?: string;
+  scenarioId?: string;
+  caseId?: string;
+}
+
+export type TraceabilityView =
+  | "workflow_to_suite"
+  | "workflow_to_scenario"
+  | "workflow_to_case"
+  | "case_to_workflow"
+  | "case_to_results";
+
 export interface RunState {
   run: {
     runId: string;
     processInstanceId: string;
     processKey: string;
+    kind?: "workflow" | "plan";
+    environment?: string;
+    scope?: string;
     startedAt: string;
     finishedAt?: string;
     results: Record<string, ActivityState>;
@@ -243,6 +334,184 @@ export async function startRun(processKey: string): Promise<{ runId: string }> {
 
 export async function fetchRun(runId: string): Promise<RunState> {
   return jsonOrThrow(await apiFetch(`/api/runs/${runId}`));
+}
+
+export async function listRuns(): Promise<RunState["run"][]> {
+  const res = await jsonOrThrow<{ runs: RunState["run"][] }>(
+    await apiFetch("/api/runs"),
+  );
+  return res.runs ?? [];
+}
+
+export async function fetchPlan(processKey: string): Promise<TestPlanFile> {
+  const res = await jsonOrThrow<{ plan: TestPlanFile }>(
+    await apiFetch(`/api/processes/${processKey}/plan`),
+  );
+  return res.plan;
+}
+
+export async function savePlan(
+  processKey: string,
+  plan: TestPlanFile,
+): Promise<TestPlanFile> {
+  const res = await jsonOrThrow<{ plan: TestPlanFile }>(
+    await apiFetch(`/api/processes/${processKey}/plan`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    }),
+  );
+  return res.plan;
+}
+
+export async function exportPlan(processKey: string) {
+  return jsonOrThrow(await apiFetch(`/api/processes/${processKey}/plan/export`));
+}
+
+export async function importPlan(processKey: string, plan: TestPlanFile) {
+  return jsonOrThrow<{ plan: TestPlanFile }>(
+    await apiFetch(`/api/processes/${processKey}/plan/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    }),
+  );
+}
+
+export async function startTestRun(input: {
+  scope: TestRunScope;
+  environment?: string;
+}): Promise<{ runId: string; processInstanceId: string; planned: number }> {
+  return jsonOrThrow(
+    await apiFetch("/api/test-runs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    }),
+  );
+}
+
+export async function generateDataSet(
+  processKey: string,
+  nodeId: string,
+  caseId: string,
+  dataSetId: string,
+  count = 5,
+): Promise<Record<string, unknown>[]> {
+  const res = await jsonOrThrow<{ rows: Record<string, unknown>[] }>(
+    await apiFetch(
+      `/api/processes/${processKey}/plan/nodes/${nodeId}/cases/${caseId}/datasets/${dataSetId}/generate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count }),
+      },
+    ),
+  );
+  return res.rows;
+}
+
+export interface TraceabilityInsights {
+  workflowsCreated: number;
+  workflowsExecuted: number;
+  suitesCreated: number;
+  scenariosCreated: number;
+  casesCreated: number;
+  casesExecuted: number;
+  passed: number;
+  failed: number;
+  executed: number;
+  coverageGaps: Array<{ processKey: string; nodeId: string; reason: string }>;
+  failedCases: Array<{
+    processKey: string;
+    caseId?: string;
+    caseName?: string;
+    nodeId?: string;
+    message?: string;
+  }>;
+  trends: Array<{ date: string; passed: number; failed: number }>;
+}
+
+export interface TraceabilityRow {
+  workflowKey: string;
+  workflowName: string;
+  nodeId?: string;
+  suiteId?: string;
+  suiteName?: string;
+  scenarioId?: string;
+  scenarioName?: string;
+  caseId?: string;
+  caseName?: string;
+  lastStatus?: string;
+  lastRunAt?: string;
+}
+
+export interface TraceabilityResponse {
+  view: TraceabilityView;
+  rows: TraceabilityRow[];
+  insights: TraceabilityInsights;
+}
+
+export async function fetchTraceability(view: TraceabilityView) {
+  return jsonOrThrow<TraceabilityResponse>(
+    await apiFetch(`/api/traceability?view=${encodeURIComponent(view)}`),
+  );
+}
+
+export async function aiGenerateWorkflow(processKey: string, prompt: string) {
+  return jsonOrThrow<{ bpmnXml: string; explanation: string }>(
+    await apiFetch("/api/ai/workflow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ processKey, prompt }),
+    }),
+  );
+}
+
+export async function aiModifyWorkflow(
+  processKey: string,
+  bpmnXml: string,
+  instruction: string,
+) {
+  return jsonOrThrow<{ bpmnXml: string; explanation: string }>(
+    await apiFetch("/api/ai/workflow/modify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ processKey, bpmnXml, instruction }),
+    }),
+  );
+}
+
+export async function aiRecommendAssets(body: {
+  processKey: string;
+  nodeId: string;
+  nodeName?: string;
+  bpmnXml: string;
+  planSummary?: string;
+}) {
+  return jsonOrThrow<{
+    suites: Array<{
+      name: string;
+      scenarios: Array<{
+        name: string;
+        cases: Array<{
+          name: string;
+          steps: Array<{ name: string; action: string; expectedResult?: string }>;
+        }>;
+      }>;
+    }>;
+    raw: string;
+  }>(
+    await apiFetch("/api/ai/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+export function newPlanId(): string {
+  return crypto.randomUUID().slice(0, 8);
 }
 
 export function resolveAssetUrl(path: string | undefined): string | undefined {

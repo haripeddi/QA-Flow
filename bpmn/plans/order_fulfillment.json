@@ -1,0 +1,180 @@
+{
+  "processKey": "order_fulfillment",
+  "version": 1,
+  "nodes": {
+    "create_order": {
+      "nodeId": "create_order",
+      "suites": [
+        {
+          "id": "24029f68",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "28f90319",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "9b8c3ce9",
+                  "name": "Create order returns 200",
+                  "executable": {
+                    "name": "Create order returns 200",
+                    "type": "http.api",
+                    "request": {
+                      "method": "POST",
+                      "url": "{{BASE_URL}}/mock/orders",
+                      "headers": {
+                        "Content-Type": "application/json"
+                      },
+                      "body": {
+                        "orderId": 42,
+                        "sku": "WIDGET-1",
+                        "qty": 1
+                      }
+                    },
+                    "expect": {
+                      "status": 200,
+                      "jsonPath": {
+                        "$.orderId": 42,
+                        "$.status": "created"
+                      }
+                    },
+                    "setVariables": {
+                      "create_order_passed": "expect.passed"
+                    }
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "9b8c3ce9"
+    },
+    "verify_order": {
+      "nodeId": "verify_order",
+      "suites": [
+        {
+          "id": "66415131",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "5824f1e5",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "b2b4ea68",
+                  "name": "Verify order exists",
+                  "executable": {
+                    "name": "Verify order exists",
+                    "type": "http.api",
+                    "request": {
+                      "method": "GET",
+                      "url": "{{BASE_URL}}/mock/orders/42"
+                    },
+                    "expect": {
+                      "status": 200,
+                      "jsonPath": {
+                        "$.orderId": 42,
+                        "$.status": "active"
+                      }
+                    },
+                    "setVariables": {
+                      "verify_order_passed": "expect.passed"
+                    }
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "b2b4ea68"
+    },
+    "send_confirmation": {
+      "nodeId": "send_confirmation",
+      "suites": [
+        {
+          "id": "f385e703",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "7974dc64",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "9955a254",
+                  "name": "Send confirmation email",
+                  "executable": {
+                    "name": "Send confirmation email",
+                    "type": "http.api",
+                    "request": {
+                      "method": "POST",
+                      "url": "{{BASE_URL}}/mock/confirmations",
+                      "body": {
+                        "orderId": 42
+                      }
+                    },
+                    "expect": {
+                      "status": 200
+                    }
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "9955a254"
+    },
+    "log_failure": {
+      "nodeId": "log_failure",
+      "suites": [
+        {
+          "id": "4a5dd0a6",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "4cb8e2c1",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "b9daf9ef",
+                  "name": "Log failure to ops channel",
+                  "executable": {
+                    "name": "Log failure to ops channel",
+                    "type": "http.api",
+                    "request": {
+                      "method": "POST",
+                      "url": "{{BASE_URL}}/mock/failures",
+                      "body": {
+                        "orderId": 42,
+                        "reason": "verify_order failed"
+                      }
+                    },
+                    "expect": {
+                      "status": 200
+                    }
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "b9daf9ef"
+    }
+  },
+  "updatedAt": "2026-06-04T13:39:44.622Z"
+}

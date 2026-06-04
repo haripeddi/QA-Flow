@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import BpmnModeler, { type BpmnModelerHandle, type ElementInfo } from "../BpmnModeler";
 import BpmnRunCanvas from "../BpmnRunCanvas";
-import CopilotPanel from "../copilot/CopilotPanel";
 import TestConfigPanel from "../TestConfigPanel";
 import RunPanel from "../RunPanel";
 import {
@@ -10,13 +9,11 @@ import {
   createProcess,
   deleteProcess,
   fetchProcess,
-  fetchProcesses,
   fetchRun,
   saveProcess,
   startRun,
   type ActivityState,
   type ProcessFullDef,
-  type ProcessSummary,
   type TagsFile,
   type TestDef,
 } from "../api";
@@ -27,7 +24,6 @@ export default function DesignPage() {
   const { key: routeKey } = useParams();
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("design");
-  const [processes, setProcesses] = useState<ProcessSummary[]>([]);
   const [proc, setProc] = useState<ProcessFullDef | null>(null);
   const [selected, setSelected] = useState<ElementInfo | null>(null);
   const [tags, setTags] = useState<TagsFile | null>(null);
@@ -35,12 +31,14 @@ export default function DesignPage() {
   const [saving, setSaving] = useState(false);
   const [healthOk, setHealthOk] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showCopilot, setShowCopilot] = useState(false);
 
   const [runId, setRunId] = useState<string | null>(null);
   const [activities, setActivities] = useState<ActivityState[]>([]);
   const [active, setActive] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [showRunModal, setShowRunModal] = useState(false);
+  const [runEnv, setRunEnv] = useState("staging");
+  const [runTag, setRunTag] = useState("");
   const pollTimer = useRef<number | null>(null);
   const modelerRef = useRef<BpmnModelerHandle | null>(null);
 
@@ -75,14 +73,10 @@ export default function DesignPage() {
         if (!cancelled) setHealthOk(ok);
       });
       try {
-        const list = await fetchProcesses();
-        if (cancelled) return;
-        setProcesses(list);
-        const key = routeKey ?? list[0]?.key;
-        if (key) await openProcess(key, true);
+        if (routeKey) await openProcess(routeKey, true);
       } catch (e) {
         if (!cancelled) {
-          setError(`Failed to load processes: ${(e as Error).message}`);
+          setError(`Failed to load process: ${(e as Error).message}`);
         }
       }
     }
@@ -98,34 +92,11 @@ export default function DesignPage() {
     void openProcess(routeKey, true);
   }, [routeKey, proc, openProcess]);
 
-  const refreshList = useCallback(async () => {
-    const list = await fetchProcesses();
-    setProcesses(list);
-  }, []);
-
-  const handleNew = async () => {
-    if (dirty && !confirm("You have unsaved changes. Discard them?")) return;
-    const name = prompt("Name of the new process?", "My new process");
-    if (!name) return;
-    const suggested =
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "")
-        .slice(0, 64) || "new_process";
-    const key = prompt("Internal key (lowercase, a-z0-9_)", suggested);
-    if (!key) return;
-    const created = await createProcess({ key, name });
-    await refreshList();
-    await openProcess(created.key, true);
-  };
-
   const handleDuplicate = async () => {
     if (!proc) return;
     const key = prompt(`Duplicate key for "${proc.name}"?`, `${proc.key}_copy`);
     if (!key) return;
     const created = await createProcess({ key, sourceKey: proc.key });
-    await refreshList();
     await openProcess(created.key, true);
   };
 
@@ -135,7 +106,6 @@ export default function DesignPage() {
     await deleteProcess(proc.key);
     setProc(null);
     setTags(null);
-    await refreshList();
     navigate("/");
   };
 
@@ -148,23 +118,30 @@ export default function DesignPage() {
       setProc(saved);
       setTags(saved.tags);
       setDirty(false);
-      await refreshList();
     } catch (e) {
       setError(`Save failed: ${(e as Error).message}`);
     } finally {
       setSaving(false);
     }
-  }, [proc, tags, refreshList]);
+  }, [proc, tags]);
 
-  const handleStartRun = useCallback(async () => {
+  const openRunModal = useCallback(() => {
+    if (!proc) return;
+    setShowRunModal(true);
+  }, [proc]);
+
+  const confirmStartRun = useCallback(async () => {
     if (!proc) return;
     if (dirty) {
-      if (!confirm("Save and run?")) return;
       await handleSave();
     }
+    setShowRunModal(false);
     setStarting(true);
     try {
-      const { runId: id } = await startRun(proc.key);
+      const { runId: id } = await startRun(proc.key, {
+        environment: runEnv,
+        tag: runTag,
+      });
       setRunId(id);
       setActive(true);
       setMode("run");
@@ -173,7 +150,7 @@ export default function DesignPage() {
     } finally {
       setStarting(false);
     }
-  }, [proc, dirty, handleSave]);
+  }, [proc, dirty, handleSave, runEnv, runTag]);
 
   useEffect(() => {
     if (!runId) return;
@@ -237,21 +214,14 @@ export default function DesignPage() {
     <div className="app">
       <header className="header">
         <div className="header-left">
-          <select
-            className="process-select"
-            value={proc?.key ?? ""}
-            onChange={(e) => openProcess(e.target.value)}
-            disabled={starting || active}
-          >
-            {processes.length === 0 && <option value="">(no processes)</option>}
-            {processes.map((p) => (
-              <option key={p.key} value={p.key}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          <Link to="/" className="back-link" title="Back to use cases">
+            ←
+          </Link>
+          <div className="usecase-title">
+            <h2>{proc?.name ?? "Loading…"}</h2>
+            {proc && <span className="usecase-title-key">{proc.key}</span>}
+          </div>
           <div className="process-actions">
-            <button onClick={handleNew} type="button">+ New</button>
             <button onClick={handleDuplicate} disabled={!proc} type="button">Duplicate</button>
             <button onClick={handleDelete} disabled={!proc} className="danger" type="button">Delete</button>
           </div>
@@ -259,19 +229,54 @@ export default function DesignPage() {
             <button className={mode === "design" ? "mode-on" : ""} onClick={() => setMode("design")} type="button">Design</button>
             <button className={mode === "run" ? "mode-on" : ""} onClick={() => setMode("run")} type="button">Run</button>
           </div>
-          <button type="button" onClick={() => setShowCopilot((v) => !v)} className={showCopilot ? "mode-on" : ""}>
-            Copilot
-          </button>
         </div>
         <div className="actions">
           <span className={`status-dot ${healthOk === null ? "" : healthOk ? "ok" : "bad"}`} />
           {dirty && <span className="dirty-badge">● unsaved</span>}
           <button onClick={handleSave} disabled={!proc || !dirty || saving} type="button">{saving ? "Saving..." : "Save"}</button>
-          <button className="primary" onClick={handleStartRun} disabled={!proc || starting || active} type="button">
+          <button className="primary" onClick={openRunModal} disabled={!proc || starting || active} type="button">
             {active ? "Running..." : "Start Run"}
           </button>
         </div>
       </header>
+
+      {showRunModal && (
+        <div className="modal-overlay" onClick={() => setShowRunModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Start a new run</h3>
+            <p className="modal-sub">
+              Configure how this run of <strong>{proc?.name}</strong> should
+              execute.
+            </p>
+            <div className="field">
+              <label>Environment</label>
+              <select value={runEnv} onChange={(e) => setRunEnv(e.target.value)}>
+                <option value="local">local</option>
+                <option value="dev">dev</option>
+                <option value="qa">qa</option>
+                <option value="staging">staging</option>
+                <option value="production">production</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Tag / label (optional)</label>
+              <input
+                value={runTag}
+                onChange={(e) => setRunTag(e.target.value)}
+                placeholder="e.g. smoke, regression, release-2.4"
+              />
+            </div>
+            <div className="modal-actions">
+              <button type="button" onClick={() => setShowRunModal(false)}>
+                Cancel
+              </button>
+              <button type="button" className="primary" onClick={confirmStartRun}>
+                Start run
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="canvas-wrap">
         {error && <div className="error-banner">{error} <button onClick={() => setError(null)}>×</button></div>}
@@ -289,19 +294,6 @@ export default function DesignPage() {
       </div>
 
       <aside className="side">
-        {showCopilot && proc && mode === "design" && (
-          <CopilotPanel
-            processKey={proc.key}
-            bpmnXml={proc.bpmnXml}
-            selectedNodeId={selected?.id}
-            selectedNodeName={selected?.name ?? undefined}
-            onApplyBpmn={(xml) => {
-              setProc({ ...proc, bpmnXml: xml });
-              setDirty(true);
-              void modelerRef.current?.importXml(xml);
-            }}
-          />
-        )}
         {mode === "design" ? (
           <>
             {isServiceTask && selected && proc && (

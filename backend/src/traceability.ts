@@ -30,6 +30,74 @@ export interface TraceabilityInsights {
   trends: Array<{ date: string; passed: number; failed: number }>;
 }
 
+export interface UseCaseSummary {
+  key: string;
+  name: string;
+  description?: string;
+  updatedAt?: string;
+  nodeCount: number;
+  testCaseCount: number;
+  automatedCount: number;
+  manualCount: number;
+  passed: number;
+  failed: number;
+  notRun: number;
+  runCount: number;
+  lastRunAt?: string;
+}
+
+export async function buildUseCaseSummaries(): Promise<UseCaseSummary[]> {
+  const processes = await listProcesses();
+  const runs = await listRuns();
+  const summaries: UseCaseSummary[] = [];
+
+  for (const proc of processes) {
+    const plan = await getPlan(proc.key);
+    const cases = listAllCases(plan);
+    let automatedCount = 0;
+    let manualCount = 0;
+    let passed = 0;
+    let failed = 0;
+    let notRun = 0;
+
+    for (const entry of cases) {
+      if (entry.testCase.executable) automatedCount++;
+      else manualCount++;
+      const last = findLastResultForCase(runs, proc.key, entry.testCase.id);
+      if (!last) notRun++;
+      else if (last.status === "passed") passed++;
+      else if (last.status === "failed") failed++;
+      else notRun++;
+    }
+
+    const procRuns = runs.filter((r) => r.processKey === proc.key);
+    let lastRunAt: string | undefined;
+    for (const r of procRuns) {
+      const at = r.finishedAt ?? r.startedAt;
+      if (at && (!lastRunAt || at > lastRunAt)) lastRunAt = at;
+    }
+
+    summaries.push({
+      key: proc.key,
+      name: proc.name,
+      description: proc.description,
+      updatedAt: proc.updatedAt,
+      nodeCount: Object.keys(plan.nodes).length,
+      testCaseCount: cases.length,
+      automatedCount,
+      manualCount,
+      passed,
+      failed,
+      notRun,
+      runCount: procRuns.length,
+      lastRunAt,
+    });
+  }
+
+  summaries.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+  return summaries;
+}
+
 export interface TraceabilityRow {
   workflowKey: string;
   workflowName: string;

@@ -229,12 +229,17 @@ async function dispatch(
   throw new Error(`unknown test type: ${(def as { type: string }).type}`);
 }
 
-export async function startNewRun(processKey: string): Promise<StartResult> {
+export async function startNewRun(
+  processKey: string,
+  options?: { environment?: string; tag?: string },
+): Promise<StartResult> {
   const proc = await getProcess(processKey);
   if (!proc) throw new Error(`unknown process: ${processKey}`);
   const source = proc.bpmnXml;
   const runId = crypto.randomUUID();
   const processInstanceId = crypto.randomUUID();
+  const environment = options?.environment?.trim() || undefined;
+  const tag = options?.tag?.trim() || undefined;
 
   const engine = Engine({
     name: `qa-flow-${runId}`,
@@ -244,6 +249,8 @@ export async function startNewRun(processKey: string): Promise<StartResult> {
       __runId: runId,
       __processInstanceId: processInstanceId,
       __processKey: processKey,
+      environment,
+      tag,
     },
   });
 
@@ -261,6 +268,9 @@ export async function startNewRun(processKey: string): Promise<StartResult> {
     runId,
     processInstanceId,
     processKey,
+    kind: "workflow",
+    environment,
+    tag,
     startedAt: new Date().toISOString(),
     results: {},
   };

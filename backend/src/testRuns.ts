@@ -173,7 +173,7 @@ export function expandScope(
           testCase,
           dataSetId: ds.id,
           rowIndex,
-          variables: { ...row, environment },
+          variables: { ...(testCase.variables ?? {}), ...row, environment },
         });
       });
     }

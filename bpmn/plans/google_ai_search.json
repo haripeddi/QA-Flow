@@ -1,0 +1,187 @@
+{
+  "processKey": "google_ai_search",
+  "version": 1,
+  "nodes": {
+    "open_google": {
+      "nodeId": "open_google",
+      "suites": [
+        {
+          "id": "e7fc75e7",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "2a4617e4",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "7d44c38a",
+                  "name": "Open google.com",
+                  "executable": {
+                    "name": "Open google.com",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": ""
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "7d44c38a"
+    },
+    "enter_ai_mode": {
+      "nodeId": "enter_ai_mode",
+      "suites": [
+        {
+          "id": "b824ae3f",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "1325fc14",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "06802dbf",
+                  "name": "Enter AI Mode (best-effort)",
+                  "executable": {
+                    "name": "Enter AI Mode (best-effort)",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "tryClick",
+                        "selector": "a:has-text(\"AI Mode\"), button:has-text(\"AI Mode\"), [aria-label*=\"AI Mode\" i]",
+                        "optional": true,
+                        "name": "click-ai-mode"
+                      },
+                      {
+                        "action": "waitForTimeout",
+                        "timeoutMs": 1500
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "after-ai-mode-attempt"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "06802dbf"
+    },
+    "search_bpmn": {
+      "nodeId": "search_bpmn",
+      "suites": [
+        {
+          "id": "d1e33a5c",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "6912e678",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "517ae08c",
+                  "name": "Search 'what is BPMN'",
+                  "executable": {
+                    "name": "Search 'what is BPMN'",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "fill",
+                        "selector": "textarea[name=\"q\"], input[name=\"q\"], textarea[aria-label*=\"Ask AI Mode\" i]",
+                        "value": "what is BPMN",
+                        "timeoutMs": 15000
+                      },
+                      {
+                        "action": "press",
+                        "selector": "textarea[name=\"q\"], input[name=\"q\"], textarea[aria-label*=\"Ask AI Mode\" i]",
+                        "value": "Enter"
+                      },
+                      {
+                        "action": "waitForLoadState",
+                        "state": "domcontentloaded",
+                        "timeoutMs": 20000
+                      },
+                      {
+                        "action": "waitForTimeout",
+                        "timeoutMs": 3500,
+                        "name": "let-results-settle"
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "search-results"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "517ae08c"
+    },
+    "assert_bpmn": {
+      "nodeId": "assert_bpmn",
+      "suites": [
+        {
+          "id": "0750cc4d",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "da4c6adb",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "c5c79018",
+                  "name": "Assert response contains 'BPMN'",
+                  "executable": {
+                    "name": "Assert response contains 'BPMN'",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "assertContains",
+                        "text": "BPMN",
+                        "ignoreCase": false,
+                        "timeoutMs": 15000
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "assertion-evidence"
+                      }
+                    ],
+                    "setVariables": {
+                      "assert_bpmn_passed": "expect.passed"
+                    }
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "c5c79018"
+    }
+  },
+  "updatedAt": "2026-06-04T13:39:44.617Z"
+}

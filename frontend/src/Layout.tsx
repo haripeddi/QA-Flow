@@ -12,7 +12,7 @@ export default function Layout() {
           to="/"
           className={loc.pathname === "/" || loc.pathname.startsWith("/process") ? "nav-on" : ""}
         >
-          Design
+          Use Cases
         </Link>
         <Link
           to="/traceability"

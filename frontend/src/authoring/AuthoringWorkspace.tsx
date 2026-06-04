@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import * as XLSX from "xlsx";
 import {
   BrowserForm,
   HttpForm,
@@ -126,6 +127,7 @@ export default function AuthoringWorkspace() {
             {
               id: caseId,
               name: "Test Case 1",
+              variables: {},
               steps: [],
               dataSets: [],
               executable: defaultTestFor("http.api", "Test Case 1"),
@@ -150,11 +152,151 @@ export default function AuthoringWorkspace() {
       scenario.cases.push({
         id: newPlanId(),
         name: `Test Case ${scenario.cases.length + 1}`,
+        variables: {},
         steps: [],
         dataSets: [],
       });
     }
     updatePlan({ ...plan });
+  };
+
+  const addCasesFromRows = useCallback(
+    (rows: Record<string, unknown>[]) => {
+      if (!plan || !node) return;
+      if (node.suites.length === 0) {
+        node.suites.push({
+          id: newPlanId(),
+          name: "Imported Suite",
+          scenarios: [
+            { id: newPlanId(), name: "Imported Scenario", cases: [] },
+          ],
+        });
+      }
+      const suite = node.suites[0];
+      if (suite.scenarios.length === 0) {
+        suite.scenarios.push({
+          id: newPlanId(),
+          name: "Imported Scenario",
+          cases: [],
+        });
+      }
+      const scenario = suite.scenarios[0];
+
+      const pick = (raw: Record<string, unknown>, keys: string[]) => {
+        for (const k of Object.keys(raw)) {
+          if (keys.includes(k.trim().toLowerCase())) {
+            return String(raw[k] ?? "").trim();
+          }
+        }
+        return "";
+      };
+
+      let added = 0;
+      let firstId: string | null = null;
+      for (const raw of rows) {
+        const name = pick(raw, ["name", "test case", "testcase", "title"]);
+        if (!name) continue;
+        const description = pick(raw, ["description", "desc", "summary"]);
+        const typeRaw = pick(raw, ["type", "kind"]).toLowerCase();
+        const url = pick(raw, ["url", "endpoint"]);
+        const method = pick(raw, ["method", "verb"]);
+
+        let executable: TestDef | undefined;
+        if (/http|api|rest/.test(typeRaw)) {
+          const http = defaultTestFor("http.api", name) as TestDef & {
+            type: "http.api";
+            request: { method: string; url: string };
+          };
+          if (url) http.request.url = url;
+          if (method) http.request.method = method.toUpperCase();
+          executable = http;
+        } else if (/browser|ui|playwright|web/.test(typeRaw)) {
+          executable = defaultTestFor("browser.playwright", name);
+        } else if (/python|script|\bpy\b/.test(typeRaw)) {
+          executable = defaultTestFor("script.python", name);
+        }
+
+        const existing = scenario.cases.find((c) => c.name === name);
+        if (existing) {
+          if (description) existing.description = description;
+          if (executable) existing.executable = executable;
+        } else {
+          const id = newPlanId();
+          if (!firstId) firstId = id;
+          scenario.cases.push({
+            id,
+            name,
+            description,
+            variables: {},
+            steps: [],
+            dataSets: [],
+            executable,
+          });
+          added++;
+        }
+      }
+
+      if (added === 0) {
+        setError(
+          "No importable rows found. Ensure the sheet has a 'name' column.",
+        );
+        return;
+      }
+      setError(null);
+      if (firstId) {
+        setSel({ suiteId: suite.id, scenarioId: scenario.id, caseId: firstId });
+      }
+      updatePlan({ ...plan });
+    },
+    [plan, node],
+  );
+
+  const importExcel = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const wb = XLSX.read(data, { type: "array" });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+          defval: "",
+        });
+        addCasesFromRows(rows);
+      } catch (err) {
+        setError(`Excel import failed: ${(err as Error).message}`);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const downloadExcelTemplate = () => {
+    const rows = [
+      {
+        name: "Login succeeds with valid credentials",
+        description: "Verify a known user can log in",
+        type: "browser",
+        url: "",
+        method: "",
+      },
+      {
+        name: "GET /health returns 200",
+        description: "API smoke check",
+        type: "http",
+        url: "https://example.com/health",
+        method: "GET",
+      },
+      {
+        name: "Manual exploratory check",
+        description: "No automation yet",
+        type: "",
+        url: "",
+        method: "",
+      },
+    ];
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "TestCases");
+    XLSX.writeFile(wb, "test-cases-template.xlsx");
   };
 
   const updateCase = (patch: Partial<PlanTestCase>) => {
@@ -256,6 +398,10 @@ export default function AuthoringWorkspace() {
                   onChange={(e) => updateCase({ name: e.target.value })}
                 />
               </div>
+              <CaseVariablesEditor
+                variables={selectedCase.variables ?? {}}
+                onChange={(variables) => updateCase({ variables })}
+              />
               <div className="field">
                 <label>
                   <input
@@ -423,6 +569,27 @@ export default function AuthoringWorkspace() {
         >
           Import plan
         </button>
+        <span className="footer-sep" />
+        <button
+          type="button"
+          className="primary"
+          onClick={() => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept =
+              ".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel";
+            input.onchange = () => {
+              const file = input.files?.[0];
+              if (file) importExcel(file);
+            };
+            input.click();
+          }}
+        >
+          Import test cases (Excel)
+        </button>
+        <button type="button" onClick={downloadExcelTemplate}>
+          Download Excel template
+        </button>
       </footer>
     </div>
   );
@@ -438,6 +605,15 @@ function DataSetEditor({
   onGenerate: () => void;
 }) {
   const [bulk, setBulk] = useState("");
+  const applyBulk = () => {
+    if (!bulk.trim()) return;
+    try {
+      const rows = JSON.parse(bulk) as Record<string, unknown>[];
+      onChange({ ...dataSet, rows });
+    } catch {
+      alert("Invalid JSON");
+    }
+  };
   return (
     <div className="dataset-card">
       <input
@@ -450,21 +626,57 @@ function DataSetEditor({
         placeholder='Bulk paste JSON rows, e.g. [{"email":"a@b.com"}]'
         value={bulk}
         onChange={(e) => setBulk(e.target.value)}
+        onBlur={applyBulk}
       />
       <button
         type="button"
-        onClick={() => {
-          try {
-            const rows = JSON.parse(bulk) as Record<string, unknown>[];
-            onChange({ ...dataSet, rows });
-          } catch {
-            alert("Invalid JSON");
-          }
-        }}
+        onClick={applyBulk}
       >
         Apply bulk rows
       </button>
       <pre className="script-output">{JSON.stringify(dataSet.rows, null, 2)}</pre>
+    </div>
+  );
+}
+
+function CaseVariablesEditor({
+  variables,
+  onChange,
+}: {
+  variables: Record<string, unknown>;
+  onChange: (variables: Record<string, unknown>) => void;
+}) {
+  const text = JSON.stringify(variables, null, 2);
+
+  const updateText = (next: string) => {
+    if (!next.trim()) {
+      onChange({});
+      return;
+    }
+    try {
+      const parsed = JSON.parse(next) as Record<string, unknown>;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        onChange(parsed);
+      }
+    } catch {
+      // Keep the draft visible while the user is still typing incomplete JSON.
+    }
+  };
+
+  return (
+    <div className="field">
+      <label>Case memory variables</label>
+      <textarea
+        rows={4}
+        value={text}
+        onChange={(e) => updateText(e.target.value)}
+        placeholder='{"customerId": "C123", "region": "US"}'
+      />
+      <p className="hint">
+        Saved with this test case and injected into executions. Use as{" "}
+        <code>{"{{customerId}}"}</code> in HTTP/browser fields or read from{" "}
+        <code>QA_VARS</code> in Python.
+      </p>
     </div>
   );
 }

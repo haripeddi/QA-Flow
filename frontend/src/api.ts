@@ -169,6 +169,7 @@ export interface PlanTestCase {
   id: string;
   name: string;
   description?: string;
+  variables?: Record<string, unknown>;
   executable?: TestDef;
   steps: TestStep[];
   dataSets: TestDataSet[];
@@ -322,14 +323,44 @@ export async function deleteProcess(key: string): Promise<void> {
   );
 }
 
-export async function startRun(processKey: string): Promise<{ runId: string }> {
+export async function startRun(
+  processKey: string,
+  options?: { environment?: string; tag?: string },
+): Promise<{ runId: string }> {
   return jsonOrThrow(
     await apiFetch("/api/runs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ processKey }),
+      body: JSON.stringify({
+        processKey,
+        environment: options?.environment,
+        tag: options?.tag,
+      }),
     }),
   );
+}
+
+export interface UseCaseSummary {
+  key: string;
+  name: string;
+  description?: string;
+  updatedAt?: string;
+  nodeCount: number;
+  testCaseCount: number;
+  automatedCount: number;
+  manualCount: number;
+  passed: number;
+  failed: number;
+  notRun: number;
+  runCount: number;
+  lastRunAt?: string;
+}
+
+export async function fetchUseCases(): Promise<UseCaseSummary[]> {
+  const data = await jsonOrThrow<{ useCases: UseCaseSummary[] }>(
+    await apiFetch("/api/usecases"),
+  );
+  return data.useCases;
 }
 
 export async function fetchRun(runId: string): Promise<RunState> {

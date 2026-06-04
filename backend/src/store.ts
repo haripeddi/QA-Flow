@@ -32,6 +32,7 @@ export interface RunRecord {
   processKey: string;
   kind?: RunKind;
   environment?: string;
+  tag?: string;
   scope?: string;
   startedAt: string;
   finishedAt?: string;

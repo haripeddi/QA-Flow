@@ -567,6 +567,7 @@ function KvEditor({
   const entries = Object.entries(value);
   const [draftKey, setDraftKey] = useState("");
   const [draftVal, setDraftVal] = useState("");
+  const normalizedDraftKey = draftKey.trim();
   const setEntry = (k: string, v: string) => {
     const next = { ...value };
     next[k] = v;
@@ -586,10 +587,13 @@ function KvEditor({
     onChange(next);
   };
   const addDraft = () => {
-    if (!draftKey.trim()) return;
-    setEntry(draftKey.trim(), draftVal);
+    if (!normalizedDraftKey) return;
+    setEntry(normalizedDraftKey, draftVal);
     setDraftKey("");
     setDraftVal("");
+  };
+  const commitDraftIfReady = () => {
+    if (normalizedDraftKey) addDraft();
   };
   return (
     <div className="field">
@@ -621,6 +625,7 @@ function KvEditor({
           onChange={(e) => setDraftVal(e.target.value)}
           placeholder={placeholderV}
           onKeyDown={(e) => e.key === "Enter" && addDraft()}
+          onBlur={commitDraftIfReady}
         />
         <button type="button" className="ghost" onClick={addDraft}>+</button>
       </div>

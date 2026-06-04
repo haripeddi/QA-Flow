@@ -26,6 +26,7 @@ export interface TestCase {
   id: string;
   name: string;
   description?: string;
+  variables?: Record<string, unknown>;
   executable?: TestDef;
   steps: TestStep[];
   dataSets: TestDataSet[];
@@ -104,6 +105,7 @@ function wrapLegacyTest(nodeId: string, test: TestDef): NodePlan {
                 id: caseId,
                 name: test.name || "Migrated test",
                 executable: test,
+                variables: {},
                 steps: [],
                 dataSets: [],
               },
@@ -215,6 +217,7 @@ export function getNodePlan(plan: TestPlanFile, nodeId: string): NodePlan {
 export interface BulkCaseInput {
   name: string;
   description?: string;
+  variables?: Record<string, unknown>;
   executable?: TestDef;
   steps?: TestStep[];
   dataSets?: TestDataSet[];
@@ -238,6 +241,7 @@ export async function bulkUpsertCases(
     const existing = scenario.cases.find((c) => c.name === input.name);
     if (existing) {
       existing.description = input.description ?? existing.description;
+      if (input.variables) existing.variables = input.variables;
       if (input.executable) existing.executable = input.executable;
       if (input.steps) existing.steps = input.steps;
       if (input.dataSets) existing.dataSets = input.dataSets;
@@ -247,6 +251,7 @@ export async function bulkUpsertCases(
         id,
         name: input.name,
         description: input.description,
+        variables: input.variables ?? {},
         executable: input.executable,
         steps: input.steps ?? [],
         dataSets: input.dataSets ?? [],

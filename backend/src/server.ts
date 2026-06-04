@@ -34,7 +34,11 @@ import {
   upsertProcess,
   validateKey,
 } from "./processes.ts";
-import { buildTraceability, type TraceabilityView } from "./traceability.ts";
+import {
+  buildTraceability,
+  buildUseCaseSummaries,
+  type TraceabilityView,
+} from "./traceability.ts";
 import { startTestRun, syncPlanToTags } from "./testRuns.ts";
 
 export async function startServer() {
@@ -360,6 +364,10 @@ export async function startServer() {
     },
   );
 
+  app.get("/api/usecases", async () => ({
+    useCases: await buildUseCaseSummaries(),
+  }));
+
   app.post<{ Body: { processKey: string; prompt: string } }>(
     "/api/ai/workflow",
     async (req, reply) => {
@@ -408,18 +416,20 @@ export async function startServer() {
     }
   });
 
-  app.post<{ Body?: { processKey?: string } }>(
-    "/api/runs",
-    async (req, reply) => {
-      const key = req.body?.processKey;
-      if (!key) return reply.code(400).send({ error: "processKey required" });
-      const proc = await getProcess(key);
-      if (!proc)
-        return reply.code(404).send({ error: `process not found: ${key}` });
-      const { runId, processInstanceId } = await startNewRun(key);
-      return { runId, processInstanceId };
-    },
-  );
+  app.post<{
+    Body?: { processKey?: string; environment?: string; tag?: string };
+  }>("/api/runs", async (req, reply) => {
+    const key = req.body?.processKey;
+    if (!key) return reply.code(400).send({ error: "processKey required" });
+    const proc = await getProcess(key);
+    if (!proc)
+      return reply.code(404).send({ error: `process not found: ${key}` });
+    const { runId, processInstanceId } = await startNewRun(key, {
+      environment: req.body?.environment,
+      tag: req.body?.tag,
+    });
+    return { runId, processInstanceId };
+  });
 
   app.get("/api/runs", async () => ({ runs: await listRuns() }));
 

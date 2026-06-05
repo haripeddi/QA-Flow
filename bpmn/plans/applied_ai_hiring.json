@@ -1,0 +1,138 @@
+{
+  "processKey": "applied_ai_hiring",
+  "version": 1,
+  "nodes": {
+    "open_ai": {
+      "nodeId": "open_ai",
+      "suites": [
+        {
+          "id": "12b71d76",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "79d40fb9",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "07b15a09",
+                  "name": "Open Applied AI",
+                  "executable": {
+                    "name": "Open Applied AI",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com/artificial-intelligence"
+                      },
+                      {
+                        "action": "waitForTimeout",
+                        "timeoutMs": 1500
+                      },
+                      {
+                        "action": "assertContains",
+                        "text": "Applied AI",
+                        "ignoreCase": false,
+                        "timeoutMs": 15000
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "applied-ai"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "07b15a09"
+    },
+    "verify_automation": {
+      "nodeId": "verify_automation",
+      "suites": [
+        {
+          "id": "e86382ae",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "497ea684",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "a3282bfe",
+                  "name": "Verify automation messaging",
+                  "executable": {
+                    "name": "Verify automation messaging",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "assertContains",
+                        "text": "Automate",
+                        "ignoreCase": true,
+                        "timeoutMs": 15000
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "automation"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "a3282bfe"
+    },
+    "verify_outcomes": {
+      "nodeId": "verify_outcomes",
+      "suites": [
+        {
+          "id": "e29b1d98",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "c4a48373",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "8d8b73f2",
+                  "name": "Verify ROI outcomes",
+                  "executable": {
+                    "name": "Verify ROI outcomes",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "assertContains",
+                        "text": "ROI",
+                        "ignoreCase": false,
+                        "timeoutMs": 15000
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "roi"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "8d8b73f2"
+    }
+  },
+  "updatedAt": "2026-06-05T07:27:12.514Z"
+}

@@ -1,0 +1,61 @@
+{
+  "processKey": "talent_crm_pipeline",
+  "elementTests": {
+    "open_crm": {
+      "name": "Open Talent CRM",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com/talent-crm"
+        },
+        {
+          "action": "waitForTimeout",
+          "timeoutMs": 1500
+        },
+        {
+          "action": "assertContains",
+          "text": "Talent CRM",
+          "ignoreCase": false,
+          "timeoutMs": 15000
+        },
+        {
+          "action": "screenshot",
+          "name": "crm"
+        }
+      ]
+    },
+    "verify_fit_scores": {
+      "name": "Verify Fit Scores",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "assertContains",
+          "text": "Fit Score",
+          "ignoreCase": true,
+          "timeoutMs": 15000
+        },
+        {
+          "action": "screenshot",
+          "name": "fit-scores"
+        }
+      ]
+    },
+    "verify_pipeline": {
+      "name": "Verify talent pipeline",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "assertContains",
+          "text": "Talent Pipeline",
+          "ignoreCase": true,
+          "timeoutMs": 15000
+        },
+        {
+          "action": "screenshot",
+          "name": "pipeline"
+        }
+      ]
+    }
+  }
+}

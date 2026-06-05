@@ -420,10 +420,16 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
 .back-link:hover { background: #e2e8f0; color: #0f172a; }
 .usecase-title { display: flex; flex-direction: column; min-width: 0; }
 .usecase-title h2 { margin: 0; font-size: 17px; font-weight: 650; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usecase-title h2 { display: inline-flex; align-items: center; gap: 6px; }
 .usecase-title-key {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px; color: #94a3b8;
 }
+.rename-inline {
+  border: none; background: transparent; cursor: pointer; color: #94a3b8;
+  font-size: 13px; padding: 2px 4px; border-radius: 4px; line-height: 1;
+}
+.rename-inline:hover { background: #f1f5f9; color: #2563eb; }
 
 /* ---- Modal ---- */
 .modal-overlay {
@@ -444,6 +450,35 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
 .modal-actions button { padding: 8px 16px; border-radius: 8px; }
 
 .footer-sep { flex: 1; }
+
+/* ---- Auth ---- */
+.auth-splash {
+  min-height: 100vh; display: grid; place-items: center;
+  background: radial-gradient(1200px 600px at 50% -10%, #1e293b, #0f172a);
+  color: #e2e8f0;
+}
+.auth-card {
+  background: #ffffff; color: #0f172a; border-radius: 16px; padding: 36px 40px;
+  width: 380px; max-width: calc(100vw - 32px); text-align: center;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.5);
+}
+.auth-logo {
+  display: inline-block; font-weight: 800; letter-spacing: 0.5px; color: #2563eb;
+  border: 2px solid #2563eb; border-radius: 10px; padding: 6px 12px; margin-bottom: 18px;
+}
+.auth-card h1 { margin: 0 0 6px; font-size: 20px; }
+.auth-sub { margin: 0 0 22px; color: #64748b; font-size: 14px; }
+.auth-error { color: #b91c1c; font-size: 14px; line-height: 1.5; }
+.auth-btn-wrap { display: flex; justify-content: center; min-height: 44px; }
+
+.nav-user { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.nav-user img { width: 26px; height: 26px; border-radius: 50%; }
+.nav-user-email { color: #cbd5e1; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-signout {
+  background: transparent; border: 1px solid #334155; color: #cbd5e1;
+  border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;
+}
+.nav-signout:hover { background: #1e293b; color: #f8fafc; }
 
 .djs-element.qa-passed   .djs-visual > :nth-child(1) { stroke: #10b981 !important; stroke-width: 3px !important; fill: #ecfdf5 !important; }
 .djs-element.qa-failed   .djs-visual > :nth-child(1) { stroke: #ef4444 !important; stroke-width: 3px !important; fill: #fef2f2 !important; }

@@ -3,11 +3,14 @@ import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import { promises as fs } from "node:fs";
 import {
+  ALLOWED_EMAIL_DOMAIN,
   ALLOWED_ORIGIN,
   API_PORT,
+  AUTH_ENABLED,
   LOGS_DIR,
   SCREENSHOTS_DIR,
 } from "./config.ts";
+import { authPreHandler, getUser } from "./auth.ts";
 import { getRun, listRuns } from "./store.ts";
 import { startNewRun, isRunActive, getActiveRun } from "./engine.ts";
 import {
@@ -31,6 +34,7 @@ import {
   ensureDirs,
   getProcess,
   listProcesses,
+  renameProcess,
   upsertProcess,
   validateKey,
 } from "./processes.ts";
@@ -59,7 +63,16 @@ export async function startServer() {
     decorateReply: false,
   });
 
+  app.addHook("onRequest", authPreHandler);
+
   app.get("/api/health", async () => ({ ok: true }));
+
+  app.get("/api/auth/config", async () => ({
+    enabled: AUTH_ENABLED,
+    domain: ALLOWED_EMAIL_DOMAIN ?? null,
+  }));
+
+  app.get("/api/auth/me", async (req) => ({ user: getUser(req) }));
 
   app.get("/", async (_req, reply) => {
     reply.type("text/html").send(`<!doctype html>
@@ -188,6 +201,21 @@ export async function startServer() {
       return reply.code(400).send({ error: (err as Error).message });
     }
   });
+
+  app.patch<{ Params: { key: string }; Body: { name?: string } }>(
+    "/api/processes/:key",
+    async (req, reply) => {
+      const name = req.body?.name;
+      if (!name || !name.trim())
+        return reply.code(400).send({ error: "name required" });
+      try {
+        const saved = await renameProcess(req.params.key, name);
+        return saved;
+      } catch (err) {
+        return reply.code(400).send({ error: (err as Error).message });
+      }
+    },
+  );
 
   app.delete<{ Params: { key: string } }>(
     "/api/processes/:key",
@@ -349,6 +377,7 @@ export async function startServer() {
       const result = await startTestRun({
         scope: scope as Parameters<typeof startTestRun>[0]["scope"],
         environment: req.body?.environment,
+        startedBy: getUser(req)?.email,
       });
       return reply.code(201).send(result);
     } catch (err) {
@@ -427,6 +456,7 @@ export async function startServer() {
     const { runId, processInstanceId } = await startNewRun(key, {
       environment: req.body?.environment,
       tag: req.body?.tag,
+      startedBy: getUser(req)?.email,
     });
     return { runId, processInstanceId };
   });

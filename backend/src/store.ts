@@ -34,6 +34,7 @@ export interface RunRecord {
   environment?: string;
   tag?: string;
   scope?: string;
+  startedBy?: string;
   startedAt: string;
   finishedAt?: string;
   results: Record<string, TaskResult>;

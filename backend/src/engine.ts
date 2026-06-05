@@ -231,7 +231,7 @@ async function dispatch(
 
 export async function startNewRun(
   processKey: string,
-  options?: { environment?: string; tag?: string },
+  options?: { environment?: string; tag?: string; startedBy?: string },
 ): Promise<StartResult> {
   const proc = await getProcess(processKey);
   if (!proc) throw new Error(`unknown process: ${processKey}`);
@@ -240,6 +240,7 @@ export async function startNewRun(
   const processInstanceId = crypto.randomUUID();
   const environment = options?.environment?.trim() || undefined;
   const tag = options?.tag?.trim() || undefined;
+  const startedBy = options?.startedBy?.trim() || undefined;
 
   const engine = Engine({
     name: `qa-flow-${runId}`,
@@ -271,6 +272,7 @@ export async function startNewRun(
     kind: "workflow",
     environment,
     tag,
+    startedBy,
     startedAt: new Date().toISOString(),
     results: {},
   };

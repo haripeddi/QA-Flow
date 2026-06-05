@@ -139,6 +139,36 @@ export async function upsertProcess(input: UpsertInput): Promise<ProcessFullDef>
   return result;
 }
 
+export async function renameProcess(
+  key: string,
+  newName: string,
+): Promise<ProcessFullDef> {
+  validateKey(key);
+  const name = newName.trim();
+  if (!name) throw new Error("name must not be empty");
+  const bpmnPath = bpmnPathFor(key);
+  let xml: string;
+  try {
+    xml = await fs.readFile(bpmnPath, "utf8");
+  } catch {
+    throw new Error(`process not found: ${key}`);
+  }
+  const safe = name.replace(/[<>&"]/g, " ");
+  if (/<bpmn:process[^>]*\bname="[^"]*"/.test(xml)) {
+    xml = xml.replace(
+      /(<bpmn:process[^>]*\bname=")[^"]*(")/,
+      `$1${safe}$2`,
+    );
+  } else {
+    xml = xml.replace(/<bpmn:process\b/, `<bpmn:process name="${safe}"`);
+  }
+  await atomicWrite(bpmnPath, xml);
+  clearTagsCache(key);
+  const result = await getProcess(key);
+  if (!result) throw new Error("process not found after rename");
+  return result;
+}
+
 export async function deleteProcess(key: string) {
   validateKey(key);
   await fs.rm(bpmnPathFor(key), { force: true });

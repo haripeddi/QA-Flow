@@ -49,6 +49,7 @@ export interface PlannedExecution {
 export interface StartTestRunInput {
   scope: TestRunScope;
   environment?: string;
+  startedBy?: string;
 }
 
 export interface StartTestRunResult {
@@ -217,6 +218,7 @@ export async function startTestRun(
     kind: "plan",
     environment: input.environment,
     scope: JSON.stringify(input.scope),
+    startedBy: input.startedBy?.trim() || undefined,
     startedAt: new Date().toISOString(),
     results: {},
   };

@@ -251,8 +251,36 @@ function apiUrl(path: string): string {
   return `${API_BASE}${clean}`;
 }
 
+let authToken: string | null = null;
+let onAuthError: (() => void) | null = null;
+
+export function setAuthToken(token: string | null): void {
+  authToken = token;
+}
+
+export function setAuthErrorHandler(cb: (() => void) | null): void {
+  onAuthError = cb;
+}
+
 async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
-  return fetch(apiUrl(path), init);
+  const headers = new Headers(init?.headers ?? {});
+  if (authToken) headers.set("Authorization", `Bearer ${authToken}`);
+  const res = await fetch(apiUrl(path), { ...init, headers });
+  if (res.status === 401 && onAuthError) onAuthError();
+  return res;
+}
+
+export interface AuthConfig {
+  enabled: boolean;
+  domain: string | null;
+}
+
+export async function fetchAuthConfig(): Promise<AuthConfig> {
+  try {
+    return await jsonOrThrow<AuthConfig>(await apiFetch("/api/auth/config"));
+  } catch {
+    return { enabled: false, domain: null };
+  }
 }
 
 async function jsonOrThrow<T>(res: Response): Promise<T> {
@@ -311,6 +339,19 @@ export async function saveProcess(
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+    }),
+  );
+}
+
+export async function renameProcess(
+  key: string,
+  name: string,
+): Promise<ProcessFullDef> {
+  return jsonOrThrow(
+    await apiFetch(`/api/processes/${encodeURIComponent(key)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
     }),
   );
 }

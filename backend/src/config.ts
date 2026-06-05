@@ -20,6 +20,10 @@ export const API_BASE_URL =
 
 export const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
 
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+export const ALLOWED_EMAIL_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN;
+export const AUTH_ENABLED = Boolean(GOOGLE_CLIENT_ID);
+
 export function bpmnPathFor(key: string): string {
   return path.join(BPMN_DIR, `${key}.bpmn`);
 }

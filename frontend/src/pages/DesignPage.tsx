@@ -10,6 +10,7 @@ import {
   deleteProcess,
   fetchProcess,
   fetchRun,
+  renameProcess,
   saveProcess,
   startRun,
   type ActivityState,
@@ -91,6 +92,18 @@ export default function DesignPage() {
     if (!routeKey || !proc || proc.key === routeKey) return;
     void openProcess(routeKey, true);
   }, [routeKey, proc, openProcess]);
+
+  const handleRename = async () => {
+    if (!proc) return;
+    const name = prompt("Rename use case", proc.name);
+    if (!name || !name.trim() || name.trim() === proc.name) return;
+    try {
+      const saved = await renameProcess(proc.key, name.trim());
+      setProc((prev) => (prev ? { ...prev, name: saved.name } : prev));
+    } catch (e) {
+      setError(`Rename failed: ${(e as Error).message}`);
+    }
+  };
 
   const handleDuplicate = async () => {
     if (!proc) return;
@@ -218,10 +231,23 @@ export default function DesignPage() {
             ←
           </Link>
           <div className="usecase-title">
-            <h2>{proc?.name ?? "Loading…"}</h2>
+            <h2>
+              {proc?.name ?? "Loading…"}
+              {proc && (
+                <button
+                  type="button"
+                  className="rename-inline"
+                  title="Rename use case"
+                  onClick={handleRename}
+                >
+                  ✎
+                </button>
+              )}
+            </h2>
             {proc && <span className="usecase-title-key">{proc.key}</span>}
           </div>
           <div className="process-actions">
+            <button onClick={handleRename} disabled={!proc} type="button">Rename</button>
             <button onClick={handleDuplicate} disabled={!proc} type="button">Duplicate</button>
             <button onClick={handleDelete} disabled={!proc} className="danger" type="button">Delete</button>
           </div>

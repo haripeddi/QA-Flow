@@ -2,20 +2,31 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
   BPMN_DIR,
+  META_DIR,
   PLANS_DIR,
   PROCESS_KEY_RE,
   TAGS_DIR,
   bpmnPathFor,
+  metaPathFor,
   tagsPathFor,
 } from "./config.ts";
 import { deletePlan } from "./plans.ts";
 import { clearTagsCache } from "./tags.ts";
+
+export interface ProcessMeta {
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
+}
 
 export interface ProcessSummary {
   key: string;
   name: string;
   description: string;
   updatedAt: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
 }
 
 export interface ProcessFullDef {
@@ -28,6 +39,23 @@ export interface ProcessFullDef {
     elementTests: Record<string, unknown>;
   };
   updatedAt: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
+}
+
+export async function readMeta(key: string): Promise<ProcessMeta> {
+  try {
+    const raw = await fs.readFile(metaPathFor(key), "utf8");
+    return JSON.parse(raw) as ProcessMeta;
+  } catch {
+    return {};
+  }
+}
+
+async function writeMeta(key: string, meta: ProcessMeta): Promise<void> {
+  await fs.mkdir(META_DIR, { recursive: true });
+  await atomicWrite(metaPathFor(key), JSON.stringify(meta, null, 2));
 }
 
 async function readProcessMetaFromBpmn(filePath: string): Promise<{
@@ -55,6 +83,7 @@ export async function ensureDirs() {
   await fs.mkdir(BPMN_DIR, { recursive: true });
   await fs.mkdir(TAGS_DIR, { recursive: true });
   await fs.mkdir(PLANS_DIR, { recursive: true });
+  await fs.mkdir(META_DIR, { recursive: true });
 }
 
 export async function listProcesses(): Promise<ProcessSummary[]> {
@@ -67,11 +96,15 @@ export async function listProcesses(): Promise<ProcessSummary[]> {
     const stat = await fs.stat(full);
     const key = path.basename(f, ".bpmn");
     const meta = await readProcessMetaFromBpmn(full);
+    const owner = await readMeta(key);
     out.push({
       key,
       name: meta.name,
       description: meta.description,
       updatedAt: stat.mtime.toISOString(),
+      createdBy: owner.createdBy,
+      createdByName: owner.createdByName,
+      createdAt: owner.createdAt,
     });
   }
   out.sort((a, b) => a.name.localeCompare(b.name));
@@ -94,6 +127,7 @@ export async function getProcess(key: string): Promise<ProcessFullDef | null> {
     tags = JSON.parse(raw);
   } catch {}
   const meta = await readProcessMetaFromBpmn(bpmnPath);
+  const owner = await readMeta(key);
   return {
     key,
     name: meta.name,
@@ -101,6 +135,9 @@ export async function getProcess(key: string): Promise<ProcessFullDef | null> {
     bpmnXml: xml,
     tags,
     updatedAt: stat.mtime.toISOString(),
+    createdBy: owner.createdBy,
+    createdByName: owner.createdByName,
+    createdAt: owner.createdAt,
   };
 }
 
@@ -116,6 +153,8 @@ export interface UpsertInput {
   key: string;
   bpmnXml: string;
   tags: { processKey: string; elementTests: Record<string, unknown> };
+  /** Identity of the acting user; used to stamp the creator on first save. */
+  actor?: { email?: string; name?: string };
 }
 
 export async function upsertProcess(input: UpsertInput): Promise<ProcessFullDef> {
@@ -133,10 +172,37 @@ export async function upsertProcess(input: UpsertInput): Promise<ProcessFullDef>
   };
   await atomicWrite(bpmnPathFor(input.key), input.bpmnXml);
   await atomicWrite(tagsPathFor(input.key), JSON.stringify(normalizedTags, null, 2));
+  // Stamp ownership the first time someone with an identity saves a process.
+  if (input.actor?.email) {
+    const existing = await readMeta(input.key);
+    if (!existing.createdBy) {
+      await writeMeta(input.key, {
+        createdBy: input.actor.email,
+        createdByName: input.actor.name ?? input.actor.email,
+        createdAt: new Date().toISOString(),
+      });
+    }
+  }
   clearTagsCache(input.key);
   const result = await getProcess(input.key);
   if (!result) throw new Error("process not found after save");
   return result;
+}
+
+/**
+ * Whether `userEmail` may delete the given process. Use cases with no recorded
+ * owner (e.g. seeded examples) are deletable by anyone; owned ones only by
+ * their creator. When the caller has no identity (auth disabled) deletion is
+ * always allowed.
+ */
+export async function canDeleteProcess(
+  key: string,
+  userEmail: string | null,
+): Promise<boolean> {
+  if (!userEmail) return true;
+  const meta = await readMeta(key);
+  if (!meta.createdBy) return true;
+  return meta.createdBy.toLowerCase() === userEmail.toLowerCase();
 }
 
 export async function renameProcess(
@@ -173,6 +239,7 @@ export async function deleteProcess(key: string) {
   validateKey(key);
   await fs.rm(bpmnPathFor(key), { force: true });
   await fs.rm(tagsPathFor(key), { force: true });
+  await fs.rm(metaPathFor(key), { force: true });
   await deletePlan(key);
   clearTagsCache(key);
 }

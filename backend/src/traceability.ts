@@ -35,6 +35,9 @@ export interface UseCaseSummary {
   name: string;
   description?: string;
   updatedAt?: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
   nodeCount: number;
   testCaseCount: number;
   automatedCount: number;
@@ -44,6 +47,7 @@ export interface UseCaseSummary {
   notRun: number;
   runCount: number;
   lastRunAt?: string;
+  lastRunBy?: string;
 }
 
 export async function buildUseCaseSummaries(): Promise<UseCaseSummary[]> {
@@ -72,9 +76,13 @@ export async function buildUseCaseSummaries(): Promise<UseCaseSummary[]> {
 
     const procRuns = runs.filter((r) => r.processKey === proc.key);
     let lastRunAt: string | undefined;
+    let lastRunBy: string | undefined;
     for (const r of procRuns) {
       const at = r.finishedAt ?? r.startedAt;
-      if (at && (!lastRunAt || at > lastRunAt)) lastRunAt = at;
+      if (at && (!lastRunAt || at > lastRunAt)) {
+        lastRunAt = at;
+        lastRunBy = r.startedBy;
+      }
     }
 
     summaries.push({
@@ -82,6 +90,9 @@ export async function buildUseCaseSummaries(): Promise<UseCaseSummary[]> {
       name: proc.name,
       description: proc.description,
       updatedAt: proc.updatedAt,
+      createdBy: proc.createdBy,
+      createdByName: proc.createdByName,
+      createdAt: proc.createdAt,
       nodeCount: Object.keys(plan.nodes).length,
       testCaseCount: cases.length,
       automatedCount,
@@ -91,6 +102,7 @@ export async function buildUseCaseSummaries(): Promise<UseCaseSummary[]> {
       notRun,
       runCount: procRuns.length,
       lastRunAt,
+      lastRunBy,
     });
   }
 

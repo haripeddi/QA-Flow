@@ -8,6 +8,7 @@ export const ROOT = path.resolve(__dirname, "../..");
 export const BPMN_DIR = process.env.BPMN_DIR ?? path.join(ROOT, "bpmn");
 export const TAGS_DIR = path.join(BPMN_DIR, "tags");
 export const PLANS_DIR = path.join(BPMN_DIR, "plans");
+export const META_DIR = path.join(BPMN_DIR, "meta");
 export const DATA_DIR = process.env.DATA_DIR ?? path.join(ROOT, "data");
 export const SCREENSHOTS_DIR = path.join(DATA_DIR, "screenshots");
 export const SCRIPTS_DIR = path.join(DATA_DIR, "scripts");
@@ -34,6 +35,10 @@ export function tagsPathFor(key: string): string {
 
 export function planPathFor(key: string): string {
   return path.join(PLANS_DIR, `${key}.json`);
+}
+
+export function metaPathFor(key: string): string {
+  return path.join(META_DIR, `${key}.json`);
 }
 
 export const PROCESS_KEY_RE = /^[a-z][a-z0-9_]{1,63}$/;

@@ -385,6 +385,17 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
   font-size: 11px; color: #94a3b8; background: #f1f5f9;
   padding: 2px 7px; border-radius: 999px; white-space: nowrap;
 }
+.usecase-delete {
+  margin-left: auto;
+  padding: 3px 7px;
+  border: none;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+.usecase-delete:hover:not(:disabled) { background: #fee2e2; }
 .usecase-desc { margin: -4px 0 0; font-size: 13px; color: #64748b; line-height: 1.4; }
 
 .usecase-metrics {
@@ -410,6 +421,14 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
   display: flex; justify-content: space-between; gap: 8px;
   font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px;
 }
+.usecase-people {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: #64748b;
+}
+.usecase-people strong { color: #334155; font-weight: 600; }
 
 /* ---- Modeler header (use case title) ---- */
 .back-link {
@@ -424,6 +443,11 @@ button.danger-text { color: #991b1b; border: none; background: transparent; padd
 .usecase-title-key {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px; color: #94a3b8;
+}
+.usecase-title-owner {
+  margin-left: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #64748b;
 }
 .rename-inline {
   border: none; background: transparent; cursor: pointer; color: #94a3b8;

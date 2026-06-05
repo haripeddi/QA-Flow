@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../auth";
 import BpmnModeler, { type BpmnModelerHandle, type ElementInfo } from "../BpmnModeler";
 import BpmnRunCanvas from "../BpmnRunCanvas";
 import TestConfigPanel from "../TestConfigPanel";
@@ -24,6 +25,7 @@ type Mode = "design" | "run";
 export default function DesignPage() {
   const { key: routeKey } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [mode, setMode] = useState<Mode>("design");
   const [proc, setProc] = useState<ProcessFullDef | null>(null);
   const [selected, setSelected] = useState<ElementInfo | null>(null);
@@ -42,6 +44,12 @@ export default function DesignPage() {
   const [runTag, setRunTag] = useState("");
   const pollTimer = useRef<number | null>(null);
   const modelerRef = useRef<BpmnModelerHandle | null>(null);
+
+  const creatorLabel = proc?.createdByName ?? proc?.createdBy;
+  const canDelete =
+    !user ||
+    !proc?.createdBy ||
+    proc.createdBy.toLowerCase() === user.email.toLowerCase();
 
   const openProcess = useCallback(
     async (key: string, skipConfirm = false) => {
@@ -115,11 +123,19 @@ export default function DesignPage() {
 
   const handleDelete = async () => {
     if (!proc) return;
+    if (!canDelete) {
+      setError("Only the creator can delete this use case.");
+      return;
+    }
     if (!confirm(`Delete "${proc.name}"?`)) return;
-    await deleteProcess(proc.key);
-    setProc(null);
-    setTags(null);
-    navigate("/");
+    try {
+      await deleteProcess(proc.key);
+      setProc(null);
+      setTags(null);
+      navigate("/");
+    } catch (e) {
+      setError(`Delete failed: ${(e as Error).message}`);
+    }
   };
 
   const handleSave = useCallback(async () => {
@@ -244,12 +260,33 @@ export default function DesignPage() {
                 </button>
               )}
             </h2>
-            {proc && <span className="usecase-title-key">{proc.key}</span>}
+            {proc && (
+              <span className="usecase-title-key">
+                {proc.key}
+                {creatorLabel && (
+                  <span className="usecase-title-owner">
+                    Created by {creatorLabel}
+                  </span>
+                )}
+              </span>
+            )}
           </div>
           <div className="process-actions">
             <button onClick={handleRename} disabled={!proc} type="button">Rename</button>
             <button onClick={handleDuplicate} disabled={!proc} type="button">Duplicate</button>
-            <button onClick={handleDelete} disabled={!proc} className="danger" type="button">Delete</button>
+            <button
+              onClick={handleDelete}
+              disabled={!proc || !canDelete}
+              className="danger"
+              type="button"
+              title={
+                canDelete
+                  ? "Delete use case"
+                  : `Only ${creatorLabel ?? "the creator"} can delete this`
+              }
+            >
+              Delete
+            </button>
           </div>
           <div className="mode-toggle">
             <button className={mode === "design" ? "mode-on" : ""} onClick={() => setMode("design")} type="button">Design</button>

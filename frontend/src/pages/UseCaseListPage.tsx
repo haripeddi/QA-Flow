@@ -2,9 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   createProcess,
+  deleteProcess,
   fetchUseCases,
   type UseCaseSummary,
 } from "../api";
+import { useAuth, type AuthUser } from "../auth";
+
+function canDelete(uc: UseCaseSummary, user: AuthUser | null): boolean {
+  if (!user) return true; // auth disabled: backend allows all
+  if (!uc.createdBy) return true; // seeded / unowned
+  return uc.createdBy.toLowerCase() === user.email.toLowerCase();
+}
 
 function slugify(name: string): string {
   return (
@@ -18,6 +26,7 @@ function slugify(name: string): string {
 
 export default function UseCaseListPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [useCases, setUseCases] = useState<UseCaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +57,21 @@ export default function UseCaseListPage() {
     try {
       const created = await createProcess({ key, name });
       navigate(`/process/${created.key}`);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const handleDelete = async (uc: UseCaseSummary) => {
+    if (
+      !confirm(
+        `Delete "${uc.name}"? This removes its workflow, test plan and tags.`,
+      )
+    )
+      return;
+    try {
+      await deleteProcess(uc.key);
+      await load();
     } catch (e) {
       setError((e as Error).message);
     }
@@ -100,7 +124,9 @@ export default function UseCaseListPage() {
             <UseCaseCard
               key={u.key}
               uc={u}
+              deletable={canDelete(u, user)}
               onOpen={() => navigate(`/process/${u.key}`)}
+              onDelete={() => handleDelete(u)}
             />
           ))}
         </div>
@@ -111,20 +137,52 @@ export default function UseCaseListPage() {
 
 function UseCaseCard({
   uc,
+  deletable,
   onOpen,
+  onDelete,
 }: {
   uc: UseCaseSummary;
+  deletable: boolean;
   onOpen: () => void;
+  onDelete: () => void;
 }) {
   const executed = uc.passed + uc.failed;
   const passRate =
     executed > 0 ? Math.round((uc.passed / executed) * 100) : null;
+  const creator = uc.createdByName ?? uc.createdBy;
 
   return (
-    <button type="button" className="usecase-card" onClick={onOpen}>
+    <div
+      className="usecase-card"
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+    >
       <div className="usecase-card-top">
         <h3>{uc.name}</h3>
         <span className="usecase-key">{uc.key}</span>
+        <button
+          type="button"
+          className="usecase-delete"
+          title={
+            deletable
+              ? "Delete use case"
+              : `Only ${creator ?? "the creator"} can delete this`
+          }
+          disabled={!deletable}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+        >
+          Delete
+        </button>
       </div>
       {uc.description && (
         <p className="usecase-desc">{uc.description}</p>
@@ -178,6 +236,17 @@ function UseCaseCard({
             : `${uc.nodeCount} node${uc.nodeCount === 1 ? "" : "s"}`}
         </span>
       </div>
-    </button>
+
+      <div className="usecase-people">
+        <span title={uc.createdBy}>
+          Created by <strong>{creator ?? "Unassigned"}</strong>
+        </span>
+        {uc.lastRunBy && (
+          <span title={uc.lastRunBy}>
+            Last run by <strong>{uc.lastRunBy}</strong>
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

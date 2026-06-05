@@ -71,6 +71,9 @@ export interface ProcessSummary {
   name: string;
   description: string;
   updatedAt: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
 }
 
 export interface ProcessFullDef {
@@ -80,6 +83,9 @@ export interface ProcessFullDef {
   bpmnXml: string;
   tags: TagsFile;
   updatedAt: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
 }
 
 export interface BrowserStepResult {
@@ -234,7 +240,9 @@ export interface RunState {
     processKey: string;
     kind?: "workflow" | "plan";
     environment?: string;
+    tag?: string;
     scope?: string;
+    startedBy?: string;
     startedAt: string;
     finishedAt?: string;
     results: Record<string, ActivityState>;
@@ -386,6 +394,9 @@ export interface UseCaseSummary {
   name: string;
   description?: string;
   updatedAt?: string;
+  createdBy?: string;
+  createdByName?: string;
+  createdAt?: string;
   nodeCount: number;
   testCaseCount: number;
   automatedCount: number;
@@ -395,6 +406,7 @@ export interface UseCaseSummary {
   notRun: number;
   runCount: number;
   lastRunAt?: string;
+  lastRunBy?: string;
 }
 
 export async function fetchUseCases(): Promise<UseCaseSummary[]> {

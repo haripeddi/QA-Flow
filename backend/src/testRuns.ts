@@ -293,7 +293,10 @@ export async function startTestRun(
   return { runId, processInstanceId, planned: planned.length };
 }
 
-export async function syncPlanToTags(processKey: string) {
+export async function syncPlanToTags(
+  processKey: string,
+  actor?: { email?: string; name?: string },
+) {
   const plan = await getPlan(processKey);
   const proc = await getProcess(processKey);
   if (!proc) throw new Error("process not found");
@@ -302,5 +305,6 @@ export async function syncPlanToTags(processKey: string) {
     key: processKey,
     bpmnXml: proc.bpmnXml,
     tags: { processKey, elementTests },
+    actor,
   });
 }

@@ -30,6 +30,7 @@ import {
 } from "./plans.ts";
 import {
   blankBpmnXml,
+  canDeleteProcess,
   deleteProcess,
   ensureDirs,
   getProcess,
@@ -175,10 +176,14 @@ export async function startServer() {
       bpmnXml = blankBpmnXml(req.body.key, req.body.name ?? req.body.key);
     }
     try {
+      const actor = getUser(req);
       const saved = await upsertProcess({
         key: req.body.key,
         bpmnXml,
         tags,
+        actor: actor
+          ? { email: actor.email, name: actor.name }
+          : undefined,
       });
       return reply.code(201).send(saved);
     } catch (err) {
@@ -191,10 +196,14 @@ export async function startServer() {
     Body: { bpmnXml: string; tags: { processKey: string; elementTests: Record<string, unknown> } };
   }>("/api/processes/:key", async (req, reply) => {
     try {
+      const actor = getUser(req);
       const saved = await upsertProcess({
         key: req.params.key,
         bpmnXml: req.body.bpmnXml,
         tags: req.body.tags,
+        actor: actor
+          ? { email: actor.email, name: actor.name }
+          : undefined,
       });
       return saved;
     } catch (err) {
@@ -221,6 +230,16 @@ export async function startServer() {
     "/api/processes/:key",
     async (req, reply) => {
       try {
+        const actor = getUser(req);
+        const allowed = await canDeleteProcess(
+          req.params.key,
+          actor?.email ?? null,
+        );
+        if (!allowed) {
+          return reply.code(403).send({
+            error: "only the creator can delete this use case",
+          });
+        }
         await deleteProcess(req.params.key);
         return reply.code(204).send();
       } catch (err) {
@@ -250,10 +269,14 @@ export async function startServer() {
         const elementTests = compilePlanToElementTests(plan);
         const proc = await getProcess(req.params.key);
         if (!proc) return reply.code(404).send({ error: "not found" });
+        const actor = getUser(req);
         await upsertProcess({
           key: req.params.key,
           bpmnXml: proc.bpmnXml,
           tags: { processKey: req.params.key, elementTests },
+          actor: actor
+            ? { email: actor.email, name: actor.name }
+            : undefined,
         });
         return { plan, elementTests };
       } catch (err) {
@@ -305,7 +328,11 @@ export async function startServer() {
           ...req.body.plan,
           processKey: req.params.key,
         });
-        await syncPlanToTags(req.params.key);
+        const actor = getUser(req);
+        await syncPlanToTags(
+          req.params.key,
+          actor ? { email: actor.email, name: actor.name } : undefined,
+        );
         return { plan };
       } catch (err) {
         return reply.code(400).send({ error: (err as Error).message });
@@ -317,7 +344,11 @@ export async function startServer() {
     "/api/processes/:key/plan/compile",
     async (req, reply) => {
       try {
-        await syncPlanToTags(req.params.key);
+        const actor = getUser(req);
+        await syncPlanToTags(
+          req.params.key,
+          actor ? { email: actor.email, name: actor.name } : undefined,
+        );
         const plan = await getPlan(req.params.key);
         return { elementTests: compilePlanToElementTests(plan) };
       } catch (err) {

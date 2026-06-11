@@ -1,0 +1,397 @@
+{
+  "processKey": "phenom_careers_faq_review",
+  "elementTests": {
+    "Activity_fq01": {
+      "name": "Open Careers Site",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "We are 1000+ Phenoms making hiring smarter"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "FAQ"
+        }
+      ]
+    },
+    "Activity_fq02": {
+      "name": "Dismiss Overlays",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Allow"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Cookie Settings"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get Started"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get started for profile recommendations"
+          }
+        }
+      ]
+    },
+    "Activity_fq03": {
+      "name": "Scroll To FAQ Section",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "heading",
+            "value": "FAQ"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "I applied. How long does it take to hear back?"
+        }
+      ]
+    },
+    "Activity_fq04": {
+      "name": "Load FAQ Items",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/faq"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "FAQ"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "section_in_view"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Expand"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "FAQ items are rendered"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A count of FAQ items is determined"
+        }
+      ]
+    },
+    "Activity_fq05": {
+      "name": "Read FAQ Question",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/faqs"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "{{current_question}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Expand {{faq_index}}"
+          }
+        }
+      ]
+    },
+    "Activity_fq06": {
+      "name": "Expand Answer",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://careers.phenom.com"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "{{current_question}}"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "{{current_question}}"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "answer_text"
+        }
+      ]
+    },
+    "Activity_fq07": {
+      "name": "Record Answer",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{baseUrl}}/faq"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Submit Answer"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A question-answer pair is formed"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The pair is added to the results"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The entry is marked valid"
+        }
+      ]
+    },
+    "Activity_fq08": {
+      "name": "Flag Missing Answer",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://careers.phenom.com"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get Started"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The entry is flagged as missing an answer"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The question text is recorded for follow-up"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The flagged entry is added to the results"
+        }
+      ]
+    },
+    "Activity_fq09": {
+      "name": "Advance To Next FAQ",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/faqs"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Collapse"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Expand"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "tab",
+            "value": "Next FAQ"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "tab",
+            "value": "Current FAQ"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "More FAQs available"
+        }
+      ]
+    },
+    "Activity_fq10": {
+      "name": "Compile FAQ Summary",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{startUrl}}"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Merge FAQs"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A combined FAQ summary is produced"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Separate Entries"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Entries are split into valid and flagged groups"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Verify Summary"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The summary is non-empty"
+        }
+      ]
+    },
+    "Activity_fq11": {
+      "name": "Verify Key Questions Present",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{faq_summary}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "I applied. How long does it take to hear back?"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "what to expect in an interview"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "the onboarding process"
+        }
+      ]
+    },
+    "Activity_fq12": {
+      "name": "Generate Review Report",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/faq-review"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Review counts are summarized"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Flagged questions are listed"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The review report is finalized"
+        }
+      ]
+    },
+    "Activity_fq13": {
+      "name": "No FAQs Handler",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://careers.phenom.com"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "An empty FAQ state is observed"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A zero-FAQs outcome is recorded"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A note about the layout is recorded"
+        }
+      ]
+    }
+  }
+}

@@ -18,30 +18,56 @@ export interface HttpTestDef {
   setVariables?: Record<string, string>;
 }
 
+export type TargetStrategy =
+  | "role"
+  | "text"
+  | "css"
+  | "id"
+  | "xpath"
+  | "label"
+  | "placeholder"
+  | "testid";
+
+export type ElementRole =
+  | "button"
+  | "link"
+  | "textbox"
+  | "checkbox"
+  | "heading"
+  | "combobox"
+  | "dialog"
+  | "tab"
+  | "menuitem"
+  | "switch"
+  | "slider"
+  | "gridcell"
+  | "image"
+  | "alert";
+
 export type BrowserAction =
   | "goto"
   | "click"
-  | "tryClick"
   | "fill"
   | "press"
-  | "waitForSelector"
-  | "waitForTimeout"
-  | "waitForLoadState"
   | "screenshot"
   | "assertContains"
-  | "assertVisible";
+  | "assertVisible"
+  | "extractText";
 
 export interface BrowserStep {
+  id?: string;
   action: BrowserAction;
-  selector?: string;
+  target?: {
+    strategy: TargetStrategy;
+    value: string;
+    roleType?: ElementRole;
+  };
+  textValue?: string;
   url?: string;
-  value?: string;
-  state?: "load" | "domcontentloaded" | "networkidle";
   timeoutMs?: number;
   name?: string;
-  text?: string;
-  ignoreCase?: boolean;
-  optional?: boolean;
+  /** When action is extractText, store the extracted text under this variable name. */
+  variable?: string;
 }
 
 export interface BrowserTestDef {
@@ -96,6 +122,7 @@ export interface BrowserStepResult {
   message?: string;
   screenshotUrl?: string;
   durationMs: number;
+  extractedValue?: string;
 }
 
 export interface BrowserEvidence {
@@ -162,6 +189,8 @@ export interface TestStep {
   params?: Record<string, unknown>;
   expectedResult?: string;
   reusableStepId?: string;
+  /** Test data attached to this individual step (step-level, not case-level). */
+  fields?: CaseField[];
 }
 
 export interface TestDataSet {
@@ -169,6 +198,61 @@ export interface TestDataSet {
   name: string;
   rows: Record<string, unknown>[];
   fakerSchema?: Record<string, string>;
+}
+
+/**
+ * How a test case (or whole suite) is meant to be executed.
+ * - hitl: Human-in-the-loop. Fully manual, requires a person to run it.
+ * - agent: An AI agent runs the layman-language steps on the browser.
+ * - executor: A code block engineers fill in / run after the manual pass.
+ */
+export type ExecutionMode = "hitl" | "agent" | "executor";
+
+export const EXECUTION_MODES: Array<{
+  value: ExecutionMode;
+  label: string;
+  hint: string;
+}> = [
+  {
+    value: "hitl",
+    label: "HITL",
+    hint: "Human-in-the-loop — fully manual, requires human intervention.",
+  },
+  {
+    value: "agent",
+    label: "Agent",
+    hint: "An AI agent executes the layman-language steps on the browser.",
+  },
+  {
+    value: "executor",
+    label: "Executor",
+    hint: "A code block engineers complete and run after the manual pass.",
+  },
+];
+
+export type CaseFieldType =
+  | "text"
+  | "number"
+  | "email"
+  | "url"
+  | "date"
+  | "boolean"
+  | "json";
+
+export interface CaseField {
+  id: string;
+  name: string;
+  type: CaseFieldType;
+  value: string;
+}
+
+export interface CaseParam {
+  id: string;
+  name: string;
+  type?: CaseFieldType;
+  /** For inputs: where the value comes from, e.g. "nodeId.outputName". */
+  source?: string;
+  value?: string;
 }
 
 export interface PlanTestCase {
@@ -180,6 +264,13 @@ export interface PlanTestCase {
   steps: TestStep[];
   dataSets: TestDataSet[];
   tags?: string[];
+  executionMode?: ExecutionMode;
+  inputs?: CaseParam[];
+  outputs?: CaseParam[];
+  fields?: CaseField[];
+  /** Manual pass/fail/skip verdict (used for HITL execution). */
+  manualResult?: "pass" | "fail" | "skip";
+  manualResultBy?: string;
 }
 
 export interface PlanScenario {
@@ -194,6 +285,7 @@ export interface PlanTestSuite {
   name: string;
   description?: string;
   scenarios: PlanScenario[];
+  executionMode?: ExecutionMode;
 }
 
 export interface NodePlan {
@@ -587,6 +679,26 @@ export async function aiRecommendAssets(body: {
     raw: string;
   }>(
     await apiFetch("/api/ai/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+export async function aiGenerateAutomation(body: {
+  name: string;
+  steps: Array<{ action: string; expectedResult?: string }>;
+  startUrl?: string;
+  inputs?: Array<{ name: string; value?: string }>;
+  outputs?: Array<{ name: string; selector?: string }>;
+}) {
+  return jsonOrThrow<{
+    executable: BrowserTestDef;
+    raw: string;
+    grounded: boolean;
+  }>(
+    await apiFetch("/api/ai/automation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

@@ -1,0 +1,180 @@
+{
+  "processKey": "phenom_career_site",
+  "version": 1,
+  "nodes": {
+    "Activity_04u0zim": {
+      "nodeId": "Activity_04u0zim",
+      "suites": [
+        {
+          "id": "e73f5110",
+          "name": "Book a Demo",
+          "executionMode": "hitl",
+          "scenarios": [
+            {
+              "id": "22ce9417",
+              "name": "Book a Demo",
+              "cases": [
+                {
+                  "id": "2792211e",
+                  "name": "Book a Demo",
+                  "description": "Open Career site",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "bd655feb",
+                      "name": "Open the phenom site https://www.phenom.com",
+                      "action": "Open the phenom site https://www.phenom.com",
+                      "expectedResult": "It should Phenom corporate site",
+                      "fields": []
+                    },
+                    {
+                      "id": "c4e63af7",
+                      "name": "Validate if there is any button Book a Demo exists on the page",
+                      "action": "Validate if there is any button Book a Demo exists on the page",
+                      "expectedResult": "Book a demo button with blue background should be displayed",
+                      "fields": []
+                    },
+                    {
+                      "id": "51dac92c",
+                      "name": "Click on Book a Demo button",
+                      "action": "Click on Book a Demo button",
+                      "expectedResult": "it should open up a new tab which contains the registration for Book a Demo ",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "hitl",
+                  "inputs": [
+                    {
+                      "id": "afe67921",
+                      "name": "",
+                      "type": "text",
+                      "source": "",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "812b1339",
+                      "name": "",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_02or0uh": {
+      "nodeId": "Activity_02or0uh",
+      "suites": [
+        {
+          "id": "44a7b2a5",
+          "name": "Book a demo",
+          "executionMode": "hitl",
+          "scenarios": [
+            {
+              "id": "db398837",
+              "name": "Validate",
+              "cases": [
+                {
+                  "id": "5f212b5a",
+                  "name": "Validate Platform Options",
+                  "description": "Validate the visibiity of Platform button",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "5674c945",
+                      "name": "go the url  https://www.phenom.com",
+                      "action": "go the url  https://www.phenom.com",
+                      "expectedResult": "it should open up phenom corporate site",
+                      "fields": []
+                    },
+                    {
+                      "id": "d7f96112",
+                      "name": " Click on the Login button available on top right of the page",
+                      "action": " Click on the Login button available on top right of the page",
+                      "expectedResult": "it should take user to Phenom internal career site page",
+                      "fields": [
+                        {
+                          "id": "414e1384",
+                          "name": "Link 1",
+                          "type": "text",
+                          "value": ""
+                        },
+                        {
+                          "id": "b7e4e433",
+                          "name": "Link 2",
+                          "type": "text",
+                          "value": ""
+                        },
+                        {
+                          "id": "309ef0e4",
+                          "name": "Link 3",
+                          "type": "text",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "2f6e63f1",
+                      "name": "",
+                      "type": "text",
+                      "source": "",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "af77771f",
+                      "name": "",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Validate Platform Options",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "value": "Login",
+                          "roleType": "button"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "phenom corporate site"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom internal career site page"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "ed92266103b3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-10T06:20:27.098Z"
+}

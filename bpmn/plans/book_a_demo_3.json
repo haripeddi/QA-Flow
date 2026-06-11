@@ -1,0 +1,185 @@
+{
+  "processKey": "book_a_demo_3",
+  "version": 1,
+  "nodes": {
+    "Activity_09nh083": {
+      "nodeId": "Activity_09nh083",
+      "suites": [
+        {
+          "id": "561ea12f",
+          "name": "Test Suite 1",
+          "executionMode": "hitl",
+          "scenarios": [
+            {
+              "id": "949c7821",
+              "name": "Scenario 1",
+              "cases": [
+                {
+                  "id": "d28113c1",
+                  "name": "Test Case 1",
+                  "description": "",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "cd09d4b1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "None",
+                      "fields": []
+                    },
+                    {
+                      "id": "e99e2a2a",
+                      "name": "Clear all modal overlays and pop-up forms sequentially before proceeding:\n\nFirst, accept or dismiss any privacy, tracking, or cookie consent banners if visible.\n\nNext, look for and close any secondary marketing overlays, chat prompts, or webinar registration pop-ups by clicking their close button (X) or clicking outside the modal background.\"",
+                      "action": "Clear all modal overlays and pop-up forms sequentially before proceeding:\n\nFirst, accept or dismiss any privacy, tracking, or cookie consent banners if visible.\n\nNext, look for and close any secondary marketing overlays, chat prompts, or webinar registration pop-ups by clicking their close button (X) or clicking outside the modal background.\"",
+                      "expectedResult": "The viewport layout is completely clear of all dimmed backdrops, dark overlays, modal dialogs, and alert boxes, leaving only the primary webpage text and header navigation fully visible and interactable",
+                      "fields": []
+                    },
+                    {
+                      "id": "05a1f2a7",
+                      "name": "Validate the text  \"AI for Tomorrow’s Enterprise. Applied by Human Resources today.\"  is available on the page",
+                      "action": "Validate the text  \"AI for Tomorrow’s Enterprise. Applied by Human Resources today.\"  is available on the page",
+                      "expectedResult": "User should be taken to Phnom's website and it should display the message \"AI for Tomorrow’s Enterprise. Applied by Human Resources today.\" ",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "52db2d88",
+                      "name": "",
+                      "type": "text",
+                      "source": "",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "135db57e",
+                      "name": "",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Test Case 1",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Privacy Policy"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Accept"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Marketing Overlay"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Close"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Chat Prompt"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "X"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Webinar Registration"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Close"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Notification"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "X"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Alert Box"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Dismiss"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "AI for Tomorrow’s Enterprise. Applied by Human Resources today."
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "a6841593cfb8"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-11T09:09:15.287Z"
+}

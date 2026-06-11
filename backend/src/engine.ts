@@ -13,6 +13,13 @@ import {
 import { runHttpTest } from "./workers/http-worker.ts";
 import { runBrowserTest } from "./workers/browser-worker.ts";
 import { runScriptTest } from "./workers/script-worker.ts";
+import { syncPlanToTags } from "./testRuns.ts";
+import {
+  caseInputVariables,
+  findRunnableCaseForNode,
+  getPlan,
+} from "./plans.ts";
+import { substituteTestDef } from "./substitute.ts";
 
 export interface StartResult {
   runId: string;
@@ -41,6 +48,25 @@ const ActivityCtor = (Elements as unknown as { Activity: unknown }).Activity as 
 function QaServiceTask(this: unknown, activityDef: unknown, context: unknown) {
   return new ActivityCtor(QaServiceTaskBehaviour, activityDef, context);
 }
+
+// Element type names (as used by bpmn-elements) for every task-like flow node we
+// want to drive through the QA dispatcher. The frontend treats any `*Task` as a
+// testable node, so the engine must too — otherwise a plain `bpmn:task` dragged
+// from the palette would silently pass through without running its tagged test.
+const QA_TASK_TYPES = [
+  "Task",
+  "ServiceTask",
+  "UserTask",
+  "ScriptTask",
+  "BusinessRuleTask",
+  "SendTask",
+  "ReceiveTask",
+  "ManualTask",
+] as const;
+
+const QA_ELEMENTS = Object.fromEntries(
+  QA_TASK_TYPES.map((type) => [type, QaServiceTask]),
+);
 
 function QaServiceTaskBehaviour(this: any, activity: any) {
   this.id = activity.id;
@@ -99,8 +125,7 @@ QaServiceTaskBehaviour.prototype.execute = function execute(
     }
     try {
       const tags = await loadTags(processKey);
-      const def = tags.elementTests[activityId];
-      if (!def) {
+      const def = tags.elementTests[activityId];      if (!def) {
         await upsertResult(processInstanceId, {
           activityId,
           status: "executed",
@@ -111,11 +136,20 @@ QaServiceTaskBehaviour.prototype.execute = function execute(
         finish({});
         return;
       }
-      const { passed, variables, message, evidence } = await dispatch(def, {
+      const plan = await getPlan(processKey);
+      const runnableCase = plan.nodes[activityId]
+        ? findRunnableCaseForNode(plan.nodes[activityId])
+        : undefined;
+      const activityVars = {
+        ...(runnableCase ? caseInputVariables(runnableCase) : {}),
+        ...(runnableCase?.variables ?? {}),
+        ...(runUserVariables.get(runId) ?? {}),
+        environment: environment.variables?.environment,
+      };      const { passed, variables, message, evidence } = await dispatch(def, {
         runId,
         activityId,
         processKey,
-        variables: { ...(runUserVariables.get(runId) ?? {}) },
+        variables: activityVars,
       });
       const userVars = runUserVariables.get(runId) ?? {};
       for (const [k, v] of Object.entries(variables)) {
@@ -161,11 +195,11 @@ async function dispatch(
     variables: Record<string, unknown>;
   },
 ): Promise<DispatchOutput> {
-  if (def.type === "http.api") {
-    const result = await runHttpTest(def);
+  const substituted = substituteTestDef(def, ctx.variables);  if (substituted.type === "http.api") {
+    const result = await runHttpTest(substituted);
     const variables: Record<string, unknown> = {};
-    if (def.setVariables) {
-      for (const [varName, source] of Object.entries(def.setVariables)) {
+    if (substituted.setVariables) {
+      for (const [varName, source] of Object.entries(substituted.setVariables)) {
         if (source === "expect.passed") variables[varName] = result.passed;
       }
     }
@@ -175,17 +209,16 @@ async function dispatch(
       message: result.reasons.join("; ") || "ok",
       evidence: {
         type: "http",
-        request: def.request,
+        request: substituted.request,
         response: { status: result.status, bodyPreview: result.bodyPreview },
         durationMs: result.durationMs,
       },
     };
   }
-  if (def.type === "browser.playwright") {
-    const result = await runBrowserTest(def, ctx);
+  if (substituted.type === "browser.playwright") {    const result = await runBrowserTest(substituted, ctx);
     const variables: Record<string, unknown> = {};
-    if (def.setVariables) {
-      for (const [varName, source] of Object.entries(def.setVariables)) {
+    if (substituted.setVariables) {
+      for (const [varName, source] of Object.entries(substituted.setVariables)) {
         if (source === "expect.passed") variables[varName] = result.passed;
       }
     }
@@ -200,8 +233,8 @@ async function dispatch(
       },
     };
   }
-  if (def.type === "script.python") {
-    const result = await runScriptTest(def, ctx);
+  if (substituted.type === "script.python") {
+    const result = await runScriptTest(substituted, ctx);
     const variables: Record<string, unknown> = {};
     if (result.parsedResult?.setVariables) {
       for (const [k, v] of Object.entries(result.parsedResult.setVariables)) {
@@ -233,6 +266,7 @@ export async function startNewRun(
   processKey: string,
   options?: { environment?: string; tag?: string; startedBy?: string },
 ): Promise<StartResult> {
+  await syncPlanToTags(processKey);
   const proc = await getProcess(processKey);
   if (!proc) throw new Error(`unknown process: ${processKey}`);
   const source = proc.bpmnXml;
@@ -245,7 +279,7 @@ export async function startNewRun(
   const engine = Engine({
     name: `qa-flow-${runId}`,
     source,
-    elements: { ServiceTask: QaServiceTask },
+    elements: QA_ELEMENTS,
     variables: {
       __runId: runId,
       __processInstanceId: processInstanceId,

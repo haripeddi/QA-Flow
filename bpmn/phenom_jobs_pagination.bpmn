@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_phenom_jobs_pagination" targetNamespace="http://qaflow/bpmn">
+  <bpmn:process id="phenom_jobs_pagination" name="Phenom Careers Job Search Pagination" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_jp01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_jp01" name="Open Careers Site">
+      <bpmn:incoming>flow_start_jp01</bpmn:incoming>
+      <bpmn:outgoing>flow_jp01_jp02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp02" name="Dismiss Overlays">
+      <bpmn:incoming>flow_jp01_jp02</bpmn:incoming>
+      <bpmn:outgoing>flow_jp02_jp03</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp03" name="Open Job Search">
+      <bpmn:incoming>flow_jp02_jp03</bpmn:incoming>
+      <bpmn:outgoing>flow_jp03_jp04</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp04" name="Load Search Results">
+      <bpmn:incoming>flow_jp03_jp04</bpmn:incoming>
+      <bpmn:outgoing>flow_jp04_g1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_jp_g1" name="Results found?" default="flow_g1_jp05">
+      <bpmn:incoming>flow_jp04_g1</bpmn:incoming>
+      <bpmn:outgoing>flow_g1_jp05</bpmn:outgoing>
+      <bpmn:outgoing>flow_g1_jp11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Activity_jp05" name="Read Current Page Results">
+      <bpmn:incoming>flow_g1_jp05</bpmn:incoming>
+      <bpmn:incoming>flow_g2_jp05</bpmn:incoming>
+      <bpmn:outgoing>flow_jp05_jp06</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp06" name="Capture Job Card Titles">
+      <bpmn:incoming>flow_jp05_jp06</bpmn:incoming>
+      <bpmn:outgoing>flow_jp06_jp07</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp07" name="Record Page Number">
+      <bpmn:incoming>flow_jp06_jp07</bpmn:incoming>
+      <bpmn:outgoing>flow_jp07_jp08</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp08" name="Go To Next Page">
+      <bpmn:incoming>flow_jp07_jp08</bpmn:incoming>
+      <bpmn:outgoing>flow_jp08_g2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_jp_g2" name="More pages?" default="flow_g2_jp09">
+      <bpmn:incoming>flow_jp08_g2</bpmn:incoming>
+      <bpmn:outgoing>flow_g2_jp05</bpmn:outgoing>
+      <bpmn:outgoing>flow_g2_jp09</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Activity_jp09" name="Compile Job List">
+      <bpmn:incoming>flow_g2_jp09</bpmn:incoming>
+      <bpmn:outgoing>flow_jp09_jp10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp10" name="Validate Job Count">
+      <bpmn:incoming>flow_jp09_jp10</bpmn:incoming>
+      <bpmn:outgoing>flow_jp10_endok</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_jp11" name="No Results Handler">
+      <bpmn:incoming>flow_g1_jp11</bpmn:incoming>
+      <bpmn:outgoing>flow_jp11_endempty</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="end_ok" name="End OK">
+      <bpmn:incoming>flow_jp10_endok</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="end_empty" name="End Empty">
+      <bpmn:incoming>flow_jp11_endempty</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_jp01" sourceRef="start" targetRef="Activity_jp01" />
+    <bpmn:sequenceFlow id="flow_jp01_jp02" sourceRef="Activity_jp01" targetRef="Activity_jp02" />
+    <bpmn:sequenceFlow id="flow_jp02_jp03" sourceRef="Activity_jp02" targetRef="Activity_jp03" />
+    <bpmn:sequenceFlow id="flow_jp03_jp04" sourceRef="Activity_jp03" targetRef="Activity_jp04" />
+    <bpmn:sequenceFlow id="flow_jp04_g1" sourceRef="Activity_jp04" targetRef="Gateway_jp_g1" />
+    <bpmn:sequenceFlow id="flow_g1_jp05" sourceRef="Gateway_jp_g1" targetRef="Activity_jp05" />
+    <bpmn:sequenceFlow id="flow_g1_jp11" sourceRef="Gateway_jp_g1" targetRef="Activity_jp11">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${environment.variables.no_results}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_jp05_jp06" sourceRef="Activity_jp05" targetRef="Activity_jp06" />
+    <bpmn:sequenceFlow id="flow_jp06_jp07" sourceRef="Activity_jp06" targetRef="Activity_jp07" />
+    <bpmn:sequenceFlow id="flow_jp07_jp08" sourceRef="Activity_jp07" targetRef="Activity_jp08" />
+    <bpmn:sequenceFlow id="flow_jp08_g2" sourceRef="Activity_jp08" targetRef="Gateway_jp_g2" />
+    <bpmn:sequenceFlow id="flow_g2_jp05" sourceRef="Gateway_jp_g2" targetRef="Activity_jp05">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${environment.variables.has_more_pages}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_g2_jp09" sourceRef="Gateway_jp_g2" targetRef="Activity_jp09" />
+    <bpmn:sequenceFlow id="flow_jp09_jp10" sourceRef="Activity_jp09" targetRef="Activity_jp10" />
+    <bpmn:sequenceFlow id="flow_jp10_endok" sourceRef="Activity_jp10" targetRef="end_ok" />
+    <bpmn:sequenceFlow id="flow_jp11_endempty" sourceRef="Activity_jp11" targetRef="end_empty" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="phenom_jobs_pagination">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start">
+        <dc:Bounds x="120" y="200" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp01_di" bpmnElement="Activity_jp01">
+        <dc:Bounds x="200" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp02_di" bpmnElement="Activity_jp02">
+        <dc:Bounds x="360" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp03_di" bpmnElement="Activity_jp03">
+        <dc:Bounds x="520" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp04_di" bpmnElement="Activity_jp04">
+        <dc:Bounds x="680" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_jp_g1_di" bpmnElement="Gateway_jp_g1" isMarkerVisible="true">
+        <dc:Bounds x="845" y="193" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="835" y="163" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp05_di" bpmnElement="Activity_jp05">
+        <dc:Bounds x="940" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp06_di" bpmnElement="Activity_jp06">
+        <dc:Bounds x="1100" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp07_di" bpmnElement="Activity_jp07">
+        <dc:Bounds x="1260" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp08_di" bpmnElement="Activity_jp08">
+        <dc:Bounds x="1420" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_jp_g2_di" bpmnElement="Gateway_jp_g2" isMarkerVisible="true">
+        <dc:Bounds x="1585" y="193" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1575" y="163" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp09_di" bpmnElement="Activity_jp09">
+        <dc:Bounds x="1680" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp10_di" bpmnElement="Activity_jp10">
+        <dc:Bounds x="1840" y="178" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_jp11_di" bpmnElement="Activity_jp11">
+        <dc:Bounds x="940" y="320" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_ok_di" bpmnElement="end_ok">
+        <dc:Bounds x="2000" y="200" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2006" y="243" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_empty_di" bpmnElement="end_empty">
+        <dc:Bounds x="1100" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1095" y="385" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow_start_jp01_di" bpmnElement="flow_start_jp01">
+        <di:waypoint x="156" y="218" />
+        <di:waypoint x="200" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp01_jp02_di" bpmnElement="flow_jp01_jp02">
+        <di:waypoint x="320" y="218" />
+        <di:waypoint x="360" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp02_jp03_di" bpmnElement="flow_jp02_jp03">
+        <di:waypoint x="480" y="218" />
+        <di:waypoint x="520" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp03_jp04_di" bpmnElement="flow_jp03_jp04">
+        <di:waypoint x="640" y="218" />
+        <di:waypoint x="680" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp04_g1_di" bpmnElement="flow_jp04_g1">
+        <di:waypoint x="800" y="218" />
+        <di:waypoint x="845" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_jp05_di" bpmnElement="flow_g1_jp05">
+        <di:waypoint x="895" y="218" />
+        <di:waypoint x="940" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g1_jp11_di" bpmnElement="flow_g1_jp11">
+        <di:waypoint x="870" y="243" />
+        <di:waypoint x="870" y="360" />
+        <di:waypoint x="940" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp05_jp06_di" bpmnElement="flow_jp05_jp06">
+        <di:waypoint x="1060" y="218" />
+        <di:waypoint x="1100" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp06_jp07_di" bpmnElement="flow_jp06_jp07">
+        <di:waypoint x="1220" y="218" />
+        <di:waypoint x="1260" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp07_jp08_di" bpmnElement="flow_jp07_jp08">
+        <di:waypoint x="1380" y="218" />
+        <di:waypoint x="1420" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp08_g2_di" bpmnElement="flow_jp08_g2">
+        <di:waypoint x="1540" y="218" />
+        <di:waypoint x="1585" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g2_jp05_di" bpmnElement="flow_g2_jp05">
+        <di:waypoint x="1610" y="193" />
+        <di:waypoint x="1610" y="120" />
+        <di:waypoint x="1000" y="120" />
+        <di:waypoint x="1000" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_g2_jp09_di" bpmnElement="flow_g2_jp09">
+        <di:waypoint x="1635" y="218" />
+        <di:waypoint x="1680" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp09_jp10_di" bpmnElement="flow_jp09_jp10">
+        <di:waypoint x="1800" y="218" />
+        <di:waypoint x="1840" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp10_endok_di" bpmnElement="flow_jp10_endok">
+        <di:waypoint x="1960" y="218" />
+        <di:waypoint x="2000" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_jp11_endempty_di" bpmnElement="flow_jp11_endempty">
+        <di:waypoint x="1060" y="360" />
+        <di:waypoint x="1100" y="360" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

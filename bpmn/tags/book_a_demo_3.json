@@ -1,0 +1,115 @@
+{
+  "processKey": "book_a_demo_3",
+  "elementTests": {
+    "Activity_09nh083": {
+      "name": "Test Case 1",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Privacy Policy"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Accept"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Marketing Overlay"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Close"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Chat Prompt"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "X"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Webinar Registration"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Close"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Notification"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "X"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Alert Box"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Dismiss"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "AI for Tomorrow’s Enterprise. Applied by Human Resources today."
+        }
+      ]
+    }
+  }
+}

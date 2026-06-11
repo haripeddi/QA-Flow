@@ -1,0 +1,380 @@
+{
+  "processKey": "phenom_resources_explorer",
+  "version": 1,
+  "nodes": {
+    "Activity_re1": {
+      "nodeId": "Activity_re1",
+      "suites": [
+        {
+          "id": "c1d2e3r1",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "g1h2i3j1",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "e1f2g3h1",
+                  "name": "Open Homepage",
+                  "description": "Navigate to phenom.com and verify the page title",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "u1v2w3x1",
+                      "name": "Open https://www.phenom.com",
+                      "action": "Open https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "u1v2w3x2",
+                      "name": "Dismiss cookie consent if visible",
+                      "action": "Dismiss cookie consent or privacy banners if visible",
+                      "expectedResult": "No overlay dialogs are blocking the main page content",
+                      "fields": []
+                    },
+                    {
+                      "id": "u1v2w3x3",
+                      "name": "Verify page title",
+                      "action": "Verify the page title contains \"Phenom Applied AI | Talent Intelligence Platform\"",
+                      "expectedResult": "The browser tab or page title reflects Phenom Applied AI branding",
+                      "fields": []
+                    },
+                    {
+                      "id": "u1v2w3x4",
+                      "name": "Verify footer copyright",
+                      "action": "Scroll to the footer and verify \"Phenom People, Inc. All Rights Reserved.\" is displayed",
+                      "expectedResult": "Footer copyright text is visible at the bottom of the page",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i1r2e3s1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o1r2e3s1",
+                      "name": "homepage_verified",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Homepage",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Accept Cookies"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Accept Cookies"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "cookie consent"
+                        }
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "Cookie Consent Dismissed"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Applied AI | Talent Intelligence Platform"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Phenom People, Inc. All Rights Reserved."
+                        },
+                        "variable": "footer_text"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Phenom People, Inc. All Rights Reserved."
+                        }
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "Footer Verification"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "67d6845f8ee6"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_re2": {
+      "nodeId": "Activity_re2",
+      "suites": [
+        {
+          "id": "c1d2e3r2",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "g1h2i3j2",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "e1f2g3h2",
+                  "name": "Open Essential Reads",
+                  "description": "Find and explore the Essential Reads content section",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "u2v2w3x1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "u2v2w3x2",
+                      "name": "Scroll to Essential Reads section",
+                      "action": "Scroll down to find the section titled \"Essential Reads\"",
+                      "expectedResult": "The \"Essential Reads\" heading is visible on the page",
+                      "fields": []
+                    },
+                    {
+                      "id": "u2v2w3x3",
+                      "name": "Verify eBook listing",
+                      "action": "Verify the section lists \"The Ultimate AI & Automation Toolkit for HR\" as an eBook with 10 min read",
+                      "expectedResult": "The AI & Automation Toolkit eBook card is visible in Essential Reads",
+                      "fields": []
+                    },
+                    {
+                      "id": "u2v2w3x4",
+                      "name": "Click on the eBook link",
+                      "action": "Click on \"The Ultimate AI & Automation Toolkit for HR\" eBook link",
+                      "expectedResult": "User is taken to the eBook content or download page",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i2r2e3s1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o2r2e3s1",
+                      "name": "ebook_page_url",
+                      "type": "url",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Essential Reads",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "heading",
+                          "value": "Essential Reads"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "The Ultimate AI & Automation Toolkit for HR"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "10 min read"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "The Ultimate AI & Automation Toolkit for HR"
+                        }
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "ebook_page_url"
+                        },
+                        "variable": "ebook_page_url"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "9d7621526cd2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_re3": {
+      "nodeId": "Activity_re3",
+      "suites": [
+        {
+          "id": "c1d2e3r3",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "g1h2i3j3",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "e1f2g3h3",
+                  "name": "Access 2026 Benchmark Report",
+                  "description": "Find and access the State of AI & Automation 2026 Benchmark Report",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "u3v2w3x1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "u3v2w3x2",
+                      "name": "Scroll to benchmark report section",
+                      "action": "Scroll to find the section titled \"The State of AI & Automation: 2026 Data Benchmark Report\"",
+                      "expectedResult": "The 2026 Benchmark Report section heading is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "u3v2w3x3",
+                      "name": "Verify Read the report link",
+                      "action": "Verify a \"Read the report\" link is visible in the benchmark report section",
+                      "expectedResult": "The Read the report call-to-action is displayed and clickable",
+                      "fields": []
+                    },
+                    {
+                      "id": "u3v2w3x4",
+                      "name": "Click Read the report",
+                      "action": "Click the \"Read the report\" link",
+                      "expectedResult": "User is taken to the 2026 Benchmark Report page or download form",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i3r2e3s1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o3r2e3s1",
+                      "name": "report_page_url",
+                      "type": "url",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Access 2026 Benchmark Report",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Phenom Applied AI | Talent Intelligence Platform"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Read the report"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Read the report"
+                        }
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Read the report"
+                        },
+                        "variable": "report_page_url"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "174627b80de9"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-10T18:16:52.308Z"
+}

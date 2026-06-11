@@ -1,0 +1,113 @@
+{
+  "processKey": "phenom_homepage_journey",
+  "elementTests": {
+    "Activity_hj1": {
+      "name": "Open Homepage & Verify Hero",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Applied AI"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "AI for Tomorrow's Enterprise. Applied by Human Resources today."
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "This is how you hire faster, develop better, and retain longer at scale."
+          }
+        }
+      ]
+    },
+    "Activity_hj2": {
+      "name": "Explore Applied AI Infrastructure",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Phenom Applied AI Infrastructure"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Engines"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Ontologies"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "XAI"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Experiences"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Use Cases"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Agents"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Learn More about Applied AI"
+          }
+        }
+      ]
+    },
+    "Activity_hj3": {
+      "name": "Review Customer Results",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Results that speak volumes in even the quietest of talent markets."
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "20K+ hours saved"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "129% increase in internal applicants"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_phenom_book_a_demo_flow" targetNamespace="http://qaflow/bpmn">
+  <bpmn:process id="phenom_book_a_demo_flow" name="Phenom Book a Demo Flow" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_bd1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_bd1" name="Open Phenom Homepage">
+      <bpmn:incoming>flow_start_bd1</bpmn:incoming>
+      <bpmn:outgoing>flow_bd1_bd2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_bd2" name="Locate Book a Demo CTA">
+      <bpmn:incoming>flow_bd1_bd2</bpmn:incoming>
+      <bpmn:outgoing>flow_bd2_bd3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_bd3" name="Submit Demo Request">
+      <bpmn:incoming>flow_bd2_bd3</bpmn:incoming>
+      <bpmn:outgoing>flow_bd3_end</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_bd3_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_bd1" sourceRef="start" targetRef="Activity_bd1" />
+    <bpmn:sequenceFlow id="flow_bd1_bd2" sourceRef="Activity_bd1" targetRef="Activity_bd2" />
+    <bpmn:sequenceFlow id="flow_bd2_bd3" sourceRef="Activity_bd2" targetRef="Activity_bd3" />
+    <bpmn:sequenceFlow id="flow_bd3_end" sourceRef="Activity_bd3" targetRef="end" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="phenom_book_a_demo_flow">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start">
+        <dc:Bounds x="160" y="180" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_bd1_di" bpmnElement="Activity_bd1">
+        <dc:Bounds x="260" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_bd2_di" bpmnElement="Activity_bd2">
+        <dc:Bounds x="430" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_bd3_di" bpmnElement="Activity_bd3">
+        <dc:Bounds x="600" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end">
+        <dc:Bounds x="770" y="180" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow_start_bd1_di" bpmnElement="flow_start_bd1">
+        <di:waypoint x="196" y="198" />
+        <di:waypoint x="260" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_bd1_bd2_di" bpmnElement="flow_bd1_bd2">
+        <di:waypoint x="380" y="198" />
+        <di:waypoint x="430" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_bd2_bd3_di" bpmnElement="flow_bd2_bd3">
+        <di:waypoint x="550" y="198" />
+        <di:waypoint x="600" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_bd3_end_di" bpmnElement="flow_bd3_end">
+        <di:waypoint x="720" y="198" />
+        <di:waypoint x="770" y="198" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

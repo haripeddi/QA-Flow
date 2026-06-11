@@ -1,0 +1,328 @@
+{
+  "processKey": "phenom_jobs_pagination",
+  "elementTests": {
+    "Activity_jp01": {
+      "name": "Open Careers Site",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "We are 1000+ Phenoms making hiring smarter"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Helping Global Leaders Hire Better"
+        }
+      ]
+    },
+    "Activity_jp02": {
+      "name": "Dismiss Overlays",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Allow"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Allow"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get Started"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get Started"
+          }
+        },
+        {
+          "action": "screenshot",
+          "name": "Overlay dismissed screenshot"
+        }
+      ]
+    },
+    "Activity_jp03": {
+      "name": "Open Job Search",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "See jobs & apply"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "See jobs & apply"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "job search results"
+        }
+      ]
+    },
+    "Activity_jp04": {
+      "name": "Load Search Results",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{search_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A list of job result cards is rendered"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "search results"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "gridcell",
+            "value": "job result card"
+          }
+        }
+      ]
+    },
+    "Activity_jp05": {
+      "name": "Read Current Page Results",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://example.com/jobs?page={{page_number}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "gridcell",
+            "value": "Job Card"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "count of job cards is determined"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Job Detail"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "job cards are interactive links"
+        }
+      ]
+    },
+    "Activity_jp06": {
+      "name": "Capture Job Card Titles",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{start_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Each job title is captured"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The titles are added to the collected list"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "All captured titles contain text"
+        }
+      ]
+    },
+    "Activity_jp07": {
+      "name": "Record Page Number",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{startUrl}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The current page number is identified"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The page number is stored"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "Pagination Control"
+          }
+        }
+      ]
+    },
+    "Activity_jp08": {
+      "name": "Go To Next Page",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{processed_page}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Next"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Next"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Next"
+          }
+        }
+      ]
+    },
+    "Activity_jp09": {
+      "name": "Compile Job List",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{startUrl}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A combined list of job titles is produced"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The combined list has no duplicates"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The final job list is non-empty"
+        }
+      ]
+    },
+    "Activity_jp10": {
+      "name": "Validate Job Count",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{job_list}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A total job count is computed"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Job Count"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The job count is greater than zero"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The job count is consistent with pages processed"
+        }
+      ]
+    },
+    "Activity_jp11": {
+      "name": "No Results Handler",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{search_url}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "no results"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "zero job results"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "broaden the search filters"
+        }
+      ]
+    }
+  }
+}

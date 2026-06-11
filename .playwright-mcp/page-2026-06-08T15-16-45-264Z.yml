@@ -1,0 +1,99 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - link "QA Flow" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - link "Use Cases" [ref=e6] [cursor=pointer]:
+      - /url: /
+    - link "Traceability" [ref=e7] [cursor=pointer]:
+      - /url: /traceability
+    - link "Test Runs" [ref=e8] [cursor=pointer]:
+      - /url: /runs
+  - generic [ref=e9]:
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - link "←" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e13]:
+          - heading "Phenom Candidate Apply Journey ✎" [level=2] [ref=e33]:
+            - text: Phenom Candidate Apply Journey
+            - button "✎" [ref=e34] [cursor=pointer]
+          - generic [ref=e35]: phenom_candidate_apply
+        - generic [ref=e15]:
+          - button "Rename" [ref=e16] [cursor=pointer]
+          - button "Duplicate" [ref=e17] [cursor=pointer]
+          - button "Delete" [ref=e18] [cursor=pointer]
+        - generic [ref=e19]:
+          - button "Design" [ref=e20] [cursor=pointer]
+          - button "Run" [ref=e21] [cursor=pointer]
+      - generic [ref=e22]:
+        - button "Save" [disabled] [ref=e24]
+        - button "Start Run" [active] [ref=e25] [cursor=pointer]
+    - generic [ref=e94]:
+      - heading "Start a new run" [level=3] [ref=e95]
+      - paragraph [ref=e96]:
+        - text: Configure how this run of
+        - strong [ref=e97]: Phenom Candidate Apply Journey
+        - text: should execute.
+      - generic [ref=e98]:
+        - generic [ref=e99]: Environment
+        - combobox [ref=e100]:
+          - option "local"
+          - option "dev"
+          - option "qa"
+          - option "staging" [selected]
+          - option "production"
+      - generic [ref=e101]:
+        - generic [ref=e102]: Tag / label (optional)
+        - textbox "e.g. smoke, regression, release-2.4" [ref=e103]
+      - generic [ref=e104]:
+        - button "Cancel" [ref=e105] [cursor=pointer]
+        - button "Start run" [ref=e106] [cursor=pointer]
+    - generic [ref=e37]:
+      - link "Powered by bpmn.io" [ref=e38] [cursor=pointer]:
+        - /url: http://bpmn.io
+        - img [ref=e39]
+      - generic [ref=e42]:
+        - img [ref=e43]:
+          - generic [ref=e45]:
+            - generic [ref=e50]:
+              - generic:
+                - generic: Start
+            - generic [ref=e53]:
+              - generic:
+                - generic: Open Career Site
+            - generic [ref=e56]:
+              - generic:
+                - generic: Search Jobs
+            - generic [ref=e59]:
+              - generic:
+                - generic: Submit Application
+            - generic [ref=e65]:
+              - generic:
+                - generic: End
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - generic "Activate hand tool" [ref=e78]: 
+            - generic "Activate lasso tool" [ref=e79]: 
+            - generic "Activate create/remove space tool" [ref=e80]: 
+            - generic "Activate global connect tool" [ref=e81]: 
+            - separator [ref=e82]
+          - generic:
+            - generic "Create start event" [ref=e83]: 
+            - generic "Create intermediate/boundary event" [ref=e84]: 
+            - generic "Create end event" [ref=e85]: 
+          - generic "Create gateway" [ref=e86]: 
+          - generic:
+            - generic "Create task" [ref=e87]: 
+            - generic "Create expanded sub-process" [ref=e88]: 
+          - generic "Create data object reference" [ref=e89]: 
+          - generic "Create data store reference" [ref=e90]: 
+          - generic "Create pool/participant" [ref=e91]: 
+          - generic "Create group" [ref=e92]: 
+    - complementary [ref=e27]:
+      - generic [ref=e28]:
+        - heading "No element selected" [level=3] [ref=e29]
+        - paragraph [ref=e30]: Click an element on the canvas to inspect or configure it.
+        - paragraph [ref=e31]:
+          - text: Drag a
+          - strong [ref=e32]: Task
+          - text: from the left palette onto the canvas, then double-click it to rename. Wire it up with sequence flows. Configure this side panel to define what the task should test.

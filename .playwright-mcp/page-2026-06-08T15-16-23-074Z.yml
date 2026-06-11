@@ -1,0 +1,34 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - link "QA Flow" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - link "Use Cases" [ref=e6] [cursor=pointer]:
+      - /url: /
+    - link "Traceability" [ref=e7] [cursor=pointer]:
+      - /url: /traceability
+    - link "Test Runs" [ref=e8] [cursor=pointer]:
+      - /url: /runs
+  - generic [ref=e9]:
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - link "←" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - heading "Loading…" [level=2] [ref=e14]
+        - generic [ref=e15]:
+          - button "Rename" [disabled] [ref=e16]
+          - button "Duplicate" [disabled] [ref=e17]
+          - button "Delete" [disabled] [ref=e18]
+        - generic [ref=e19]:
+          - button "Design" [ref=e20] [cursor=pointer]
+          - button "Run" [ref=e21] [cursor=pointer]
+      - generic [ref=e22]:
+        - button "Save" [disabled] [ref=e24]
+        - button "Start Run" [disabled] [ref=e25]
+    - complementary [ref=e27]:
+      - generic [ref=e28]:
+        - heading "No element selected" [level=3] [ref=e29]
+        - paragraph [ref=e30]: Click an element on the canvas to inspect or configure it.
+        - paragraph [ref=e31]:
+          - text: Drag a
+          - strong [ref=e32]: Task
+          - text: from the left palette onto the canvas, then double-click it to rename. Wire it up with sequence flows. Configure this side panel to define what the task should test.

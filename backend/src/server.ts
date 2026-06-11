@@ -14,6 +14,7 @@ import { authPreHandler, getUser } from "./auth.ts";
 import { getRun, listRuns } from "./store.ts";
 import { startNewRun, isRunActive, getActiveRun } from "./engine.ts";
 import {
+  generateBrowserAutomation,
   generateWorkflowFromPrompt,
   modifyWorkflow,
   recommendTestAssets,
@@ -404,8 +405,7 @@ export async function startServer() {
       const scope = req.body?.scope;
       if (!scope?.processKey || !scope?.type) {
         return reply.code(400).send({ error: "scope.processKey and scope.type required" });
-      }
-      const result = await startTestRun({
+      }      const result = await startTestRun({
         scope: scope as Parameters<typeof startTestRun>[0]["scope"],
         environment: req.body?.environment,
         startedBy: getUser(req)?.email,
@@ -477,14 +477,42 @@ export async function startServer() {
   });
 
   app.post<{
+    Body: {
+      name: string;
+      steps: Array<{ action: string; expectedResult?: string }>;
+      startUrl?: string;
+      inputs?: Array<{ name: string; value?: string }>;
+      outputs?: Array<{ name: string; selector?: string }>;
+    };
+  }>("/api/ai/automation", async (req, reply) => {
+    try {
+      const steps = (req.body.steps ?? []).filter((s) => s && s.action?.trim());
+      if (steps.length === 0) {
+        return reply
+          .code(400)
+          .send({ error: "Add at least one test step before generating." });
+      }
+      const result = await generateBrowserAutomation({
+        name: req.body.name ?? "Generated automation",
+        steps,
+        startUrl: req.body.startUrl?.trim() || undefined,
+        inputs: req.body.inputs,
+        outputs: req.body.outputs,
+      });
+      return result;
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
+  app.post<{
     Body?: { processKey?: string; environment?: string; tag?: string };
   }>("/api/runs", async (req, reply) => {
     const key = req.body?.processKey;
     if (!key) return reply.code(400).send({ error: "processKey required" });
     const proc = await getProcess(key);
     if (!proc)
-      return reply.code(404).send({ error: `process not found: ${key}` });
-    const { runId, processInstanceId } = await startNewRun(key, {
+      return reply.code(404).send({ error: `process not found: ${key}` });    const { runId, processInstanceId } = await startNewRun(key, {
       environment: req.body?.environment,
       tag: req.body?.tag,
       startedBy: getUser(req)?.email,

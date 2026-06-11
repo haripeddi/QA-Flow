@@ -21,28 +21,54 @@ export interface HttpTestDef {
   setVariables?: Record<string, string>;
 }
 
+export type TargetStrategy =
+  | "role"
+  | "text"
+  | "css"
+  | "id"
+  | "xpath"
+  | "label"
+  | "placeholder"
+  | "testid";
+
+export type ElementRole =
+  | "button"
+  | "link"
+  | "textbox"
+  | "checkbox"
+  | "heading"
+  | "combobox"
+  | "dialog"
+  | "tab"
+  | "menuitem"
+  | "switch"
+  | "slider"
+  | "gridcell"
+  | "image"
+  | "alert";
+
 export interface BrowserStep {
+  id?: string;
   action:
     | "goto"
     | "click"
     | "fill"
-    | "press"
-    | "waitForSelector"
-    | "waitForTimeout"
-    | "waitForLoadState"
-    | "screenshot"
-    | "assertContains"
     | "assertVisible"
-    | "tryClick";
-  selector?: string;
+    | "assertContains"
+    | "extractText"
+    | "press"
+    | "screenshot";
+  target?: {
+    strategy: TargetStrategy;
+    value: string;
+    roleType?: ElementRole;
+  };
+  textValue?: string;
   url?: string;
-  value?: string;
-  state?: "load" | "domcontentloaded" | "networkidle";
   timeoutMs?: number;
   name?: string;
-  text?: string;
-  ignoreCase?: boolean;
-  optional?: boolean;
+  /** When action is extractText, store the extracted text under this variable name. */
+  variable?: string;
 }
 
 export interface BrowserTestDef {

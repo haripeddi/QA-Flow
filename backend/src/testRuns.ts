@@ -1,11 +1,14 @@
 import crypto from "node:crypto";
 import {
   compilePlanToElementTests,
+  caseInputVariables,
   findCaseInPlan,
   getPlan,
   listAllCases,
+  upsertPlan,
   type TestCase,
 } from "./plans.ts";
+import { generateBrowserAutomation } from "./ai.ts";
 import { getProcess, upsertProcess } from "./processes.ts";
 import {
   createRun,
@@ -15,10 +18,12 @@ import {
   type TaskResult,
 } from "./store.ts";
 import type { TestDef } from "./tags.ts";
-import { substituteTestDef } from "./substitute.ts";
+import { substituteTestDef, substituteString } from "./substitute.ts";
 import { runHttpTest } from "./workers/http-worker.ts";
 import { runBrowserTest } from "./workers/browser-worker.ts";
 import { runScriptTest } from "./workers/script-worker.ts";
+
+const AGENT_EXECUTABLE_GENERATION_VERSION = "agent-executable-v7-list-assertions-output-filter";
 
 export type TestRunScopeType =
   | "case"
@@ -72,8 +77,7 @@ async function dispatchTest(
   evidence: Record<string, unknown>;
   variables: Record<string, unknown>;
 }> {
-  const substituted = substituteTestDef(def, ctx.variables);
-  if (substituted.type === "http.api") {
+  const substituted = substituteTestDef(def, ctx.variables);  if (substituted.type === "http.api") {
     const result = await runHttpTest(substituted);
     const variables: Record<string, unknown> = {};
     if (substituted.setVariables && result.passed) {
@@ -101,8 +105,9 @@ async function dispatchTest(
     const result = await runBrowserTest(substituted, {
       runId: ctx.runId,
       activityId: ctx.activityId,
+      processKey: ctx.processKey,
     });
-    const variables: Record<string, unknown> = {};
+    const variables: Record<string, unknown> = { ...result.variables };
     if (substituted.setVariables && result.passed) {
       for (const [k, expr] of Object.entries(substituted.setVariables)) {
         if (expr === "expect.passed") variables[k] = result.passed;
@@ -147,6 +152,116 @@ async function dispatchTest(
   throw new Error(`unknown test type`);
 }
 
+/** First http(s) URL referenced anywhere in a case (inputs, step text, fields). */
+function deriveStartUrl(testCase: TestCase): string | undefined {
+  const tc = testCase as TestCase & {
+    inputs?: Array<{ value?: string }>;
+  };
+  const texts: string[] = [];
+  for (const inp of tc.inputs ?? []) if (inp.value) texts.push(String(inp.value));
+  for (const st of testCase.steps ?? []) {
+    if (st.action) texts.push(st.action);
+    const fields = (st as { fields?: Array<{ value?: string }> }).fields ?? [];
+    for (const f of fields) if (f.value) texts.push(String(f.value));
+  }
+  for (const t of texts) {
+    const m = /https?:\/\/[^\s"']+/.exec(t);
+    if (m) return m[0].replace(/[.,)]+$/, "");
+  }
+  return undefined;
+}
+
+function stepsFingerprint(testCase: TestCase): string {
+  const sig = {
+    generatorVersion: AGENT_EXECUTABLE_GENERATION_VERSION,
+    steps: (testCase.steps ?? []).map((s) => [s.action, s.expectedResult]),
+    inputs: (testCase.inputs ?? []).map((p) => [p.name, p.value, p.source]),
+    outputs: (testCase.outputs ?? []).map((p) => [p.name, p.value, p.source]),
+  };
+  return crypto
+    .createHash("sha1")
+    .update(JSON.stringify(sig))
+    .digest("hex")
+    .slice(0, 12);
+}
+
+/** Fold declared case outputs into the shared run variable pool. */
+function foldCaseOutputs(
+  testCase: TestCase,
+  produced: Record<string, unknown>,
+  runVars: Record<string, unknown>,
+): void {
+  for (const out of testCase.outputs ?? []) {
+    const name = out.name?.trim();
+    if (!name) continue;
+    if (produced[name] !== undefined && produced[name] !== null) {
+      runVars[name] = produced[name];
+    } else if (out.value?.trim()) {
+      runVars[name] = substituteString(out.value.trim(), runVars);
+    }
+  }
+}
+
+/**
+ * For agent-mode cases, convert the plain-English steps into a runnable
+ * Playwright executable on the fly. Cached via a fingerprint so we only call the
+ * model when steps change. Hand-authored executables (no fingerprint) are left
+ * untouched. Returns whether the plan was modified and any generation errors.
+ */
+export async function ensureAgentExecutables(
+  plan: Awaited<ReturnType<typeof getPlan>>,
+): Promise<{ changed: boolean; errors: string[] }> {
+  let changed = false;
+  const errors: string[] = [];
+  for (const { testCase } of listAllCases(plan)) {
+    const tc = testCase as TestCase & {
+      executionMode?: string;
+      __autoStepsHash?: string;
+    };
+    if (tc.executionMode !== "agent") continue;
+    const steps = (tc.steps ?? []).filter((s) => s.action?.trim());
+    if (steps.length === 0) continue;
+
+    // Agent cases are plain-English only: their executable is always derived
+    // from the steps. Regenerate unless we already have an auto-generated
+    // executable whose fingerprint matches the current steps. A placeholder
+    // executable seeded when switching to Agent mode has no fingerprint, so it
+    // is correctly treated as stale and regenerated here.
+    const hash = stepsFingerprint(tc);
+    const hasFreshExecutable =
+      tc.executable?.type === "browser.playwright" && tc.__autoStepsHash === hash;
+    if (
+      hasFreshExecutable
+    )
+      continue;
+
+    try {
+      const res = await generateBrowserAutomation({
+        name: tc.name,
+        steps: steps.map((s) => ({
+          action: s.action,
+          expectedResult: s.expectedResult,
+        })),
+        startUrl: deriveStartUrl(tc),
+        inputs: (tc.inputs ?? [])
+          .filter((p) => p.name?.trim())
+          .map((p) => ({ name: p.name.trim(), value: p.value })),
+        outputs: (tc.outputs ?? [])
+          .filter((p) => p.name?.trim())
+          .map((p) => ({
+            name: p.name.trim(),
+            selector: p.source?.trim() || undefined,
+          })),
+      });
+      tc.executable = res.executable;
+      tc.__autoStepsHash = hash;
+      changed = true;    } catch (err) {
+      errors.push(`${tc.name}: ${(err as Error).message}`);
+    }
+  }
+  return { changed, errors };
+}
+
 export function expandScope(
   scope: TestRunScope,
   plan: Awaited<ReturnType<typeof getPlan>>,
@@ -174,7 +289,12 @@ export function expandScope(
           testCase,
           dataSetId: ds.id,
           rowIndex,
-          variables: { ...(testCase.variables ?? {}), ...row, environment },
+          variables: {
+            ...caseInputVariables(testCase),
+            ...(testCase.variables ?? {}),
+            ...row,
+            environment,
+          },
         });
       });
     }
@@ -204,8 +324,16 @@ export async function startTestRun(
   if (!proc) throw new Error(`process not found: ${input.scope.processKey}`);
 
   const plan = await getPlan(input.scope.processKey);
+  // Convert plain-English agent steps into runnable Playwright automation.
+  const { changed, errors } = await ensureAgentExecutables(plan);
+  if (changed) await upsertPlan(plan);
   const planned = expandScope(input.scope, plan, input.environment);
   if (planned.length === 0) {
+    if (errors.length > 0) {
+      throw new Error(
+        `Could not generate automation from the steps: ${errors.join(" | ")}`,
+      );
+    }
     throw new Error("no executable test cases found for scope");
   }
 
@@ -225,6 +353,7 @@ export async function startTestRun(
   await createRun(record);
 
   void (async () => {
+    const runVars: Record<string, unknown> = {};
     for (const item of planned) {
       if (!item.testCase.executable) continue;
       const activityId = `${item.testCase.id}_r${item.rowIndex ?? 0}`;
@@ -244,12 +373,14 @@ export async function startTestRun(
         },
       });
       try {
+        const mergedVars = { ...item.variables, ...runVars };
         const result = await dispatchTest(item.testCase.executable, {
           runId,
           activityId,
           processKey: input.scope.processKey,
-          variables: item.variables,
+          variables: mergedVars,
         });
+        foldCaseOutputs(item.testCase, result.variables, runVars);
         const finished: TaskResult = {
           activityId,
           status: result.passed ? "passed" : "failed",
@@ -300,8 +431,14 @@ export async function syncPlanToTags(
   const plan = await getPlan(processKey);
   const proc = await getProcess(processKey);
   if (!proc) throw new Error("process not found");
-  const elementTests = compilePlanToElementTests(plan);
-  await upsertProcess({
+  const { changed, errors } = await ensureAgentExecutables(plan);
+  if (changed) await upsertPlan(plan);
+  if (errors.length > 0) {
+    throw new Error(
+      `Could not generate automation from the steps: ${errors.join(" | ")}`,
+    );
+  }
+  const elementTests = compilePlanToElementTests(plan);  await upsertProcess({
     key: processKey,
     bpmnXml: proc.bpmnXml,
     tags: { processKey, elementTests },

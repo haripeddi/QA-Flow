@@ -1,0 +1,495 @@
+{
+  "processKey": "phenom_careers_locations_browse",
+  "elementTests": {
+    "Activity_lb01": {
+      "name": "Open Careers Site",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "We are 1000+ Phenoms making hiring smarter"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "One Team Across Continents"
+        }
+      ]
+    },
+    "Activity_lb02": {
+      "name": "Dismiss Overlays",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Careers in India"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Allow"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Allow"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Cookie Settings"
+          }
+        },
+        {
+          "action": "screenshot",
+          "name": "cookie_banner_dismissed"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Get Started"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "viewport is clear of modal dialogs"
+          }
+        }
+      ]
+    },
+    "Activity_lb03": {
+      "name": "Scroll To Locations Section",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{careers_url}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "heading",
+            "value": "One Team Across Continents"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "USA"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "India"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Netherlands"
+          }
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "One Team Across Continents"
+          },
+          "variable": "section_in_view"
+        }
+      ]
+    },
+    "Activity_lb04": {
+      "name": "Load Location Cards",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{section_in_view}}"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "gridcell",
+            "value": "Location Card"
+          },
+          "timeoutMs": 20000
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "gridcell",
+            "value": "Location Card"
+          },
+          "variable": "location_count"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The location cards are rendered"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A count of location cards is determined"
+        }
+      ]
+    },
+    "Activity_lb05": {
+      "name": "Read Location Card",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/locations/{{location_index}}"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "heading",
+            "value": "Country"
+          },
+          "variable": "current_country"
+        }
+      ]
+    },
+    "Activity_lb06": {
+      "name": "Check Region",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{url}}"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The country is identified"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The location is classified"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The primary-hub status is determined"
+        }
+      ]
+    },
+    "Activity_lb07": {
+      "name": "Capture HQ Details",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{baseUrl}}"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "textbox",
+            "value": "Country"
+          },
+          "variable": "current_country"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The hub country is recorded"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Mark as Headquarters"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The location is tagged as a hub"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "textbox",
+            "value": "Description"
+          },
+          "variable": "location_record"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The hub description is recorded"
+        }
+      ]
+    },
+    "Activity_lb08": {
+      "name": "Capture Satellite Office Details",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/satellite-offices"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "label",
+            "value": "Country"
+          },
+          "variable": "current_country"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The satellite country is recorded"
+        },
+        {
+          "action": "fill",
+          "target": {
+            "strategy": "label",
+            "value": "Office Tier"
+          },
+          "textValue": "satellite-office"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The location is tagged as a satellite office"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "label",
+            "value": "Description"
+          },
+          "variable": "location_record"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The satellite description is recorded"
+        }
+      ]
+    },
+    "Activity_lb09": {
+      "name": "Record Location",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/locations"
+        },
+        {
+          "action": "fill",
+          "target": {
+            "strategy": "role",
+            "roleType": "textbox",
+            "value": "Location Record"
+          },
+          "textValue": "{{location_record}}"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Add Location"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The location record is added to the list"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Update Count"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The recorded-locations count is updated"
+        }
+      ]
+    },
+    "Activity_lb10": {
+      "name": "Go To Next Location",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "/locations"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Next"
+          }
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "More locations available"
+          },
+          "variable": "has_more_locations"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Increment Index"
+          }
+        }
+      ]
+    },
+    "Activity_lb11": {
+      "name": "Compile Location List",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "http://example.com/locations"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Merge Locations"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A combined location list is produced"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Remove Duplicates"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The combined list has no duplicate countries"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Finalize Locations"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The final location list is non-empty"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "location_list"
+          },
+          "variable": "location_list"
+        }
+      ]
+    },
+    "Activity_lb12": {
+      "name": "Validate Location Count",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{location_list}}"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "total locations"
+          },
+          "variable": "total_locations"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "A total location count is computed"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "location count is greater than 0"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "at least one hub is present"
+          }
+        }
+      ]
+    },
+    "Activity_lb13": {
+      "name": "No Locations Handler",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://careers.phenom.com"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "An empty locations state is observed"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "zero location cards were found"
+          },
+          "variable": "empty_recorded"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "locations section layout may have changed"
+          },
+          "variable": "layout_note"
+        }
+      ]
+    }
+  }
+}

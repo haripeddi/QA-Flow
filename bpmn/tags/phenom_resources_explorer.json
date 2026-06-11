@@ -1,0 +1,153 @@
+{
+  "processKey": "phenom_resources_explorer",
+  "elementTests": {
+    "Activity_re1": {
+      "name": "Open Homepage",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Accept Cookies"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Accept Cookies"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "dialog",
+            "value": "cookie consent"
+          }
+        },
+        {
+          "action": "screenshot",
+          "name": "Cookie Consent Dismissed"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Applied AI | Talent Intelligence Platform"
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "Phenom People, Inc. All Rights Reserved."
+          },
+          "variable": "footer_text"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Phenom People, Inc. All Rights Reserved."
+          }
+        },
+        {
+          "action": "screenshot",
+          "name": "Footer Verification"
+        }
+      ]
+    },
+    "Activity_re2": {
+      "name": "Open Essential Reads",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "heading",
+            "value": "Essential Reads"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "The Ultimate AI & Automation Toolkit for HR"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "10 min read"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "The Ultimate AI & Automation Toolkit for HR"
+          }
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "text",
+            "value": "ebook_page_url"
+          },
+          "variable": "ebook_page_url"
+        }
+      ]
+    },
+    "Activity_re3": {
+      "name": "Access 2026 Benchmark Report",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Phenom Applied AI | Talent Intelligence Platform"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Read the report"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Read the report"
+          }
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Read the report"
+          },
+          "variable": "report_page_url"
+        }
+      ]
+    }
+  }
+}

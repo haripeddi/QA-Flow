@@ -1,0 +1,1078 @@
+{
+  "processKey": "phenom_jobs_pagination",
+  "version": 1,
+  "nodes": {
+    "Activity_jp01": {
+      "nodeId": "Activity_jp01",
+      "suites": [
+        {
+          "id": "jpa1b2c1",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c1",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c1",
+                  "name": "Open Careers Site",
+                  "description": "Navigate to the Phenom careers site",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0101",
+                      "name": "Open https://careers.phenom.com",
+                      "action": "Open https://careers.phenom.com",
+                      "expectedResult": "The Phenom careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0102",
+                      "name": "Verify careers hero text",
+                      "action": "Verify the page shows \"We are 1000+ Phenoms making hiring smarter\"",
+                      "expectedResult": "The careers hero headline is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0103",
+                      "name": "Verify careers subtitle",
+                      "action": "Verify the page shows \"Helping Global Leaders Hire Better\"",
+                      "expectedResult": "The careers subtitle is visible",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0101",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0101",
+                      "name": "site_loaded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Careers Site",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "We are 1000+ Phenoms making hiring smarter"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Helping Global Leaders Hire Better"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "139512fc6767"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp02": {
+      "nodeId": "Activity_jp02",
+      "suites": [
+        {
+          "id": "jpa1b2c2",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c2",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c2",
+                  "name": "Dismiss Overlays",
+                  "description": "Clear cookie and marketing overlays",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0201",
+                      "name": "Navigate to https://careers.phenom.com",
+                      "action": "Navigate to https://careers.phenom.com",
+                      "expectedResult": "The careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0202",
+                      "name": "Dismiss cookie consent banner",
+                      "action": "Accept or dismiss any cookie consent or privacy banner if visible",
+                      "expectedResult": "The cookie banner is dismissed",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0203",
+                      "name": "Close marketing overlays",
+                      "action": "Close any marketing overlays or pop-ups by clicking their close button",
+                      "expectedResult": "The viewport is clear of modal dialogs",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0201",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0201",
+                      "name": "page_ready",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Dismiss Overlays",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Allow"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Allow"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get Started"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get Started"
+                        }
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "Overlay dismissed screenshot"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "930eb12d5d45"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp03": {
+      "nodeId": "Activity_jp03",
+      "suites": [
+        {
+          "id": "jpa1b2c3",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c3",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c3",
+                  "name": "Open Job Search",
+                  "description": "Open the job search via the See jobs & apply CTA",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0301",
+                      "name": "Navigate to https://careers.phenom.com",
+                      "action": "Navigate to https://careers.phenom.com",
+                      "expectedResult": "The careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0302",
+                      "name": "Locate See jobs & apply",
+                      "action": "Find the \"See jobs & apply\" call-to-action on the page",
+                      "expectedResult": "The See jobs & apply link is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0303",
+                      "name": "Open job search",
+                      "action": "Click \"See jobs & apply\" to open the job search results",
+                      "expectedResult": "The job search results page opens",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0301",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0301",
+                      "name": "search_url",
+                      "type": "url",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Job Search",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "See jobs & apply"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "See jobs & apply"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "job search results"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "f4eefd7facf9"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp04": {
+      "nodeId": "Activity_jp04",
+      "suites": [
+        {
+          "id": "jpa1b2c4",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c4",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c4",
+                  "name": "Load Search Results",
+                  "description": "Wait for the job search results to load",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0401",
+                      "name": "Wait for results to load",
+                      "action": "Wait for the job search results list to finish loading",
+                      "expectedResult": "A list of job result cards is rendered",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0402",
+                      "name": "Verify search results heading",
+                      "action": "Verify the page shows the search results section",
+                      "expectedResult": "The search results area is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0403",
+                      "name": "Confirm at least one result",
+                      "action": "Confirm at least one job result card is present",
+                      "expectedResult": "One or more job cards are displayed",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0401",
+                      "name": "search_url",
+                      "type": "url",
+                      "source": "Activity_jp03.search_url",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0401",
+                      "name": "results_loaded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Load Search Results",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{search_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A list of job result cards is rendered"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "search results"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "gridcell",
+                          "value": "job result card"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "44967f4e6adf"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp05": {
+      "nodeId": "Activity_jp05",
+      "suites": [
+        {
+          "id": "jpa1b2c5",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c5",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c5",
+                  "name": "Read Current Page Results",
+                  "description": "Read the job results on the current page (loop entry)",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0501",
+                      "name": "Scan visible job cards",
+                      "action": "Scan all job result cards visible on the current page",
+                      "expectedResult": "The visible job cards are identified",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0502",
+                      "name": "Count job cards on page",
+                      "action": "Count the number of job result cards on the current page",
+                      "expectedResult": "A count of job cards is determined",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0503",
+                      "name": "Verify cards are clickable",
+                      "action": "Verify each job card links to a job detail or apply page",
+                      "expectedResult": "Job cards are interactive links",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0501",
+                      "name": "page_number",
+                      "type": "number",
+                      "source": "",
+                      "value": "1"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0501",
+                      "name": "cards_on_page",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Read Current Page Results",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://example.com/jobs?page={{page_number}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "gridcell",
+                          "value": "Job Card"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "count of job cards is determined"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Job Detail"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "job cards are interactive links"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "ccf044cfd37c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp06": {
+      "nodeId": "Activity_jp06",
+      "suites": [
+        {
+          "id": "jpa1b2c6",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c6",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c6",
+                  "name": "Capture Job Card Titles",
+                  "description": "Capture the job titles from the current page",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0601",
+                      "name": "Read each job title",
+                      "action": "Read the title text of each job result card",
+                      "expectedResult": "Each job title is captured",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0602",
+                      "name": "Collect titles into a list",
+                      "action": "Collect all captured job titles into a running list",
+                      "expectedResult": "The titles are added to the collected list",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0603",
+                      "name": "Verify titles are non-empty",
+                      "action": "Verify none of the captured job titles are empty",
+                      "expectedResult": "All captured titles contain text",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0601",
+                      "name": "cards_on_page",
+                      "type": "number",
+                      "source": "Activity_jp05.cards_on_page",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0601",
+                      "name": "captured_titles",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Capture Job Card Titles",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{start_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Each job title is captured"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The titles are added to the collected list"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "All captured titles contain text"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "dc86c732e242"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp07": {
+      "nodeId": "Activity_jp07",
+      "suites": [
+        {
+          "id": "jpa1b2c7",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c7",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c7",
+                  "name": "Record Page Number",
+                  "description": "Record which results page was just processed",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0701",
+                      "name": "Read current page indicator",
+                      "action": "Read the current page number from the pagination control",
+                      "expectedResult": "The current page number is identified",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0702",
+                      "name": "Record page as processed",
+                      "action": "Record the current page number as processed",
+                      "expectedResult": "The page number is stored",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0703",
+                      "name": "Verify pagination control present",
+                      "action": "Verify the pagination control is visible at the bottom of the results",
+                      "expectedResult": "Pagination controls are displayed",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0701",
+                      "name": "page_number",
+                      "type": "number",
+                      "source": "Activity_jp05.page_number",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0701",
+                      "name": "processed_page",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Record Page Number",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{startUrl}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The current page number is identified"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The page number is stored"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "dialog",
+                          "value": "Pagination Control"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "59dc423010b2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp08": {
+      "nodeId": "Activity_jp08",
+      "suites": [
+        {
+          "id": "jpa1b2c8",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c8",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c8",
+                  "name": "Go To Next Page",
+                  "description": "Advance to the next page of job results",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0801",
+                      "name": "Locate Next control",
+                      "action": "Find the \"Next\" pagination control on the results page",
+                      "expectedResult": "The Next control is identified",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0802",
+                      "name": "Click Next",
+                      "action": "Click the \"Next\" pagination control to load the next page",
+                      "expectedResult": "The next page of job results loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0803",
+                      "name": "Determine if more pages remain",
+                      "action": "Determine whether a further next page is available after this one",
+                      "expectedResult": "Whether more pages remain is determined",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0801",
+                      "name": "processed_page",
+                      "type": "number",
+                      "source": "Activity_jp07.processed_page",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0801",
+                      "name": "has_more_pages",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Go To Next Page",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{processed_page}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Next"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Next"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Next"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "446c8aa8efb8"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp09": {
+      "nodeId": "Activity_jp09",
+      "suites": [
+        {
+          "id": "jpa1b2c9",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2c9",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2c9",
+                  "name": "Compile Job List",
+                  "description": "Combine all captured titles into a final job list",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps0901",
+                      "name": "Merge captured titles",
+                      "action": "Merge the captured job titles from all processed pages",
+                      "expectedResult": "A combined list of job titles is produced",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0902",
+                      "name": "Remove duplicates",
+                      "action": "Remove any duplicate job titles from the combined list",
+                      "expectedResult": "The combined list has no duplicates",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps0903",
+                      "name": "Verify list is non-empty",
+                      "action": "Verify the combined job list contains at least one title",
+                      "expectedResult": "The final job list is non-empty",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi0901",
+                      "name": "captured_titles",
+                      "type": "json",
+                      "source": "Activity_jp06.captured_titles",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo0901",
+                      "name": "job_list",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Compile Job List",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{startUrl}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A combined list of job titles is produced"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The combined list has no duplicates"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The final job list is non-empty"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "dea8b276d3ba"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp10": {
+      "nodeId": "Activity_jp10",
+      "suites": [
+        {
+          "id": "jpa1b2ca",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2ca",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2ca",
+                  "name": "Validate Job Count",
+                  "description": "Validate the total number of jobs collected",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps1001",
+                      "name": "Count total jobs",
+                      "action": "Count the total number of jobs in the compiled job list",
+                      "expectedResult": "A total job count is computed",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps1002",
+                      "name": "Validate count is positive",
+                      "action": "Validate that the total job count is greater than zero",
+                      "expectedResult": "The job count is greater than zero",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps1003",
+                      "name": "Verify count matches pages",
+                      "action": "Verify the total count is consistent with the number of pages processed",
+                      "expectedResult": "The job count is consistent with pages processed",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi1001",
+                      "name": "job_list",
+                      "type": "json",
+                      "source": "Activity_jp09.job_list",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo1001",
+                      "name": "total_jobs",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Validate Job Count",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{job_list}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A total job count is computed"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Job Count"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The job count is greater than zero"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The job count is consistent with pages processed"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "e5e75d7d4025"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_jp11": {
+      "nodeId": "Activity_jp11",
+      "suites": [
+        {
+          "id": "jpa1b2cb",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "jpe1f2cb",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "jpc1d2cb",
+                  "name": "No Results Handler",
+                  "description": "Handle the case where the search returns no jobs",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "jps1101",
+                      "name": "Verify empty state message",
+                      "action": "Verify the search shows a no-results or empty-state message",
+                      "expectedResult": "A no-results message is displayed",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps1102",
+                      "name": "Record zero results",
+                      "action": "Record that zero job results were returned for the search",
+                      "expectedResult": "A zero-results outcome is recorded",
+                      "fields": []
+                    },
+                    {
+                      "id": "jps1103",
+                      "name": "Suggest retry guidance",
+                      "action": "Note guidance to broaden the search filters and retry",
+                      "expectedResult": "Retry guidance is noted",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "jpi1101",
+                      "name": "search_url",
+                      "type": "url",
+                      "source": "Activity_jp03.search_url",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "jpo1101",
+                      "name": "empty_recorded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "No Results Handler",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{search_url}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "no results"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "zero job results"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "broaden the search filters"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "88fc72ef980a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-11T07:53:18.545Z"
+}

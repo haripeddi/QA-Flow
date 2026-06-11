@@ -1,0 +1,340 @@
+{
+  "processKey": "phenom_homepage_journey",
+  "version": 1,
+  "nodes": {
+    "Activity_hj1": {
+      "nodeId": "Activity_hj1",
+      "suites": [
+        {
+          "id": "a1b2c3d1",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "e1f2a3b1",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "c1d2e3f1",
+                  "name": "Open Homepage & Verify Hero",
+                  "description": "Navigate to phenom.com and verify the hero messaging",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "s1a2b3c1",
+                      "name": "Open https://www.phenom.com",
+                      "action": "Open https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads with title containing Phenom Applied AI",
+                      "fields": []
+                    },
+                    {
+                      "id": "s1a2b3c2",
+                      "name": "Dismiss cookie consent or privacy banners if visible",
+                      "action": "Dismiss cookie consent or privacy banners if visible",
+                      "expectedResult": "The page viewport is clear of overlay dialogs blocking the main content",
+                      "fields": []
+                    },
+                    {
+                      "id": "s1a2b3c3",
+                      "name": "Verify hero headline text",
+                      "action": "Verify the page displays the hero headline \"AI for Tomorrow's Enterprise. Applied by Human Resources today.\"",
+                      "expectedResult": "The hero headline text is visible on the homepage",
+                      "fields": []
+                    },
+                    {
+                      "id": "s1a2b3c4",
+                      "name": "Verify subheadline about hiring and retention",
+                      "action": "Verify the subheadline \"This is how you hire faster, develop better, and retain longer at scale.\" is visible",
+                      "expectedResult": "The subheadline text appears below the hero headline",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i1a2b3c1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o1a2b3c1",
+                      "name": "hero_verified",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Homepage & Verify Hero",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Applied AI"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "AI for Tomorrow's Enterprise. Applied by Human Resources today."
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "This is how you hire faster, develop better, and retain longer at scale."
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "4b5150bf8ed6"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_hj2": {
+      "nodeId": "Activity_hj2",
+      "suites": [
+        {
+          "id": "a1b2c3d2",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "e1f2a3b2",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "c1d2e3f2",
+                  "name": "Explore Applied AI Infrastructure",
+                  "description": "Find and explore the Applied AI Infrastructure section",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "s2a2b3c1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "s2a2b3c2",
+                      "name": "Scroll to Applied AI Infrastructure section",
+                      "action": "Scroll down to find the section titled \"Phenom Applied AI Infrastructure\"",
+                      "expectedResult": "The \"Phenom Applied AI Infrastructure\" heading is visible on the page",
+                      "fields": []
+                    },
+                    {
+                      "id": "s2a2b3c3",
+                      "name": "Verify infrastructure components listed",
+                      "action": "Verify the section mentions Engines, Ontologies, XAI, Experiences, Use Cases, and Agents",
+                      "expectedResult": "Infrastructure component labels are visible in the section",
+                      "fields": []
+                    },
+                    {
+                      "id": "s2a2b3c4",
+                      "name": "Click Learn More about Applied AI",
+                      "action": "Click the \"Learn More about Applied AI\" link",
+                      "expectedResult": "User is taken to the Applied AI product page with relevant content",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i2a2b3c1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o2a2b3c1",
+                      "name": "ai_page_url",
+                      "type": "url",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Explore Applied AI Infrastructure",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Phenom Applied AI Infrastructure"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Engines"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Ontologies"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "XAI"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Experiences"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Use Cases"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Agents"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Learn More about Applied AI"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "aefe944e8c82"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_hj3": {
+      "nodeId": "Activity_hj3",
+      "suites": [
+        {
+          "id": "a1b2c3d3",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "e1f2a3b3",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "c1d2e3f3",
+                  "name": "Review Customer Results",
+                  "description": "Verify customer success metrics and proof points on the homepage",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "s3a2b3c1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "s3a2b3c2",
+                      "name": "Scroll to customer results section",
+                      "action": "Scroll to the section titled \"Results that speak volumes in even the quietest of talent markets.\"",
+                      "expectedResult": "The customer results section heading is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "s3a2b3c3",
+                      "name": "Verify Thermo Fisher metric",
+                      "action": "Verify the page displays \"20K+ hours saved\" for Thermo Fisher Scientific",
+                      "expectedResult": "The 20K+ hours saved metric is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "s3a2b3c4",
+                      "name": "Verify internal applicants metric",
+                      "action": "Verify the page displays \"129% increase in internal applicants\"",
+                      "expectedResult": "The 129% increase in internal applicants metric is visible",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i3a2b3c1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o3a2b3c1",
+                      "name": "metrics_verified",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Review Customer Results",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Results that speak volumes in even the quietest of talent markets."
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "20K+ hours saved"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "129% increase in internal applicants"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "d9ded1da7396"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-11T07:44:26.371Z"
+}

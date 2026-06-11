@@ -24,6 +24,27 @@ function slugify(name: string): string {
   );
 }
 
+// Business-facing descriptions for known seeded use cases so the template
+// gallery reads like a product catalogue rather than internal keys.
+const TEMPLATE_BLURBS: Record<string, string> = {
+  career_site_experience:
+    "Validate the candidate-facing career site journey — home, job search, and the apply funnel conversion path.",
+  talent_crm_pipeline:
+    "Exercise the Talent CRM lead-capture and nurture pipeline, from talent community sign-up to engagement.",
+  applied_ai_hiring:
+    "Smoke-test AI-driven candidate matching, screening, and intelligent shortlisting flows.",
+  hr_resources_hub:
+    "Cover the HR resources & content hub navigation, gated assets, and lead generation.",
+  customer_success_stories:
+    "Verify customer proof points, success stories, and case-study browsing experiences.",
+  order_fulfillment:
+    "End-to-end order intake, payment authorization, and fulfillment API regression suite.",
+  google_ai_search:
+    "Browser journey covering AI-powered search relevance and results rendering.",
+};
+
+const BLANK_TEMPLATE = "__blank__";
+
 export default function UseCaseListPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -31,6 +52,12 @@ export default function UseCaseListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newKey, setNewKey] = useState("");
+  const [keyEdited, setKeyEdited] = useState(false);
+  const [template, setTemplate] = useState<string>(BLANK_TEMPLATE);
+  const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -49,16 +76,48 @@ export default function UseCaseListPage() {
     void load();
   }, [load]);
 
-  const handleNew = async () => {
-    const name = prompt("Name of the new use case?", "My new use case");
-    if (!name) return;
-    const key = prompt("Internal key (lowercase, a-z0-9_)", slugify(name));
-    if (!key) return;
+  const openNew = () => {
+    setNewName("");
+    setNewKey("");
+    setKeyEdited(false);
+    setTemplate(BLANK_TEMPLATE);
+    setShowNew(true);
+  };
+
+  const onNameChange = (value: string) => {
+    setNewName(value);
+    if (!keyEdited) setNewKey(slugify(value));
+  };
+
+  const pickTemplate = (key: string) => {
+    setTemplate(key);
+    if (key !== BLANK_TEMPLATE && !newName.trim()) {
+      const tpl = useCases.find((u) => u.key === key);
+      if (tpl) {
+        const name = `${tpl.name} (copy)`;
+        setNewName(name);
+        if (!keyEdited) setNewKey(slugify(name));
+      }
+    }
+  };
+
+  const handleCreate = async () => {
+    const name = newName.trim();
+    const key = (newKey.trim() || slugify(name)).toLowerCase();
+    if (!name || !key) return;
+    setCreating(true);
     try {
-      const created = await createProcess({ key, name });
+      const created = await createProcess(
+        template === BLANK_TEMPLATE
+          ? { key, name }
+          : { key, name, sourceKey: template },
+      );
+      setShowNew(false);
       navigate(`/process/${created.key}`);
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -98,7 +157,7 @@ export default function UseCaseListPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search use cases…"
           />
-          <button type="button" className="primary" onClick={handleNew}>
+          <button type="button" className="primary" onClick={openNew}>
             + New use case
           </button>
         </div>
@@ -129,6 +188,99 @@ export default function UseCaseListPage() {
               onDelete={() => handleDelete(u)}
             />
           ))}
+        </div>
+      )}
+
+      {showNew && (
+        <div className="modal-overlay" onClick={() => setShowNew(false)}>
+          <div
+            className="modal modal-wide"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Create a new use case</h3>
+            <p className="modal-sub">
+              Name your use case and start from a blank canvas or an existing
+              business template.
+            </p>
+
+            <div className="new-fields">
+              <div className="field">
+                <label>Use case name</label>
+                <input
+                  autoFocus
+                  value={newName}
+                  onChange={(e) => onNameChange(e.target.value)}
+                  placeholder="e.g. Candidate Apply Flow"
+                />
+              </div>
+              <div className="field">
+                <label>Internal key</label>
+                <input
+                  value={newKey}
+                  onChange={(e) => {
+                    setKeyEdited(true);
+                    setNewKey(e.target.value);
+                  }}
+                  placeholder="candidate_apply_flow"
+                />
+              </div>
+            </div>
+
+            <div className="template-section">
+              <label className="template-label">Start from a template</label>
+              <div className="template-gallery">
+                <button
+                  type="button"
+                  className={`template-card ${
+                    template === BLANK_TEMPLATE ? "template-on" : ""
+                  }`}
+                  onClick={() => pickTemplate(BLANK_TEMPLATE)}
+                >
+                  <span className="template-emoji">＋</span>
+                  <span className="template-name">Blank canvas</span>
+                  <span className="template-blurb">
+                    Start from an empty BPMN canvas and model the flow yourself.
+                  </span>
+                </button>
+                {useCases.map((u) => (
+                  <button
+                    key={u.key}
+                    type="button"
+                    className={`template-card ${
+                      template === u.key ? "template-on" : ""
+                    }`}
+                    onClick={() => pickTemplate(u.key)}
+                  >
+                    <span className="template-name">{u.name}</span>
+                    <span className="template-blurb">
+                      {TEMPLATE_BLURBS[u.key] ??
+                        u.description ??
+                        "Reuse this workflow and its test plan as a starting point."}
+                    </span>
+                    <span className="template-meta">
+                      {u.testCaseCount} test case
+                      {u.testCaseCount === 1 ? "" : "s"} ·{" "}
+                      {u.nodeCount} node{u.nodeCount === 1 ? "" : "s"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button type="button" onClick={() => setShowNew(false)}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="primary"
+                onClick={handleCreate}
+                disabled={creating || !newName.trim() || !newKey.trim()}
+              >
+                {creating ? "Creating…" : "Create use case"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

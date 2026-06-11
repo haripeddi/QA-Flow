@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QA Flow — Agentic Test Automation (Prototype)</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-2: #111935;
+    --panel: #151d3b;
+    --panel-2: #1b2547;
+    --border: #26315c;
+    --text: #e8ecf8;
+    --muted: #9aa6c8;
+    --primary: #6d7cff;
+    --primary-2: #8b6dff;
+    --accent: #36d6c3;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 80% -10%, #1a2350 0%, var(--bg) 55%) fixed;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  #root { height: 100vh; display: flex; flex-direction: column; }
+  button { font-family: inherit; cursor: pointer; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .col { display: flex; flex-direction: column; }
+  .grow { flex: 1; }
+  .muted { color: var(--muted); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border); background: var(--panel-2);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* Top bar */
+  .topbar {
+    height: 60px; display: flex; align-items: center; gap: 16px;
+    padding: 0 20px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+    backdrop-filter: blur(6px);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
+  .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow);
+  }
+  .seg { display: flex; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+  .seg button {
+    border: 0; background: transparent; color: var(--muted);
+    padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 13px;
+  }
+  .seg button.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: white; }
+
+  .layout { flex: 1; display: flex; min-height: 0; }
+  .sidebar {
+    width: 230px; border-right: 1px solid var(--border); padding: 14px;
+    display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,.015);
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px;
+    color: var(--muted); font-weight: 600; font-size: 14px; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--panel); color: var(--text); }
+  .nav-item.active { background: var(--panel-2); color: var(--text); border-color: var(--border); }
+  .nav-ico { width: 18px; text-align: center; }
+
+  .main { flex: 1; min-width: 0; overflow: auto; padding: 22px 26px; }
+  .page-title { font-size: 22px; font-weight: 800; margin: 0; }
+  .page-sub { color: var(--muted); margin: 4px 0 18px; font-size: 14px; }
+
+  .grid { display: grid; gap: 16px; }
+  .card {
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { margin: 0 0 4px; font-size: 15px; }
+
+  .btn {
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+    padding: 9px 14px; border-radius: 10px; font-weight: 700; font-size: 13px;
+  }
+  .btn:hover { border-color: var(--primary); }
+  .btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); border: 0; }
+  .btn.ghost { background: transparent; }
+  .btn.sm { padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+
+  .scope { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; }
+  .scope.platform { color: #93c5fd; }
+  .scope.industry { color: #c4b5fd; }
+  .scope.customer { color: #6ee7b7; }
+
+  /* Workflow canvas */
+  .canvas-wrap { display: flex; gap: 16px; min-height: 0; }
+  .canvas {
+    flex: 1; background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.06) 1px, transparent 0) 0 0/22px 22px,
+      var(--bg-2);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 18px;
+    overflow: auto;
+  }
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .node {
+    width: 320px; background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+    box-shadow: var(--shadow); cursor: pointer; transition: transform .08s, border-color .12s;
+  }
+  .node:hover { border-color: var(--primary); transform: translateY(-1px); }
+  .node.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(109,124,255,.35), var(--shadow); }
+  .node .node-head { display: flex; align-items: center; gap: 10px; }
+  .node .ico {
+    width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .node .ttl { font-weight: 700; font-size: 14px; }
+  .node .typ { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .connector { width: 2px; height: 18px; background: var(--border); }
+  .insert {
+    width: 26px; height: 26px; border-radius: 50%; border: 1px dashed var(--border);
+    background: var(--bg-2); color: var(--muted); display: grid; place-items: center;
+    font-size: 16px; line-height: 1; margin: 4px 0;
+  }
+  .insert:hover { border-color: var(--primary); color: var(--primary); background: var(--panel); }
+
+  /* config panel */
+  .config { width: 360px; flex-shrink: 0; }
+  .field { margin-bottom: 13px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+  .input, select, textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 9px; padding: 9px 11px; font-size: 13px; font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+  .kv { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
+  .iconbtn { border: 1px solid var(--border); background: var(--panel-2); color: var(--muted); border-radius: 8px; width: 34px; }
+
+  /* table */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 11px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  .bar { height: 8px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); }
+
+  /* modal */
+  .overlay { position: fixed; inset: 0; background: rgba(4,7,18,.66); display: grid; place-items: center; z-index: 40; }
+  .modal { width: 460px; max-width: 92vw; }
+  .close { margin-left: auto; background: transparent; border: 0; color: var(--muted); font-size: 20px; }
+
+  .stat { font-size: 28px; font-weight: 800; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { padding: 2px 9px; border-radius: 7px; font-size: 11px; font-weight: 700; }
+  .b-green { background: rgba(52,211,153,.15); color: var(--green); }
+  .b-red { background: rgba(248,113,113,.15); color: var(--red); }
+  .b-amber { background: rgba(251,191,36,.15); color: var(--amber); }
+  .b-blue { background: rgba(109,124,255,.18); color: #aab4ff; }
+  .b-gray { background: rgba(154,166,200,.15); color: var(--muted); }
+
+  .agentlog { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.7; }
+  .agentlog .step { display: flex; gap: 8px; }
+  .empty { color: var(--muted); text-align: center; padding: 40px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+/* ---------- Node type registry (N8N / Zapier-inspired param schemas) ---------- */
+const NODE_TYPES = {
+  trigger:  { label: "Trigger / Start", ico: "▶", color: "#34d399", bg: "rgba(52,211,153,.15)" },
+  manual:   { label: "Manual Test",     ico: "✍", color: "#fbbf24", bg: "rgba(251,191,36,.15)" },
+  api:      { label: "API Request",     ico: "⇄", color: "#6d7cff", bg: "rgba(109,124,255,.18)" },
+  browser:  { label: "Browser Flow",    ico: "🌐", color: "#38bdf8", bg: "rgba(56,189,248,.15)" },
+  script:   { label: "Script",          ico: "{}", color: "#f472b6", bg: "rgba(244,114,182,.15)" },
+  agent:    { label: "AI Agent",        ico: "✦", color: "#8b6dff", bg: "rgba(139,109,255,.18)" },
+  mcp:      { label: "MCP Tool",        ico: "⌘", color: "#36d6c3", bg: "rgba(54,214,195,.15)" },
+  end:      { label: "End",             ico: "⏹", color: "#9aa6c8", bg: "rgba(154,166,200,.15)" },
+};
+
+const PERSONAS = {
+  qa: { label: "QA Engineer", desc: "Technical · runs manual + automation with own scripts, any framework" },
+  sa: { label: "Solution Architect", desc: "Non-technical · writes requirements in plain language, agent drives the app" },
+};
+
+/* ---------- Seed data ---------- */
+const seedCustomers = [
+  { id: "acme", name: "Acme Retail", industry: "Retail", baseUrl: "https://acme.phenom.com", users: 1200, params: { region: "US-East", currency: "USD", locale: "en-US" } },
+  { id: "globex", name: "Globex Health", industry: "Healthcare", baseUrl: "https://globex.phenom.com", users: 800, params: { region: "EU-West", currency: "EUR", locale: "de-DE" } },
+  { id: "initech", name: "Initech Bank", industry: "Banking", baseUrl: "https://initech.phenom.com", users: 2500, params: { region: "US-West", currency: "USD", locale: "en-US" } },
+];
+
+const seedTemplates = [
+  { id: "t1", name: "Candidate Apply → Offer", scope: "platform", nodes: 7, industry: "All", desc: "End-to-end hiring funnel: career site → apply → screen → interview → offer." },
+  { id: "t2", name: "Healthcare Credentialing", scope: "industry", nodes: 9, industry: "Healthcare", desc: "License verification + compliance gates for clinical roles." },
+  { id: "t3", name: "Bulk Requisition Import", scope: "platform", nodes: 5, industry: "All", desc: "CSV import → validation → publish across job boards." },
+  { id: "t4", name: "Acme Black-Friday Surge", scope: "customer", nodes: 11, industry: "Retail", desc: "Acme-specific load + seasonal hiring workflow." },
+];
+
+const makeWorkflow = () => ([
+  { id: "n1", type: "trigger", title: "Start: Candidate visits career site", cfg: {} },
+  { id: "n2", type: "browser", title: "Open career site & search jobs", cfg: { steps: "goto {{baseUrl}}/career-site\nfill #search 'engineer'\nclick .search-btn\nassertContains 'results'" } },
+  { id: "n3", type: "agent", title: "Agent: apply to first matching job", cfg: {
+      model: "gpt-4.1", goal: "Apply to the first software engineer role using the candidate profile",
+      instructions: "Use customer context for locale & region. Fill the application form, upload resume, submit, and confirm a success message appears.",
+      tools: ["browser","mcp"], maxSteps: 25, success: "Application confirmation page is shown with a reference id",
+  } },
+  { id: "n4", type: "api", title: "Verify application created (ATS)", cfg: {
+      method: "GET", url: "{{baseUrl}}/api/applications?ref={{refId}}", expectStatus: "200",
+      assertPath: "$.status == 'RECEIVED'",
+  } },
+  { id: "n5", type: "end", title: "End", cfg: {} },
+]);
+
+const seedRuns = [
+  { id: "r1042", env: "staging", tag: "regression", by: "priya@phenom.com", customer: "Acme Retail", status: "passed", dur: "2m 14s", when: "10 min ago", pass: 7, fail: 0 },
+  { id: "r1041", env: "staging", tag: "smoke", by: "agent (SA: john)", customer: "Globex Health", status: "failed", dur: "3m 02s", when: "1 hr ago", pass: 5, fail: 2 },
+  { id: "r1040", env: "uat", tag: "nightly", by: "priya@phenom.com", customer: "Initech Bank", status: "passed", dur: "1m 58s", when: "8 hr ago", pass: 9, fail: 0 },
+  { id: "r1039", env: "staging", tag: "regression", by: "agent (SA: maria)", customer: "Acme Retail", status: "passed", dur: "2m 41s", when: "yesterday", pass: 7, fail: 0 },
+];
+
+/* ---------- App ---------- */
+function App() {
+  const [persona, setPersona] = useState("qa");
+  const [nav, setNav] = useState("workflow");
+
+  return (
+    <React.Fragment>
+      <div className="topbar">
+        <div className="brand"><span className="logo">✦</span> QA Flow <span className="pill" style={{marginLeft:6}}>Prototype</span></div>
+        <div className="grow" />
+        <span className="muted" style={{fontSize:13}}>Persona</span>
+        <div className="seg">
+          {Object.keys(PERSONAS).map(p => (
+            <button key={p} className={persona===p?"active":""} onClick={()=>setPersona(p)}>{PERSONAS[p].label}</button>
+          ))}
+        </div>
+        <div className="pill"><span className="dot" style={{background:"var(--green)"}}></span> staging</div>
+      </div>
+
+      <div className="layout">
+        <div className="sidebar">
+          <NavItem ico="◳" label="Workflow Builder" id="workflow" nav={nav} setNav={setNav} />
+          <NavItem ico="▦" label="Templates" id="templates" nav={nav} setNav={setNav} />
+          <NavItem ico="◴" label="Test Cases" id="cases" nav={nav} setNav={setNav} />
+          <NavItem ico="↻" label="Runs" id="runs" nav={nav} setNav={setNav} />
+          <NavItem ico="◷" label="Traceability" id="trace" nav={nav} setNav={setNav} />
+          <NavItem ico="◰" label="Customer Context" id="customers" nav={nav} setNav={setNav} />
+          <div className="grow" />
+          <div className="card" style={{padding:12}}>
+            <div className="muted" style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:".5px"}}>Mode</div>
+            <div style={{fontWeight:700, marginTop:4}}>{PERSONAS[persona].label}</div>
+            <div className="muted" style={{fontSize:11, marginTop:4, lineHeight:1.5}}>{PERSONAS[persona].desc}</div>
+          </div>
+        </div>
+
+        <div className="main">
+          {nav==="workflow"   && <WorkflowBuilder persona={persona} />}
+          {nav==="templates"  && <Templates />}
+          {nav==="cases"      && <TestCases />}
+          {nav==="runs"       && <Runs />}
+          {nav==="trace"      && <Traceability />}
+          {nav==="customers"  && <Customers />}
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function NavItem({ ico, label, id, nav, setNav }) {
+  return (
+    <div className={"nav-item " + (nav===id?"active":"")} onClick={()=>setNav(id)}>
+      <span className="nav-ico">{ico}</span> {label}
+    </div>
+  );
+}
+
+/* ---------- Workflow Builder ---------- */
+function WorkflowBuilder({ persona }) {
+  const [nodes, setNodes] = useState(makeWorkflow());
+  const [selId, setSelId] = useState("n3");
+  const [insertAt, setInsertAt] = useState(null);
+  const [showRun, setShowRun] = useState(false);
+  const [customer, setCustomer] = useState("acme");
+  const [showAgentReq, setShowAgentReq] = useState(false);
+
+  const sel = nodes.find(n => n.id === selId);
+
+  const addNode = (type) => {
+    const nt = NODE_TYPES[type];
+    const newNode = { id: "n" + Date.now(), type, title: nt.label, cfg: defaultCfg(type) };
+    const copy = [...nodes];
+    copy.splice(insertAt, 0, newNode);
+    setNodes(copy);
+    setSelId(newNode.id);
+    setInsertAt(null);
+  };
+
+  const updateCfg = (patch) => {
+    setNodes(nodes.map(n => n.id === selId ? { ...n, ...patch } : n));
+  };
+  const removeNode = (id) => {
+    setNodes(nodes.filter(n => n.id !== id));
+    if (selId === id) setSelId(null);
+  };
+
+  return (
+    <React.Fragment>
+      <div className="row">
+        <div>
+          <h1 className="page-title">Candidate Apply → Offer</h1>
+          <p className="page-sub">Workflow · BPMN-backed execution · {nodes.length} nodes</p>
+        </div>
+        <div className="grow" />
+        <select className="input" style={{width:180}} value={customer} onChange={e=>setCustomer(e.target.value)}>
+          {seedCustomers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        {persona==="sa" && <button className="btn" onClick={()=>setShowAgentReq(true)}>✦ Describe in plain language</button>}
+        <button className="btn primary" onClick={()=>setShowRun(true)}>▶ Run workflow</button>
+      </div>
+
+      {persona==="sa" && (
+        <div className="card" style={{borderColor:"var(--primary-2)", marginBottom:16, background:"linear-gradient(180deg, rgba(139,109,255,.10), var(--bg-2))"}}>
+          <div className="row"><span className="pill"><span className="dot" style={{background:"var(--primary-2)"}}></span> Solution Architect mode</span></div>
+          <p className="muted" style={{margin:"10px 0 0", fontSize:13, lineHeight:1.6}}>
+            You don't need to know where the automation lives. Describe what the customer should be able to do, and an
+            agent will navigate the app, build the steps, and capture traceability for you. Add an <b>AI Agent</b> node
+            anywhere with the <b>+</b> button.
+          </p>
+        </div>
+      )}
+
+      <div className="canvas-wrap" style={{height:"calc(100vh - 230px)"}}>
+        <div className="canvas">
+          <div className="flow">
+            <InsertButton onClick={()=>setInsertAt(0)} />
+            {nodes.map((n, i) => (
+              <React.Fragment key={n.id}>
+                <NodeCard node={n} selected={n.id===selId} onClick={()=>setSelId(n.id)} onDelete={()=>removeNode(n.id)} />
+                <div className="connector" />
+                <InsertButton onClick={()=>setInsertAt(i+1)} />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        <div className="config card">
+          {sel ? <ConfigPanel node={sel} onChange={updateCfg} customer={seedCustomers.find(c=>c.id===customer)} />
+               : <div className="empty">Select a node to configure its parameters, or click <b>+</b> to insert a node.</div>}
+        </div>
+      </div>
+
+      {insertAt !== null && <InsertPicker onPick={addNode} onClose={()=>setInsertAt(null)} />}
+      {showRun && <RunModal nodes={nodes} customer={seedCustomers.find(c=>c.id===customer)} onClose={()=>setShowRun(false)} />}
+      {showAgentReq && <AgentRequirementModal onClose={()=>setShowAgentReq(false)} onCreate={(node)=>{
+          const copy=[...nodes]; copy.splice(nodes.length-1,0,node); setNodes(copy); setSelId(node.id); setShowAgentReq(false);
+      }} />}
+    </React.Fragment>
+  );
+}
+
+function NodeCard({ node, selected, onClick, onDelete }) {
+  const nt = NODE_TYPES[node.type];
+  return (
+    <div className={"node " + (selected?"selected":"")} onClick={onClick}>
+      <div className="node-head">
+        <div className="ico" style={{background:nt.bg, color:nt.color}}>{nt.ico}</div>
+        <div className="grow">
+          <div className="ttl">{node.title}</div>
+          <div className="typ">{nt.label}</div>
+        </div>
+        {node.type!=="trigger" && node.type!=="end" &&
+          <button className="iconbtn sm" title="Delete" onClick={(e)=>{e.stopPropagation(); onDelete();}}>✕</button>}
+      </div>
+    </div>
+  );
+}
+
+function InsertButton({ onClick }) {
+  return <button className="insert" title="Insert node here" onClick={onClick}>+</button>;
+}
+
+function InsertPicker({ onPick, onClose }) {
+  const types = ["manual","api","browser","script","agent","mcp"];
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="card modal" onClick={e=>e.stopPropagation()}>
+        <div className="row"><h3 style={{margin:0}}>Insert a node</h3><button className="close" onClick={onClose}>×</button></div>
+        <p className="muted" style={{fontSize:13, marginTop:4}}>Drop any step between existing nodes — script, API, browser, an AI Agent, or an MCP tool.</p>
+        <div className="grid" style={{gridTemplateColumns:"1fr 1fr", marginTop:12}}>
+          {types.map(t => {
+            const nt = NODE_TYPES[t];
+            return (
+              <div key={t} className="card" style={{cursor:"pointer", padding:13}} onClick={()=>onPick(t)}>
+                <div className="row">
+                  <div className="ico" style={{background:nt.bg, color:nt.color, width:32, height:32, borderRadius:8, display:"grid", placeItems:"center"}}>{nt.ico}</div>
+                  <div style={{fontWeight:700, fontSize:14}}>{nt.label}</div>
+                </div>
+                <div className="muted" style={{fontSize:12, marginTop:8}}>{nodeBlurb(t)}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function nodeBlurb(t){
+  return ({
+    manual:"Human step with expected result, tracked in the run.",
+    api:"Configure method, URL, auth, headers, body & assertions.",
+    browser:"Playwright steps: goto, click, fill, assert, screenshot.",
+    script:"Inline Python/JS with variable in/out.",
+    agent:"Plain-language goal; agent drives the app & tools.",
+    mcp:"Call a tool exposed by any MCP server.",
+  })[t];
+}
+
+function defaultCfg(t){
+  return ({
+    api: { method:"GET", url:"{{baseUrl}}/api/", expectStatus:"200", assertPath:"" },
+    browser: { steps:"goto {{baseUrl}}/\n" },
+    script: { language:"python", code:"# QA_VARS available\nprint('##QA_RESULT## {\"pass\": true}')" },
+    agent: { model:"gpt-4.1", goal:"", instructions:"", tools:["browser"], maxSteps:20, success:"" },
+    mcp: { server:"", tool:"", args:"{}" },
+    manual: { expected:"", steps:"" },
+  })[t] || {};
+}
+
+/* ---------- Config Panel (param schemas per node) ---------- */
+function ConfigPanel({ node, onChange, customer }) {
+  const nt = NODE_TYPES[node.type];
+  const set = (k, v) => onChange({ cfg: { ...node.cfg, [k]: v } });
+
+  return (
+    <div>
+      <div className="row" style={{marginBottom:14}}>
+        <div className="ico" style={{background:nt.bg, color:nt.color, width:34, height:34, borderRadius:9, display:"grid", placeItems:"center", fontSize:17}}>{nt.ico}</div>
+        <div>
+          <div style={{fontWeight:800}}>{nt.label}</div>
+          <div className="muted" style={{fontSize:11}}>Node parameters</div>
+        </div>
+      </div>
+
+      <div className="field">
+        <label>Node name</label>
+        <input className="input" value={node.title} onChange={e=>onChange({title:e.target.value})} />
+      </div>
+
+      {node.type==="api" && <ApiParams cfg={node.cfg} set={set} />}
+      {node.type==="agent" && <AgentParams cfg={node.cfg} set={set} customer={customer} />}
+      {node.type==="mcp" && <McpParams cfg={node.cfg} set={set} />}
+      {node.type==="browser" && (
+        <div className="field"><label>Steps</label>
+          <textarea style={{minHeight:160, fontFamily:"ui-monospace,monospace"}} value={node.cfg.steps||""} onChange={e=>set("steps",e.target.value)} />
+          <div className="hint">One action per line. Supports {"{{variables}}"} from the shared bag.</div>
+        </div>
+      )}
+      {node.type==="script" && (
+        <React.Fragment>
+          <div className="field"><label>Language</label>
+            <select value={node.cfg.language} onChange={e=>set("language",e.target.value)}><option>python</option><option>javascript</option></select>
+          </div>
+          <div className="field"><label>Code</label>
+            <textarea style={{minHeight:160, fontFamily:"ui-monospace,monospace"}} value={node.cfg.code||""} onChange={e=>set("code",e.target.value)} />
+          </div>
+        </React.Fragment>
+      )}
+      {node.type==="manual" && (
+        <React.Fragment>
+          <div className="field"><label>Steps for the tester</label><textarea value={node.cfg.steps||""} onChange={e=>set("steps",e.target.value)} /></div>
+          <div className="field"><label>Expected result</label><textarea value={node.cfg.expected||""} onChange={e=>set("expected",e.target.value)} /></div>
+        </React.Fragment>
+      )}
+      {(node.type==="trigger"||node.type==="end") && <div className="muted" style={{fontSize:13}}>This control node has no parameters.</div>}
+
+      {node.type!=="trigger" && node.type!=="end" && (
+        <div className="field" style={{marginTop:16, borderTop:"1px solid var(--border)", paddingTop:14}}>
+          <label>Output variables → shared bag</label>
+          <input className="input" placeholder="refId = $.data.id" defaultValue={node.type==="agent"?"refId":""} />
+          <div className="hint">Written values become {"{{available}}"} to later nodes.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ApiParams({ cfg, set }) {
+  const [headers, setHeaders] = useState([{k:"Content-Type", v:"application/json"}]);
+  return (
+    <React.Fragment>
+      <div className="row" style={{gap:8}}>
+        <div className="field" style={{width:120}}>
+          <label>Method</label>
+          <select value={cfg.method} onChange={e=>set("method",e.target.value)}>
+            {["GET","POST","PUT","PATCH","DELETE"].map(m=><option key={m}>{m}</option>)}
+          </select>
+        </div>
+        <div className="field grow"><label>URL</label><input className="input" value={cfg.url} onChange={e=>set("url",e.target.value)} /></div>
+      </div>
+      <div className="field">
+        <label>Authentication</label>
+        <select defaultValue="bearer"><option value="none">None</option><option value="bearer">Bearer token</option><option value="basic">Basic</option><option value="apikey">API key</option><option value="oauth">OAuth 2.0</option></select>
+      </div>
+      <div className="field">
+        <label>Headers</label>
+        {headers.map((h,i)=>(
+          <div className="kv" key={i}>
+            <input className="input" value={h.k} onChange={e=>{const c=[...headers];c[i].k=e.target.value;setHeaders(c);}} />
+            <input className="input" value={h.v} onChange={e=>{const c=[...headers];c[i].v=e.target.value;setHeaders(c);}} />
+            <button className="iconbtn" onClick={()=>setHeaders(headers.filter((_,x)=>x!==i))}>✕</button>
+          </div>
+        ))}
+        <button className="btn sm ghost" onClick={()=>setHeaders([...headers,{k:"",v:""}])}>+ Add header</button>
+      </div>
+      <div className="field"><label>Request body (JSON)</label><textarea placeholder='{ "key": "{{value}}" }' style={{fontFamily:"ui-monospace,monospace"}} /></div>
+      <div className="row" style={{gap:8}}>
+        <div className="field" style={{width:130}}><label>Expect status</label><input className="input" value={cfg.expectStatus} onChange={e=>set("expectStatus",e.target.value)} /></div>
+        <div className="field grow"><label>Assert (JSONPath)</label><input className="input" placeholder="$.status == 'OK'" value={cfg.assertPath} onChange={e=>set("assertPath",e.target.value)} /></div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function AgentParams({ cfg, set, customer }) {
+  const toggleTool = (t) => {
+    const cur = cfg.tools||[];
+    set("tools", cur.includes(t) ? cur.filter(x=>x!==t) : [...cur, t]);
+  };
+  return (
+    <React.Fragment>
+      <div className="field">
+        <label>Model</label>
+        <select value={cfg.model} onChange={e=>set("model",e.target.value)}>
+          <option>gpt-4.1</option><option>claude-opus-4</option><option>gpt-4o-mini</option>
+        </select>
+      </div>
+      <div className="field">
+        <label>Goal (what success looks like)</label>
+        <textarea placeholder="Apply to the first matching role and confirm submission" value={cfg.goal} onChange={e=>set("goal",e.target.value)} />
+      </div>
+      <div className="field">
+        <label>Instructions</label>
+        <textarea placeholder="Plain-language steps / constraints for the agent" value={cfg.instructions} onChange={e=>set("instructions",e.target.value)} />
+      </div>
+      <div className="field">
+        <label>Allowed tools</label>
+        <div className="chips">
+          {["browser","api","mcp","script"].map(t=>(
+            <button key={t} className={"badge "+((cfg.tools||[]).includes(t)?"b-blue":"b-gray")} style={{border:"1px solid var(--border)"}} onClick={()=>toggleTool(t)}>{t}</button>
+          ))}
+        </div>
+      </div>
+      <div className="row" style={{gap:8}}>
+        <div className="field" style={{width:120}}><label>Max steps</label><input className="input" type="number" value={cfg.maxSteps} onChange={e=>set("maxSteps",e.target.value)} /></div>
+        <div className="field grow"><label>Success criteria</label><input className="input" value={cfg.success} onChange={e=>set("success",e.target.value)} /></div>
+      </div>
+      <div className="field">
+        <label>Customer context binding</label>
+        <div className="card" style={{padding:10, background:"var(--bg)"}}>
+          <div className="muted" style={{fontSize:12}}>Injected into the agent so behaviour adapts per customer:</div>
+          {customer && <div className="chips" style={{marginTop:8}}>
+            <span className="badge b-green">{customer.name}</span>
+            <span className="badge b-gray">{customer.params.region}</span>
+            <span className="badge b-gray">{customer.params.locale}</span>
+            <span className="badge b-gray">{customer.params.currency}</span>
+          </div>}
+        </div>
+        <div className="hint">Bound from the workflow's selected customer. Gives the agent context & richer traceability.</div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function McpParams({ cfg, set }) {
+  return (
+    <React.Fragment>
+      <div className="field">
+        <label>MCP server</label>
+        <select value={cfg.server} onChange={e=>set("server",e.target.value)}>
+          <option value="">Select server…</option>
+          <option>playwright</option><option>snowflake</option><option>atlassian</option><option>slack</option>
+        </select>
+      </div>
+      <div className="field"><label>Tool</label><input className="input" placeholder="e.g. query, create_issue" value={cfg.tool} onChange={e=>set("tool",e.target.value)} /></div>
+      <div className="field"><label>Arguments (JSON)</label><textarea style={{fontFamily:"ui-monospace,monospace"}} value={cfg.args} onChange={e=>set("args",e.target.value)} /></div>
+      <div className="hint">Discovered from the server's tool schema, like the API block's parameters.</div>
+    </React.Fragment>
+  );
+}
+
+/* ---------- Agent requirement (SA non-technical entry) ---------- */
+function AgentRequirementModal({ onClose, onCreate }) {
+  const [text, setText] = useState("As a candidate in Germany, I should be able to search for nursing jobs, apply with my profile, and receive a confirmation email.");
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="card modal" style={{width:540}} onClick={e=>e.stopPropagation()}>
+        <div className="row"><h3 style={{margin:0}}>✦ Describe the test in plain language</h3><button className="close" onClick={onClose}>×</button></div>
+        <p className="muted" style={{fontSize:13}}>No code, no knowledge of where automation lives. The agent turns this into executable steps.</p>
+        <textarea style={{minHeight:120}} value={text} onChange={e=>setText(e.target.value)} />
+        <div className="row" style={{marginTop:14}}>
+          <div className="grow" />
+          <button className="btn ghost" onClick={onClose}>Cancel</button>
+          <button className="btn primary" onClick={()=>onCreate({ id:"n"+Date.now(), type:"agent", title:"Agent: "+text.slice(0,40)+"…", cfg:{ model:"gpt-4.1", goal:text, instructions:"Derive steps from the requirement; adapt to customer locale.", tools:["browser","mcp"], maxSteps:30, success:"Confirmation received" } })}>Generate agent node</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Run modal with live agent trace ---------- */
+function RunModal({ nodes, customer, onClose }) {
+  const [env, setEnv] = useState("staging");
+  const [tag, setTag] = useState("regression");
+  const [running, setRunning] = useState(false);
+  const [done, setDone] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const traceLines = useMemo(()=>nodes.filter(n=>n.type!=="trigger"&&n.type!=="end").map(n=>({n, ok:Math.random()>0.12})),[nodes]);
+
+  const start = () => {
+    setRunning(true);
+    let i = 0;
+    const iv = setInterval(()=>{
+      i++; setStep(i);
+      if (i >= traceLines.length) { clearInterval(iv); setRunning(false); setDone(true); }
+    }, 650);
+  };
+
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="card modal" style={{width:560}} onClick={e=>e.stopPropagation()}>
+        <div className="row"><h3 style={{margin:0}}>Run workflow</h3><button className="close" onClick={onClose}>×</button></div>
+        {!running && !done && (
+          <React.Fragment>
+            <p className="muted" style={{fontSize:13}}>Customer: <b style={{color:"var(--text)"}}>{customer?.name}</b> · context auto-injected into every node.</p>
+            <div className="row" style={{gap:10}}>
+              <div className="field grow"><label>Environment</label><select value={env} onChange={e=>setEnv(e.target.value)}><option>staging</option><option>uat</option><option>prod</option></select></div>
+              <div className="field grow"><label>Tag / label</label><input className="input" value={tag} onChange={e=>setTag(e.target.value)} /></div>
+            </div>
+            <div className="hint">This is run #1043. The same workflow can be run repeatedly — each run is tracked separately.</div>
+            <div className="row" style={{marginTop:14}}><div className="grow"/><button className="btn primary" onClick={start}>▶ Start run</button></div>
+          </React.Fragment>
+        )}
+        {(running || done) && (
+          <React.Fragment>
+            <div className="agentlog" style={{marginTop:12}}>
+              {traceLines.map((t,i)=>(
+                <div className="step" key={i} style={{opacity: i<step?1:0.3}}>
+                  <span>{i<step ? (t.ok?"✅":"❌") : "⏳"}</span>
+                  <span style={{color:NODE_TYPES[t.n.type].color}}>[{t.n.type}]</span>
+                  <span className="grow">{t.n.title}</span>
+                </div>
+              ))}
+            </div>
+            {done && <div className="row" style={{marginTop:14}}>
+              <span className="badge b-green">Run #1043 complete</span>
+              <span className="muted" style={{fontSize:12}}>traceability captured automatically</span>
+              <div className="grow"/><button className="btn primary" onClick={onClose}>View run</button>
+            </div>}
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Templates ---------- */
+function Templates() {
+  return (
+    <React.Fragment>
+      <h1 className="page-title">Templates</h1>
+      <p className="page-sub">Reusable workflows at platform, industry, or customer scope. Pick one, bind a customer, run.</p>
+      <div className="grid" style={{gridTemplateColumns:"repeat(auto-fill, minmax(280px,1fr))"}}>
+        {seedTemplates.map(t=>(
+          <div className="card" key={t.id}>
+            <div className="row">
+              <span className={"scope "+t.scope}>{t.scope}</span>
+              <div className="grow"/>
+              <span className="pill">{t.nodes} nodes</span>
+            </div>
+            <h3 style={{marginTop:10}}>{t.name}</h3>
+            <div className="muted" style={{fontSize:13, lineHeight:1.5, minHeight:54}}>{t.desc}</div>
+            <div className="row" style={{marginTop:10}}>
+              <span className="badge b-gray">{t.industry}</span>
+              <div className="grow"/>
+              <button className="btn sm ghost">Preview</button>
+              <button className="btn sm primary">Use template</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </React.Fragment>
+  );
+}
+
+/* ---------- Test Cases (TestSigma-style) ---------- */
+function TestCases() {
+  const cases = [
+    { id:"TC-101", name:"Search jobs by keyword", type:"automation", node:"Browser Flow", scope:"platform", status:"passed" },
+    { id:"TC-102", name:"Apply with existing profile", type:"agent", node:"AI Agent", scope:"platform", status:"passed" },
+    { id:"TC-103", name:"Verify application in ATS", type:"automation", node:"API Request", scope:"platform", status:"failed" },
+    { id:"TC-104", name:"Recruiter receives notification", type:"manual", node:"Manual Test", scope:"customer", status:"not-run" },
+    { id:"TC-105", name:"German locale offer letter", type:"agent", node:"AI Agent", scope:"industry", status:"passed" },
+  ];
+  const badge = s => s==="passed"?"b-green":s==="failed"?"b-red":"b-gray";
+  const typeBadge = t => t==="agent"?"b-blue":t==="manual"?"b-amber":"b-green";
+  return (
+    <React.Fragment>
+      <div className="row"><div><h1 className="page-title">Test Cases</h1><p className="page-sub">Author detailed cases — manual, automation (any framework), or agent-driven.</p></div><div className="grow"/><button className="btn primary">+ New test case</button></div>
+      <div className="card" style={{padding:0}}>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Bound node</th><th>Scope</th><th>Last status</th></tr></thead>
+          <tbody>
+            {cases.map(c=>(
+              <tr key={c.id}>
+                <td className="muted">{c.id}</td>
+                <td style={{fontWeight:600}}>{c.name}</td>
+                <td><span className={"badge "+typeBadge(c.type)}>{c.type}</span></td>
+                <td className="muted">{c.node}</td>
+                <td><span className={"scope "+c.scope}>{c.scope}</span></td>
+                <td><span className={"badge "+badge(c.status)}>{c.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </React.Fragment>
+  );
+}
+
+/* ---------- Runs (repetitive execution / history) ---------- */
+function Runs() {
+  return (
+    <React.Fragment>
+      <h1 className="page-title">Runs</h1>
+      <p className="page-sub">Every execution of a workflow is tracked. Run the same workflow repeatedly across customers & environments.</p>
+      <div className="grid" style={{gridTemplateColumns:"repeat(4,1fr)", marginBottom:16}}>
+        <Stat label="Runs today" value="18" />
+        <Stat label="Pass rate" value="86%" tone="green" />
+        <Stat label="Agent-driven" value="42%" tone="blue" />
+        <Stat label="Avg duration" value="2m 31s" />
+      </div>
+      <div className="card" style={{padding:0}}>
+        <table>
+          <thead><tr><th>Run</th><th>Customer</th><th>Env</th><th>Tag</th><th>Started by</th><th>Result</th><th>Duration</th><th>When</th></tr></thead>
+          <tbody>
+            {seedRuns.map(r=>(
+              <tr key={r.id}>
+                <td className="muted">#{r.id}</td>
+                <td style={{fontWeight:600}}>{r.customer}</td>
+                <td><span className="badge b-gray">{r.env}</span></td>
+                <td><span className="badge b-blue">{r.tag}</span></td>
+                <td className="muted">{r.by}</td>
+                <td><span className={"badge "+(r.status==="passed"?"b-green":"b-red")}>{r.pass}✓ {r.fail}✗</span></td>
+                <td className="muted">{r.dur}</td>
+                <td className="muted">{r.when}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function Stat({ label, value, tone }) {
+  const color = tone==="green"?"var(--green)":tone==="blue"?"#aab4ff":"var(--text)";
+  return <div className="card"><div className="muted" style={{fontSize:12, fontWeight:700, textTransform:"uppercase", letterSpacing:".5px"}}>{label}</div><div className="stat" style={{color}}>{value}</div></div>;
+}
+
+/* ---------- Traceability ---------- */
+function Traceability() {
+  const rows = [
+    { wf:"Candidate Apply → Offer", cases:7, auto:6, manual:1, cov:92, pass:88 },
+    { wf:"Healthcare Credentialing", cases:9, auto:7, manual:2, cov:78, pass:71 },
+    { wf:"Bulk Requisition Import", cases:5, auto:5, manual:0, cov:100, pass:100 },
+  ];
+  return (
+    <React.Fragment>
+      <h1 className="page-title">Traceability</h1>
+      <p className="page-sub">Generated automatically from execution — no per-metric coding. Workflow → cases → results, coverage gaps & trends.</p>
+      <div className="grid" style={{gridTemplateColumns:"repeat(4,1fr)", marginBottom:16}}>
+        <Stat label="Workflow coverage" value="90%" tone="green" />
+        <Stat label="Requirements traced" value="124" />
+        <Stat label="UAT defects (proj.)" value="-37%" tone="green" />
+        <Stat label="Coverage gaps" value="6" />
+      </div>
+      <div className="card" style={{padding:0}}>
+        <table>
+          <thead><tr><th>Workflow</th><th>Cases</th><th>Auto / Manual</th><th>Coverage</th><th>Pass rate</th></tr></thead>
+          <tbody>
+            {rows.map((r,i)=>(
+              <tr key={i}>
+                <td style={{fontWeight:600}}>{r.wf}</td>
+                <td>{r.cases}</td>
+                <td className="muted">{r.auto} / {r.manual}</td>
+                <td style={{width:200}}><div className="row"><div className="bar grow"><i style={{width:r.cov+"%"}}></i></div><span className="muted" style={{fontSize:12, width:38}}>{r.cov}%</span></div></td>
+                <td><span className={"badge "+(r.pass>=85?"b-green":"b-amber")}>{r.pass}%</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </React.Fragment>
+  );
+}
+
+/* ---------- Customers ---------- */
+function Customers() {
+  return (
+    <React.Fragment>
+      <div className="row"><div><h1 className="page-title">Customer Context</h1><p className="page-sub">Feed customer data once; every workflow & agent adapts and produces richer traceability.</p></div><div className="grow"/><button className="btn primary">+ Add customer</button></div>
+      <div className="grid" style={{gridTemplateColumns:"repeat(auto-fill, minmax(300px,1fr))"}}>
+        {seedCustomers.map(c=>(
+          <div className="card" key={c.id}>
+            <div className="row"><h3 style={{margin:0}}>{c.name}</h3><div className="grow"/><span className="badge b-gray">{c.industry}</span></div>
+            <div className="muted" style={{fontSize:13, marginTop:8}}>{c.baseUrl}</div>
+            <div className="chips" style={{marginTop:12}}>
+              {Object.entries(c.params).map(([k,v])=><span key={k} className="badge b-blue">{k}: {v}</span>)}
+            </div>
+            <div className="row" style={{marginTop:12}}>
+              <span className="muted" style={{fontSize:12}}>{c.users.toLocaleString()} users</span>
+              <div className="grow"/><button className="btn sm ghost">Edit context</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

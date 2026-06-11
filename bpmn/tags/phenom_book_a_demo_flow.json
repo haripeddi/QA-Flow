@@ -1,0 +1,143 @@
+{
+  "processKey": "phenom_book_a_demo_flow",
+  "elementTests": {
+    "Activity_bd1": {
+      "name": "Open Phenom Homepage",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Accept"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Accept"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Close"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The viewport is clear of dimmed backdrops and modal dialogs"
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Platform"
+          }
+        }
+      ]
+    },
+    "Activity_bd2": {
+      "name": "Locate Book a Demo CTA",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "{{site_url}}"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "button",
+            "value": "Learn more"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "text",
+            "value": "Header area"
+          }
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book a Demo"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book a Demo"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book Demo"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book a Demo"
+          }
+        }
+      ]
+    },
+    "Activity_bd3": {
+      "name": "Submit Demo Request",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book a Demo"
+          }
+        },
+        {
+          "action": "assertVisible",
+          "target": {
+            "strategy": "role",
+            "roleType": "textbox",
+            "value": "Request a Demo"
+          }
+        },
+        {
+          "action": "extractText",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Book a Demo"
+          },
+          "variable": "demo_page_url"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_phenom_homepage_journey" targetNamespace="http://qaflow/bpmn">
+  <bpmn:process id="phenom_homepage_journey" name="Phenom Homepage Journey" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_hj1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_hj1" name="Open Homepage &amp; Verify Hero">
+      <bpmn:incoming>flow_start_hj1</bpmn:incoming>
+      <bpmn:outgoing>flow_hj1_hj2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_hj2" name="Explore Applied AI Infrastructure">
+      <bpmn:incoming>flow_hj1_hj2</bpmn:incoming>
+      <bpmn:outgoing>flow_hj2_hj3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_hj3" name="Review Customer Results">
+      <bpmn:incoming>flow_hj2_hj3</bpmn:incoming>
+      <bpmn:outgoing>flow_hj3_end</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_hj3_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_hj1" sourceRef="start" targetRef="Activity_hj1" />
+    <bpmn:sequenceFlow id="flow_hj1_hj2" sourceRef="Activity_hj1" targetRef="Activity_hj2" />
+    <bpmn:sequenceFlow id="flow_hj2_hj3" sourceRef="Activity_hj2" targetRef="Activity_hj3" />
+    <bpmn:sequenceFlow id="flow_hj3_end" sourceRef="Activity_hj3" targetRef="end" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="phenom_homepage_journey">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start">
+        <dc:Bounds x="160" y="180" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_hj1_di" bpmnElement="Activity_hj1">
+        <dc:Bounds x="260" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_hj2_di" bpmnElement="Activity_hj2">
+        <dc:Bounds x="430" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_hj3_di" bpmnElement="Activity_hj3">
+        <dc:Bounds x="600" y="158" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end">
+        <dc:Bounds x="770" y="180" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow_start_hj1_di" bpmnElement="flow_start_hj1">
+        <di:waypoint x="196" y="198" />
+        <di:waypoint x="260" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_hj1_hj2_di" bpmnElement="flow_hj1_hj2">
+        <di:waypoint x="380" y="198" />
+        <di:waypoint x="430" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_hj2_hj3_di" bpmnElement="flow_hj2_hj3">
+        <di:waypoint x="550" y="198" />
+        <di:waypoint x="600" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_hj3_end_di" bpmnElement="flow_hj3_end">
+        <di:waypoint x="720" y="198" />
+        <di:waypoint x="770" y="198" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

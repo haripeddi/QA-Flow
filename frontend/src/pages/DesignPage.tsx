@@ -5,6 +5,7 @@ import BpmnModeler, { type BpmnModelerHandle, type ElementInfo } from "../BpmnMo
 import BpmnRunCanvas from "../BpmnRunCanvas";
 import TestConfigPanel from "../TestConfigPanel";
 import RunPanel from "../RunPanel";
+import NodeTestDrawer from "../authoring/NodeTestDrawer";
 import {
   checkHealth,
   createProcess,
@@ -206,9 +207,8 @@ export default function DesignPage() {
   const openAuthoring = useCallback(
     (el: ElementInfo) => {
       if (!proc || !/Task$/.test(el.type ?? "")) return;
-      navigate(`/process/${proc.key}/node/${el.id}`);
     },
-    [navigate, proc],
+    [proc],
   );
 
   const selectedTest: TestDef | undefined = useMemo(() => {
@@ -240,7 +240,7 @@ export default function DesignPage() {
   );
 
   return (
-    <div className="app">
+    <div className={`app ${mode === "design" && isServiceTask ? "authoring-open" : ""}`}>
       <header className="header">
         <div className="header-left">
           <Link to="/" className="back-link" title="Back to use cases">
@@ -297,7 +297,7 @@ export default function DesignPage() {
           <span className={`status-dot ${healthOk === null ? "" : healthOk ? "ok" : "bad"}`} />
           {dirty && <span className="dirty-badge">● unsaved</span>}
           <button onClick={handleSave} disabled={!proc || !dirty || saving} type="button">{saving ? "Saving..." : "Save"}</button>
-          <button className="primary" onClick={openRunModal} disabled={!proc || starting || active} type="button">
+          <button className="primary" onClick={openRunModal} disabled={mode === "design" || !proc || starting || active} type="button">
             {active ? "Running..." : "Start Run"}
           </button>
         </div>
@@ -360,18 +360,24 @@ export default function DesignPage() {
         {mode === "design" ? (
           <>
             {isServiceTask && selected && proc && (
-              <button type="button" className="primary" style={{ marginBottom: 10, width: "100%" }} onClick={() => openAuthoring(selected)}>
-                Open authoring workspace
-              </button>
+              <NodeTestDrawer
+                processKey={proc.key}
+                nodeId={selected.id}
+                nodeName={selected.name}
+                predecessorIds={parsePredecessors(proc.bpmnXml, selected.id)}
+                variant="panel"
+              />
             )}
-            <TestConfigPanel
-              selectedId={selected?.id ?? null}
-              selectedType={selected?.type ?? null}
-              selectedName={selected?.name ?? null}
-              test={selectedTest}
-              isServiceTask={isServiceTask}
-              onChange={onTestChange}
-            />
+            {(!isServiceTask || !selected || !proc) && (
+              <TestConfigPanel
+                selectedId={selected?.id ?? null}
+                selectedType={selected?.type ?? null}
+                selectedName={selected?.name ?? null}
+                test={selectedTest}
+                isServiceTask={isServiceTask}
+                onChange={onTestChange}
+              />
+            )}
           </>
         ) : (
           <RunPanel activities={activities} active={active} />
@@ -379,4 +385,33 @@ export default function DesignPage() {
       </aside>
     </div>
   );
+}
+
+/**
+ * Walk the BPMN sequence flows backward from `nodeId` to find every upstream
+ * (ancestor) flow node. Used to surface previous nodes' output parameters as
+ * available inputs for the current node.
+ */
+function parsePredecessors(bpmnXml: string, nodeId: string): string[] {
+  const incoming = new Map<string, string[]>();
+  const flowRe =
+    /<bpmn:sequenceFlow\b[^>]*\bsourceRef="([^"]+)"[^>]*\btargetRef="([^"]+)"|<bpmn:sequenceFlow\b[^>]*\btargetRef="([^"]+)"[^>]*\bsourceRef="([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = flowRe.exec(bpmnXml)) !== null) {
+    const source = m[1] ?? m[4];
+    const target = m[2] ?? m[3];
+    if (!source || !target) continue;
+    const list = incoming.get(target) ?? [];
+    list.push(source);
+    incoming.set(target, list);
+  }
+  const ancestors = new Set<string>();
+  const queue = [...(incoming.get(nodeId) ?? [])];
+  while (queue.length) {
+    const cur = queue.shift()!;
+    if (ancestors.has(cur)) continue;
+    ancestors.add(cur);
+    for (const prev of incoming.get(cur) ?? []) queue.push(prev);
+  }
+  return [...ancestors];
 }

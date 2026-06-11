@@ -1,0 +1,1381 @@
+{
+  "processKey": "phenom_careers_locations_browse",
+  "version": 1,
+  "nodes": {
+    "Activity_lb01": {
+      "nodeId": "Activity_lb01",
+      "suites": [
+        {
+          "id": "lba1b201",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f201",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d201",
+                  "name": "Open Careers Site",
+                  "description": "Navigate to the Phenom careers site",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0101",
+                      "name": "Open https://careers.phenom.com",
+                      "action": "Open https://careers.phenom.com",
+                      "expectedResult": "The Phenom careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0102",
+                      "name": "Verify careers hero text",
+                      "action": "Verify the page shows \"We are 1000+ Phenoms making hiring smarter\"",
+                      "expectedResult": "The careers hero headline is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0103",
+                      "name": "Verify global culture heading",
+                      "action": "Verify the page references \"One Team Across Continents\"",
+                      "expectedResult": "The global culture section reference is present",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0101",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0101",
+                      "name": "site_loaded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Careers Site",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "We are 1000+ Phenoms making hiring smarter"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "One Team Across Continents"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "25d40f6996cf"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb02": {
+      "nodeId": "Activity_lb02",
+      "suites": [
+        {
+          "id": "lba1b202",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f202",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d202",
+                  "name": "Dismiss Overlays",
+                  "description": "Clear cookie and marketing overlays",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0201",
+                      "name": "Navigate to https://careers.phenom.com",
+                      "action": "Navigate to https://careers.phenom.com",
+                      "expectedResult": "The careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0202",
+                      "name": "Dismiss cookie consent banner",
+                      "action": "Accept or dismiss any cookie consent or privacy banner if visible",
+                      "expectedResult": "The cookie banner is dismissed",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0203",
+                      "name": "Close marketing overlays",
+                      "action": "Close any marketing overlays or pop-ups by clicking their close button",
+                      "expectedResult": "The viewport is clear of modal dialogs",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0201",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0201",
+                      "name": "page_ready",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Dismiss Overlays",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Careers in India"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Allow"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Allow"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Cookie Settings"
+                        }
+                      },
+                      {
+                        "action": "screenshot",
+                        "name": "cookie_banner_dismissed"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get Started"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "viewport is clear of modal dialogs"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "522fbf1ef51a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb03": {
+      "nodeId": "Activity_lb03",
+      "suites": [
+        {
+          "id": "lba1b203",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f203",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d203",
+                  "name": "Scroll To Locations Section",
+                  "description": "Scroll to the One Team Across Continents section",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0301",
+                      "name": "Scroll to locations section",
+                      "action": "Scroll down to the \"One Team Across Continents\" section",
+                      "expectedResult": "The global locations section is in view",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0302",
+                      "name": "Verify section heading",
+                      "action": "Verify the heading \"One Team Across Continents\" is visible",
+                      "expectedResult": "The section heading is displayed",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0303",
+                      "name": "Verify country labels present",
+                      "action": "Verify country labels such as USA, India, and Netherlands are shown",
+                      "expectedResult": "Country labels are visible in the section",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0301",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0301",
+                      "name": "section_in_view",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Scroll To Locations Section",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "heading",
+                          "value": "One Team Across Continents"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "USA"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "India"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Netherlands"
+                        }
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "One Team Across Continents"
+                        },
+                        "variable": "section_in_view"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "47e81c6e366c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb04": {
+      "nodeId": "Activity_lb04",
+      "suites": [
+        {
+          "id": "lba1b204",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f204",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d204",
+                  "name": "Load Location Cards",
+                  "description": "Load the list of office location cards",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0401",
+                      "name": "Wait for location cards",
+                      "action": "Wait for the office location cards to finish loading",
+                      "expectedResult": "The location cards are rendered",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0402",
+                      "name": "Count location cards",
+                      "action": "Count the number of country location cards displayed",
+                      "expectedResult": "A count of location cards is determined",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0403",
+                      "name": "Confirm at least one location",
+                      "action": "Confirm at least one country location card is present",
+                      "expectedResult": "One or more location cards are displayed",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0401",
+                      "name": "section_in_view",
+                      "type": "boolean",
+                      "source": "Activity_lb03.section_in_view",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0401",
+                      "name": "location_count",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Load Location Cards",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{section_in_view}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "gridcell",
+                          "value": "Location Card"
+                        },
+                        "timeoutMs": 20000
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "gridcell",
+                          "value": "Location Card"
+                        },
+                        "variable": "location_count"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The location cards are rendered"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A count of location cards is determined"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "13b27e80150a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb05": {
+      "nodeId": "Activity_lb05",
+      "suites": [
+        {
+          "id": "lba1b205",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f205",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d205",
+                  "name": "Read Location Card",
+                  "description": "Read the current location card (loop entry)",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0501",
+                      "name": "Read country name",
+                      "action": "Read the country name on the current location card",
+                      "expectedResult": "The country name is captured",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0502",
+                      "name": "Read location description",
+                      "action": "Read the description text on the current location card",
+                      "expectedResult": "The location description is captured",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0503",
+                      "name": "Verify card has a country",
+                      "action": "Verify the location card has a non-empty country label",
+                      "expectedResult": "The country label is present",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0501",
+                      "name": "location_index",
+                      "type": "number",
+                      "source": "",
+                      "value": "1"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0501",
+                      "name": "current_country",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Read Location Card",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/locations/{{location_index}}"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "heading",
+                          "value": "Country"
+                        },
+                        "variable": "current_country"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "642c8cb3466b"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb06": {
+      "nodeId": "Activity_lb06",
+      "suites": [
+        {
+          "id": "lba1b206",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f206",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d206",
+                  "name": "Check Region",
+                  "description": "Determine whether the location is a primary hub",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0601",
+                      "name": "Read country for region check",
+                      "action": "Read the current country name to classify the region",
+                      "expectedResult": "The country is identified",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0602",
+                      "name": "Classify as hub or satellite",
+                      "action": "Classify the country as a primary hub (e.g. USA or India) or a satellite office",
+                      "expectedResult": "The location is classified",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0603",
+                      "name": "Determine primary hub flag",
+                      "action": "Determine whether this location is a primary hub",
+                      "expectedResult": "The primary-hub status is determined",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0601",
+                      "name": "current_country",
+                      "type": "text",
+                      "source": "Activity_lb05.current_country",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0601",
+                      "name": "is_primary_hub",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Check Region",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The country is identified"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The location is classified"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The primary-hub status is determined"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "ed94bf84746c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb07": {
+      "nodeId": "Activity_lb07",
+      "suites": [
+        {
+          "id": "lba1b207",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f207",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d207",
+                  "name": "Capture HQ Details",
+                  "description": "Capture details for a primary hub location",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0701",
+                      "name": "Capture hub country",
+                      "action": "Capture the country name for the primary hub location",
+                      "expectedResult": "The hub country is recorded",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0702",
+                      "name": "Mark as headquarters tier",
+                      "action": "Mark the location as a headquarters or major-hub tier",
+                      "expectedResult": "The location is tagged as a hub",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0703",
+                      "name": "Capture hub description",
+                      "action": "Capture the description for the hub location",
+                      "expectedResult": "The hub description is recorded",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0701",
+                      "name": "current_country",
+                      "type": "text",
+                      "source": "Activity_lb05.current_country",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0701",
+                      "name": "location_record",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Capture HQ Details",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{baseUrl}}"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "textbox",
+                          "value": "Country"
+                        },
+                        "variable": "current_country"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The hub country is recorded"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Mark as Headquarters"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The location is tagged as a hub"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "textbox",
+                          "value": "Description"
+                        },
+                        "variable": "location_record"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The hub description is recorded"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "20e5c944061f"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb08": {
+      "nodeId": "Activity_lb08",
+      "suites": [
+        {
+          "id": "lba1b208",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f208",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d208",
+                  "name": "Capture Satellite Office Details",
+                  "description": "Capture details for a satellite office location",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0801",
+                      "name": "Capture satellite country",
+                      "action": "Capture the country name for the satellite office location",
+                      "expectedResult": "The satellite country is recorded",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0802",
+                      "name": "Mark as satellite tier",
+                      "action": "Mark the location as a satellite-office tier",
+                      "expectedResult": "The location is tagged as a satellite office",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0803",
+                      "name": "Capture satellite description",
+                      "action": "Capture the description for the satellite location",
+                      "expectedResult": "The satellite description is recorded",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0801",
+                      "name": "current_country",
+                      "type": "text",
+                      "source": "Activity_lb05.current_country",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0801",
+                      "name": "location_record",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Capture Satellite Office Details",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/satellite-offices"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "label",
+                          "value": "Country"
+                        },
+                        "variable": "current_country"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The satellite country is recorded"
+                      },
+                      {
+                        "action": "fill",
+                        "target": {
+                          "strategy": "label",
+                          "value": "Office Tier"
+                        },
+                        "textValue": "satellite-office"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The location is tagged as a satellite office"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "label",
+                          "value": "Description"
+                        },
+                        "variable": "location_record"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The satellite description is recorded"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "43d5c39da1f4"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb09": {
+      "nodeId": "Activity_lb09",
+      "suites": [
+        {
+          "id": "lba1b209",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f209",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d209",
+                  "name": "Record Location",
+                  "description": "Add the location record to the running list",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs0901",
+                      "name": "Append location record",
+                      "action": "Append the captured location record to the running locations list",
+                      "expectedResult": "The location record is added to the list",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0902",
+                      "name": "Verify record has country and tier",
+                      "action": "Verify the location record includes a country and a tier",
+                      "expectedResult": "The record contains a country and tier",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs0903",
+                      "name": "Update running count",
+                      "action": "Update the count of recorded locations",
+                      "expectedResult": "The recorded-locations count is updated",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi0901",
+                      "name": "location_record",
+                      "type": "json",
+                      "source": "Activity_lb07.location_record",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo0901",
+                      "name": "recorded_count",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Record Location",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/locations"
+                      },
+                      {
+                        "action": "fill",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "textbox",
+                          "value": "Location Record"
+                        },
+                        "textValue": "{{location_record}}"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Add Location"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The location record is added to the list"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Update Count"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The recorded-locations count is updated"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "28f5e8dcc915"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb10": {
+      "nodeId": "Activity_lb10",
+      "suites": [
+        {
+          "id": "lba1b20a",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f20a",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d20a",
+                  "name": "Go To Next Location",
+                  "description": "Advance to the next location card",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs1001",
+                      "name": "Move to next card",
+                      "action": "Advance to the next country location card in the list",
+                      "expectedResult": "The next location card is selected",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1002",
+                      "name": "Determine if more locations remain",
+                      "action": "Determine whether more location cards remain to be processed",
+                      "expectedResult": "Whether more locations remain is determined",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1003",
+                      "name": "Increment location index",
+                      "action": "Increment the current location index",
+                      "expectedResult": "The location index is incremented",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi1001",
+                      "name": "recorded_count",
+                      "type": "number",
+                      "source": "Activity_lb09.recorded_count",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo1001",
+                      "name": "has_more_locations",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Go To Next Location",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/locations"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Next"
+                        }
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "More locations available"
+                        },
+                        "variable": "has_more_locations"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Increment Index"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "1ab97821db91"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb11": {
+      "nodeId": "Activity_lb11",
+      "suites": [
+        {
+          "id": "lba1b20b",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f20b",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d20b",
+                  "name": "Compile Location List",
+                  "description": "Combine all recorded locations into a final list",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs1101",
+                      "name": "Merge location records",
+                      "action": "Merge all recorded location records into one list",
+                      "expectedResult": "A combined location list is produced",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1102",
+                      "name": "Remove duplicate countries",
+                      "action": "Remove any duplicate countries from the combined list",
+                      "expectedResult": "The combined list has no duplicate countries",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1103",
+                      "name": "Verify list non-empty",
+                      "action": "Verify the combined location list contains at least one entry",
+                      "expectedResult": "The final location list is non-empty",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi1101",
+                      "name": "location_count",
+                      "type": "number",
+                      "source": "Activity_lb04.location_count",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo1101",
+                      "name": "location_list",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Compile Location List",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "http://example.com/locations"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Merge Locations"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A combined location list is produced"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Remove Duplicates"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The combined list has no duplicate countries"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Finalize Locations"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The final location list is non-empty"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "location_list"
+                        },
+                        "variable": "location_list"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "3f757ece851f"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb12": {
+      "nodeId": "Activity_lb12",
+      "suites": [
+        {
+          "id": "lba1b20c",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f20c",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d20c",
+                  "name": "Validate Location Count",
+                  "description": "Validate the total number of locations collected",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs1201",
+                      "name": "Count total locations",
+                      "action": "Count the total number of locations in the compiled list",
+                      "expectedResult": "A total location count is computed",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1202",
+                      "name": "Validate count is positive",
+                      "action": "Validate that the total location count is greater than zero",
+                      "expectedResult": "The location count is greater than zero",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1203",
+                      "name": "Verify hubs included",
+                      "action": "Verify at least one primary hub is included in the list",
+                      "expectedResult": "At least one hub is present in the results",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi1201",
+                      "name": "location_list",
+                      "type": "json",
+                      "source": "Activity_lb11.location_list",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo1201",
+                      "name": "total_locations",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Validate Location Count",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{location_list}}"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "total locations"
+                        },
+                        "variable": "total_locations"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A total location count is computed"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "location count is greater than 0"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "at least one hub is present"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "7184390b2c8c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_lb13": {
+      "nodeId": "Activity_lb13",
+      "suites": [
+        {
+          "id": "lba1b20d",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "lbe1f20d",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "lbc1d20d",
+                  "name": "No Locations Handler",
+                  "description": "Handle the case where no location cards are present",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "lbs1301",
+                      "name": "Verify empty state",
+                      "action": "Verify the locations section shows no location cards",
+                      "expectedResult": "An empty locations state is observed",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1302",
+                      "name": "Record zero locations",
+                      "action": "Record that zero location cards were found",
+                      "expectedResult": "A zero-locations outcome is recorded",
+                      "fields": []
+                    },
+                    {
+                      "id": "lbs1303",
+                      "name": "Note section may have changed",
+                      "action": "Note that the locations section layout may have changed",
+                      "expectedResult": "A note about the layout is recorded",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "lbi1301",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "lbo1301",
+                      "name": "empty_recorded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "No Locations Handler",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://careers.phenom.com"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "An empty locations state is observed"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "zero location cards were found"
+                        },
+                        "variable": "empty_recorded"
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "text",
+                          "value": "locations section layout may have changed"
+                        },
+                        "variable": "layout_note"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "7d7838ea4aed"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-10T18:43:20.389Z"
+}

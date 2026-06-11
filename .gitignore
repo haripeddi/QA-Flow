@@ -1,8 +1,11 @@
 node_modules/
 dist/
 build/
+# Env files (never commit secrets like OPENAI_API_KEY) — matches any folder
 .env
-.env.local
+.env.*
+**/.env
+**/.env.*
 # Runtime data (lives on persistent disk in production):
 data/
 *.log

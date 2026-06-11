@@ -1,0 +1,1297 @@
+{
+  "processKey": "phenom_careers_faq_review",
+  "version": 1,
+  "nodes": {
+    "Activity_fq01": {
+      "nodeId": "Activity_fq01",
+      "suites": [
+        {
+          "id": "fqa1b201",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f201",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d201",
+                  "name": "Open Careers Site",
+                  "description": "Navigate to the Phenom careers site",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0101",
+                      "name": "Open https://careers.phenom.com",
+                      "action": "Open https://careers.phenom.com",
+                      "expectedResult": "The Phenom careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0102",
+                      "name": "Verify careers hero text",
+                      "action": "Verify the page shows \"We are 1000+ Phenoms making hiring smarter\"",
+                      "expectedResult": "The careers hero headline is visible",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0103",
+                      "name": "Verify FAQ reference present",
+                      "action": "Verify the page contains an \"FAQ\" section reference",
+                      "expectedResult": "An FAQ reference is present on the page",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0101",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0101",
+                      "name": "site_loaded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Careers Site",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "We are 1000+ Phenoms making hiring smarter"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "FAQ"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "d51d2f2fc2f4"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq02": {
+      "nodeId": "Activity_fq02",
+      "suites": [
+        {
+          "id": "fqa1b202",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f202",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d202",
+                  "name": "Dismiss Overlays",
+                  "description": "Clear cookie and marketing overlays",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0201",
+                      "name": "Navigate to https://careers.phenom.com",
+                      "action": "Navigate to https://careers.phenom.com",
+                      "expectedResult": "The careers site loads",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0202",
+                      "name": "Dismiss cookie consent banner",
+                      "action": "Accept or dismiss any cookie consent or privacy banner if visible",
+                      "expectedResult": "The cookie banner is dismissed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0203",
+                      "name": "Close marketing overlays",
+                      "action": "Close any marketing overlays or pop-ups by clicking their close button",
+                      "expectedResult": "The viewport is clear of modal dialogs",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0201",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0201",
+                      "name": "page_ready",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Dismiss Overlays",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Careers in India | Shaping the Future of Work With AI"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Allow"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Cookie Settings"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get Started"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get started for profile recommendations"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "930eb12d5d45"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq03": {
+      "nodeId": "Activity_fq03",
+      "suites": [
+        {
+          "id": "fqa1b203",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f203",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d203",
+                  "name": "Scroll To FAQ Section",
+                  "description": "Scroll to the FAQ section",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0301",
+                      "name": "Scroll to FAQ section",
+                      "action": "Scroll down to the \"FAQ\" section of the careers page",
+                      "expectedResult": "The FAQ section is in view",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0302",
+                      "name": "Verify FAQ heading",
+                      "action": "Verify the \"FAQ\" heading is visible",
+                      "expectedResult": "The FAQ heading is displayed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0303",
+                      "name": "Verify a known question present",
+                      "action": "Verify a question like \"I applied. How long does it take to hear back?\" is present",
+                      "expectedResult": "A known FAQ question is visible",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0301",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0301",
+                      "name": "section_in_view",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Scroll To FAQ Section",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{careers_url}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "heading",
+                          "value": "FAQ"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "I applied. How long does it take to hear back?"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "c626f3ca6503"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq04": {
+      "nodeId": "Activity_fq04",
+      "suites": [
+        {
+          "id": "fqa1b204",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f204",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d204",
+                  "name": "Load FAQ Items",
+                  "description": "Load the list of FAQ items",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0401",
+                      "name": "Wait for FAQ items",
+                      "action": "Wait for the FAQ accordion items to finish loading",
+                      "expectedResult": "The FAQ items are rendered",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0402",
+                      "name": "Count FAQ items",
+                      "action": "Count the number of FAQ question items displayed",
+                      "expectedResult": "A count of FAQ items is determined",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0403",
+                      "name": "Confirm at least one FAQ",
+                      "action": "Confirm at least one FAQ question item is present",
+                      "expectedResult": "One or more FAQ items are displayed",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0401",
+                      "name": "section_in_view",
+                      "type": "boolean",
+                      "source": "Activity_fq03.section_in_view",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0401",
+                      "name": "faq_count",
+                      "type": "number",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Load FAQ Items",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/faq"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "FAQ"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "section_in_view"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Expand"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "FAQ items are rendered"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A count of FAQ items is determined"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "bfbdee5316c3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq05": {
+      "nodeId": "Activity_fq05",
+      "suites": [
+        {
+          "id": "fqa1b205",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f205",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d205",
+                  "name": "Read FAQ Question",
+                  "description": "Read the current FAQ question (loop entry)",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0501",
+                      "name": "Read question text",
+                      "action": "Read the question text of the current FAQ item",
+                      "expectedResult": "The FAQ question text is captured",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0502",
+                      "name": "Verify question is non-empty",
+                      "action": "Verify the FAQ question text is not empty",
+                      "expectedResult": "The question text contains content",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0503",
+                      "name": "Verify question is expandable",
+                      "action": "Verify the FAQ question can be expanded to reveal an answer",
+                      "expectedResult": "The question is an expandable accordion item",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0501",
+                      "name": "faq_index",
+                      "type": "number",
+                      "source": "",
+                      "value": "1"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0501",
+                      "name": "current_question",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Read FAQ Question",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/faqs"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "{{current_question}}"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Expand {{faq_index}}"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "103324946bd8"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq06": {
+      "nodeId": "Activity_fq06",
+      "suites": [
+        {
+          "id": "fqa1b206",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f206",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d206",
+                  "name": "Expand Answer",
+                  "description": "Expand the FAQ item to reveal the answer",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0601",
+                      "name": "Click question to expand",
+                      "action": "Click the current FAQ question to expand its answer",
+                      "expectedResult": "The answer panel expands",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0602",
+                      "name": "Read answer text",
+                      "action": "Read the revealed answer text for the current question",
+                      "expectedResult": "The answer text is captured",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0603",
+                      "name": "Determine if answer present",
+                      "action": "Determine whether the answer panel contains non-empty text",
+                      "expectedResult": "Whether an answer is present is determined",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0602",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    },
+                    {
+                      "id": "fqi0601",
+                      "name": "current_question",
+                      "type": "text",
+                      "source": "Activity_fq05.current_question",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0601",
+                      "name": "answer_text",
+                      "type": "text",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Expand Answer",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://careers.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "{{current_question}}"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "{{current_question}}"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "answer_text"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "e983ccb57d9d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq07": {
+      "nodeId": "Activity_fq07",
+      "suites": [
+        {
+          "id": "fqa1b207",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f207",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d207",
+                  "name": "Record Answer",
+                  "description": "Record a valid question and answer pair",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0701",
+                      "name": "Pair question and answer",
+                      "action": "Pair the current question with its captured answer text",
+                      "expectedResult": "A question-answer pair is formed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0702",
+                      "name": "Append pair to results",
+                      "action": "Append the question-answer pair to the running results list",
+                      "expectedResult": "The pair is added to the results",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0703",
+                      "name": "Mark as valid",
+                      "action": "Mark this FAQ entry as having a valid answer",
+                      "expectedResult": "The entry is marked valid",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0701",
+                      "name": "answer_text",
+                      "type": "text",
+                      "source": "Activity_fq06.answer_text",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0701",
+                      "name": "faq_record",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Record Answer",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{baseUrl}}/faq"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Submit Answer"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A question-answer pair is formed"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The pair is added to the results"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The entry is marked valid"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "10c7e2c6d1de"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq08": {
+      "nodeId": "Activity_fq08",
+      "suites": [
+        {
+          "id": "fqa1b208",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f208",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d208",
+                  "name": "Flag Missing Answer",
+                  "description": "Flag a FAQ item that has no answer",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0801",
+                      "name": "Mark answer missing",
+                      "action": "Mark the current FAQ entry as missing an answer",
+                      "expectedResult": "The entry is flagged as missing an answer",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0802",
+                      "name": "Record the question text",
+                      "action": "Record the current question text for follow-up",
+                      "expectedResult": "The question text is recorded for follow-up",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0803",
+                      "name": "Append flagged entry",
+                      "action": "Append the flagged entry to the running results list",
+                      "expectedResult": "The flagged entry is added to the results",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0802",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    },
+                    {
+                      "id": "fqi0801",
+                      "name": "current_question",
+                      "type": "text",
+                      "source": "Activity_fq05.current_question",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0801",
+                      "name": "faq_record",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Flag Missing Answer",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://careers.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Get Started"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The entry is flagged as missing an answer"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The question text is recorded for follow-up"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The flagged entry is added to the results"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "bc9a09af2d59"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq09": {
+      "nodeId": "Activity_fq09",
+      "suites": [
+        {
+          "id": "fqa1b209",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f209",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d209",
+                  "name": "Advance To Next FAQ",
+                  "description": "Move to the next FAQ item",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs0901",
+                      "name": "Collapse current item",
+                      "action": "Collapse the current FAQ item if it is expanded",
+                      "expectedResult": "The current FAQ item is collapsed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0902",
+                      "name": "Move to next FAQ",
+                      "action": "Advance to the next FAQ item in the list",
+                      "expectedResult": "The next FAQ item is selected",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs0903",
+                      "name": "Determine if more FAQs remain",
+                      "action": "Determine whether more FAQ items remain to be reviewed",
+                      "expectedResult": "Whether more FAQs remain is determined",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi0901",
+                      "name": "faq_record",
+                      "type": "json",
+                      "source": "Activity_fq07.faq_record",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo0901",
+                      "name": "has_more_faqs",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Advance To Next FAQ",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/faqs"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Collapse"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Expand"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "tab",
+                          "value": "Next FAQ"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "tab",
+                          "value": "Current FAQ"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "More FAQs available"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "2479ec5d987c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq10": {
+      "nodeId": "Activity_fq10",
+      "suites": [
+        {
+          "id": "fqa1b20a",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f20a",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d20a",
+                  "name": "Compile FAQ Summary",
+                  "description": "Combine all reviewed FAQ entries into a summary",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs1001",
+                      "name": "Merge FAQ records",
+                      "action": "Merge all reviewed FAQ records into one summary",
+                      "expectedResult": "A combined FAQ summary is produced",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1002",
+                      "name": "Separate valid and flagged",
+                      "action": "Separate entries into valid answers and flagged missing answers",
+                      "expectedResult": "Entries are split into valid and flagged groups",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1003",
+                      "name": "Verify summary non-empty",
+                      "action": "Verify the FAQ summary contains at least one entry",
+                      "expectedResult": "The summary is non-empty",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi1001",
+                      "name": "faq_count",
+                      "type": "number",
+                      "source": "Activity_fq04.faq_count",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo1001",
+                      "name": "faq_summary",
+                      "type": "json",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Compile FAQ Summary",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{startUrl}}"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Merge FAQs"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A combined FAQ summary is produced"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Separate Entries"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Entries are split into valid and flagged groups"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Verify Summary"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The summary is non-empty"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "10e6cbfc1fa7"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq11": {
+      "nodeId": "Activity_fq11",
+      "suites": [
+        {
+          "id": "fqa1b20b",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f20b",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d20b",
+                  "name": "Verify Key Questions Present",
+                  "description": "Verify expected key FAQ questions are covered",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs1101",
+                      "name": "Check application timeline question",
+                      "action": "Verify the summary includes \"I applied. How long does it take to hear back?\"",
+                      "expectedResult": "The application timeline question is covered",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1102",
+                      "name": "Check interview expectations question",
+                      "action": "Verify the summary includes a question about what to expect in an interview",
+                      "expectedResult": "The interview expectations question is covered",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1103",
+                      "name": "Check onboarding question",
+                      "action": "Verify the summary includes a question about the onboarding process",
+                      "expectedResult": "The onboarding question is covered",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi1101",
+                      "name": "faq_summary",
+                      "type": "json",
+                      "source": "Activity_fq10.faq_summary",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo1101",
+                      "name": "key_questions_covered",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Verify Key Questions Present",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{faq_summary}}"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "I applied. How long does it take to hear back?"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "what to expect in an interview"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "the onboarding process"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "67701bc15572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq12": {
+      "nodeId": "Activity_fq12",
+      "suites": [
+        {
+          "id": "fqa1b20c",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f20c",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d20c",
+                  "name": "Generate Review Report",
+                  "description": "Generate a final FAQ review report",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs1201",
+                      "name": "Summarize counts",
+                      "action": "Summarize the total FAQs reviewed and how many had valid answers",
+                      "expectedResult": "Review counts are summarized",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1202",
+                      "name": "List flagged questions",
+                      "action": "List any questions flagged as missing an answer",
+                      "expectedResult": "Flagged questions are listed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1203",
+                      "name": "Finalize report",
+                      "action": "Finalize the FAQ review report",
+                      "expectedResult": "The review report is finalized",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi1201",
+                      "name": "key_questions_covered",
+                      "type": "boolean",
+                      "source": "Activity_fq11.key_questions_covered",
+                      "value": ""
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo1201",
+                      "name": "report_ready",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Generate Review Report",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "/faq-review"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Review counts are summarized"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Flagged questions are listed"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The review report is finalized"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "a1aae23a3e6c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_fq13": {
+      "nodeId": "Activity_fq13",
+      "suites": [
+        {
+          "id": "fqa1b20d",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "fqe1f20d",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fqc1d20d",
+                  "name": "No FAQs Handler",
+                  "description": "Handle the case where no FAQ items are present",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "fqs1301",
+                      "name": "Verify empty state",
+                      "action": "Verify the FAQ section shows no FAQ items",
+                      "expectedResult": "An empty FAQ state is observed",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1302",
+                      "name": "Record zero FAQs",
+                      "action": "Record that zero FAQ items were found",
+                      "expectedResult": "A zero-FAQs outcome is recorded",
+                      "fields": []
+                    },
+                    {
+                      "id": "fqs1303",
+                      "name": "Note section may have changed",
+                      "action": "Note that the FAQ section layout may have changed",
+                      "expectedResult": "A note about the layout is recorded",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "fqi1301",
+                      "name": "careers_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://careers.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "fqo1301",
+                      "name": "empty_recorded",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "No FAQs Handler",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://careers.phenom.com"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "An empty FAQ state is observed"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A zero-FAQs outcome is recorded"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "A note about the layout is recorded"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "4a2edb571234"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-11T08:15:55.775Z"
+}

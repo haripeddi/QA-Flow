@@ -13,6 +13,15 @@ export interface TestStep {
   params?: Record<string, unknown>;
   expectedResult?: string;
   reusableStepId?: string;
+  fields?: Array<{ id: string; name: string; type?: string; value?: string }>;
+}
+
+export interface CaseParam {
+  id: string;
+  name: string;
+  type?: string;
+  source?: string;
+  value?: string;
 }
 
 export interface TestDataSet {
@@ -31,6 +40,10 @@ export interface TestCase {
   steps: TestStep[];
   dataSets: TestDataSet[];
   tags?: string[];
+  executionMode?: string;
+  inputs?: CaseParam[];
+  outputs?: CaseParam[];
+  __autoStepsHash?: string;
 }
 
 export interface Scenario {
@@ -186,25 +199,35 @@ export function compilePlanToElementTests(
 ): TagsFile["elementTests"] {
   const out: TagsFile["elementTests"] = {};
   for (const node of Object.values(plan.nodes)) {
-    let chosen: TestCase | undefined;
-    for (const suite of node.suites) {
-      for (const scenario of suite.scenarios) {
-        for (const c of scenario.cases) {
-          if (node.primaryCaseId && c.id === node.primaryCaseId) {
-            chosen = c;
-            break;
-          }
-          if (!chosen && c.executable) chosen = c;
-        }
-        if (chosen?.id === node.primaryCaseId) break;
-      }
-      if (chosen?.id === node.primaryCaseId) break;
-    }
+    const chosen = findRunnableCaseForNode(node);
     if (chosen?.executable) {
       out[node.nodeId] = chosen.executable;
     }
   }
   return out;
+}
+
+export function findRunnableCaseForNode(node: NodePlan): TestCase | undefined {
+  let chosen: TestCase | undefined;
+  for (const suite of node.suites) {
+    for (const scenario of suite.scenarios) {
+      for (const c of scenario.cases) {
+        if (node.primaryCaseId && c.id === node.primaryCaseId) return c;
+        if (!chosen && c.executable) chosen = c;
+      }
+    }
+  }
+  return chosen;
+}
+
+export function caseInputVariables(testCase: TestCase): Record<string, unknown> {
+  const vars: Record<string, unknown> = {};
+  for (const input of testCase.inputs ?? []) {
+    const name = input.name?.trim();
+    if (!name || input.value === undefined || input.value === "") continue;
+    vars[name] = input.value;
+  }
+  return vars;
 }
 
 export function getNodePlan(plan: TestPlanFile, nodeId: string): NodePlan {

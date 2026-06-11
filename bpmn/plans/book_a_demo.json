@@ -1,0 +1,160 @@
+{
+  "processKey": "book_a_demo",
+  "version": 1,
+  "nodes": {
+    "Activity_0egd340": {
+      "nodeId": "Activity_0egd340",
+      "suites": [
+        {
+          "id": "28d5acec",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "ed1a0672",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "d426b95f",
+                  "name": "Book a Demo",
+                  "executable": {
+                    "name": "Book a Demo",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "value": "Book A Demo",
+                          "roleType": "button"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom's corporate site"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Book a demo page"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "d426b95f"
+    },
+    "Activity_1tpv4l3": {
+      "nodeId": "Activity_1tpv4l3",
+      "suites": [
+        {
+          "id": "a7291735",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "471fc45c",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "4fd9141b",
+                  "name": "Test Case 1",
+                  "executable": {
+                    "name": "Test Case 1",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "value": "BOOK A DEMO",
+                          "roleType": "button"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom corporate site"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "demo booking page"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "4fd9141b"
+    },
+    "Activity_108aaaa": {
+      "nodeId": "Activity_108aaaa",
+      "suites": [
+        {
+          "id": "d31a763a",
+          "name": "Default Suite",
+          "scenarios": [
+            {
+              "id": "cdec8eaf",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "fd9fd6ad",
+                  "name": "Test Case 1",
+                  "executable": {
+                    "name": "Test Case 1",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "Phenom Applied AI | Talent Intelligence Platform"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Platform"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The Phenom Intelligent Talent Experience Platform"
+                      }
+                    ]
+                  },
+                  "variables": {},
+                  "steps": [],
+                  "dataSets": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryCaseId": "fd9fd6ad"
+    }
+  },
+  "updatedAt": "2026-06-10T15:27:46.403Z"
+}

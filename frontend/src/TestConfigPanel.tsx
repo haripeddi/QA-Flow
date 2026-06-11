@@ -3,8 +3,10 @@ import type {
   BrowserAction,
   BrowserStep,
   BrowserTestDef,
+  ElementRole,
   HttpTestDef,
   ScriptTestDef,
+  TargetStrategy,
   TestDef,
   TestType,
 } from "./api";
@@ -22,15 +24,40 @@ interface Props {
 const BROWSER_ACTIONS: { value: BrowserAction; label: string }[] = [
   { value: "goto", label: "Go to URL" },
   { value: "click", label: "Click" },
-  { value: "tryClick", label: "Try click (optional)" },
   { value: "fill", label: "Fill input" },
   { value: "press", label: "Press key" },
-  { value: "waitForSelector", label: "Wait for selector" },
-  { value: "waitForLoadState", label: "Wait for load state" },
-  { value: "waitForTimeout", label: "Wait (ms)" },
   { value: "screenshot", label: "Take screenshot" },
   { value: "assertContains", label: "Assert text contains" },
   { value: "assertVisible", label: "Assert element visible" },
+  { value: "extractText", label: "Extract text to variable" },
+];
+
+const TARGET_STRATEGIES: TargetStrategy[] = [
+  "role",
+  "text",
+  "label",
+  "placeholder",
+  "testid",
+  "id",
+  "css",
+  "xpath",
+];
+
+const ELEMENT_ROLES: ElementRole[] = [
+  "button",
+  "link",
+  "textbox",
+  "checkbox",
+  "heading",
+  "combobox",
+  "dialog",
+  "tab",
+  "menuitem",
+  "switch",
+  "slider",
+  "gridcell",
+  "image",
+  "alert",
 ];
 
 export default function TestConfigPanel({
@@ -400,6 +427,26 @@ function BrowserStepEditor({
   onRemove: () => void;
   onMove: (dir: -1 | 1) => void;
 }) {
+  const needsTarget =
+    step.action === "click" ||
+    step.action === "fill" ||
+    step.action === "press" ||
+    step.action === "assertVisible" ||
+    step.action === "extractText";
+
+  const updateTarget = (
+    patch: Partial<NonNullable<BrowserStep["target"]>>,
+  ) => {
+    onChange({
+      target: {
+        strategy: step.target?.strategy ?? "role",
+        value: step.target?.value ?? "",
+        roleType: step.target?.roleType,
+        ...patch,
+      },
+    });
+  };
+
   return (
     <div className="step-card">
       <div className="step-card-head">
@@ -423,46 +470,88 @@ function BrowserStepEditor({
         </div>
       </div>
       <div className="step-fields">
-        {(step.action === "goto") && (
-          <Labeled label="URL"><input value={step.url ?? ""} onChange={(e) => onChange({ url: e.target.value })} /></Labeled>
-        )}
-        {(step.action === "click" ||
-          step.action === "tryClick" ||
-          step.action === "fill" ||
-          step.action === "press" ||
-          step.action === "waitForSelector" ||
-          step.action === "assertVisible") && (
-          <Labeled label="Selector"><input value={step.selector ?? ""} onChange={(e) => onChange({ selector: e.target.value })} placeholder='input[name="q"]' /></Labeled>
-        )}
-        {(step.action === "fill") && (
-          <Labeled label="Value"><input value={step.value ?? ""} onChange={(e) => onChange({ value: e.target.value })} /></Labeled>
-        )}
-        {(step.action === "press") && (
-          <Labeled label="Key"><input value={step.value ?? ""} onChange={(e) => onChange({ value: e.target.value })} placeholder="Enter" /></Labeled>
-        )}
-        {(step.action === "waitForLoadState") && (
-          <Labeled label="State">
-            <select value={step.state ?? "networkidle"} onChange={(e) => onChange({ state: e.target.value as "load" | "domcontentloaded" | "networkidle" })}>
-              <option>load</option><option>domcontentloaded</option><option>networkidle</option>
-            </select>
+        {step.action === "goto" && (
+          <Labeled label="URL">
+            <input
+              value={step.url ?? ""}
+              onChange={(e) => onChange({ url: e.target.value })}
+            />
           </Labeled>
         )}
-        {(step.action === "assertContains") && (
+        {needsTarget && (
           <>
-            <Labeled label="Text"><input value={step.text ?? ""} onChange={(e) => onChange({ text: e.target.value })} /></Labeled>
-            <label className="check">
-              <input type="checkbox" checked={!!step.ignoreCase} onChange={(e) => onChange({ ignoreCase: e.target.checked })} />
-              case-insensitive
-            </label>
+            <Labeled label="Strategy">
+              <select
+                value={step.target?.strategy ?? "role"}
+                onChange={(e) =>
+                  updateTarget({ strategy: e.target.value as TargetStrategy })
+                }
+              >
+                {TARGET_STRATEGIES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </Labeled>
+            {(step.target?.strategy ?? "role") === "role" && (
+              <Labeled label="Role type">
+                <select
+                  value={step.target?.roleType ?? "button"}
+                  onChange={(e) =>
+                    updateTarget({ roleType: e.target.value as ElementRole })
+                  }
+                >
+                  {ELEMENT_ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </Labeled>
+            )}
+            <Labeled label="Target value">
+              <input
+                value={step.target?.value ?? ""}
+                onChange={(e) => updateTarget({ value: e.target.value })}
+                placeholder="Login"
+              />
+            </Labeled>
           </>
         )}
-        {(step.action === "tryClick") && (
-          <label className="check">
-            <input type="checkbox" checked={step.optional ?? true} onChange={(e) => onChange({ optional: e.target.checked })} />
-            optional (don't fail the test if missing)
-          </label>
+        {step.action === "extractText" && (
+          <Labeled label="Variable name">
+            <input
+              value={step.variable ?? ""}
+              onChange={(e) => onChange({ variable: e.target.value })}
+              placeholder="orderId"
+            />
+          </Labeled>
         )}
-        <Labeled label="Label (optional)"><input value={step.name ?? ""} onChange={(e) => onChange({ name: e.target.value || undefined })} placeholder="e.g. after-search" /></Labeled>
+        {(step.action === "fill" || step.action === "press") && (
+          <Labeled label={step.action === "press" ? "Key" : "Text value"}>
+            <input
+              value={step.textValue ?? ""}
+              onChange={(e) => onChange({ textValue: e.target.value })}
+              placeholder={step.action === "press" ? "Enter" : "value"}
+            />
+          </Labeled>
+        )}
+        {step.action === "assertContains" && (
+          <Labeled label="Text value">
+            <input
+              value={step.textValue ?? ""}
+              onChange={(e) => onChange({ textValue: e.target.value })}
+            />
+          </Labeled>
+        )}
+        <Labeled label="Label (optional)">
+          <input
+            value={step.name ?? ""}
+            onChange={(e) => onChange({ name: e.target.value || undefined })}
+            placeholder="e.g. after-search"
+          />
+        </Labeled>
         <Labeled label="Timeout (ms)">
           <input
             type="number"
@@ -472,7 +561,7 @@ function BrowserStepEditor({
                 timeoutMs: e.target.value ? Number(e.target.value) : undefined,
               })
             }
-            placeholder={step.action === "waitForTimeout" ? "1000" : "20000"}
+            placeholder="20000"
           />
         </Labeled>
       </div>

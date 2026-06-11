@@ -1,0 +1,83 @@
+{
+  "processKey": "book_a_demo",
+  "elementTests": {
+    "Activity_0egd340": {
+      "name": "Book a Demo",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "value": "Book A Demo",
+            "roleType": "button"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom's corporate site"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Book a demo page"
+        }
+      ]
+    },
+    "Activity_1tpv4l3": {
+      "name": "Test Case 1",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "value": "BOOK A DEMO",
+            "roleType": "button"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom corporate site"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "demo booking page"
+        }
+      ]
+    },
+    "Activity_108aaaa": {
+      "name": "Test Case 1",
+      "type": "browser.playwright",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://www.phenom.com"
+        },
+        {
+          "action": "assertContains",
+          "textValue": "Phenom Applied AI | Talent Intelligence Platform"
+        },
+        {
+          "action": "click",
+          "target": {
+            "strategy": "role",
+            "roleType": "link",
+            "value": "Platform"
+          }
+        },
+        {
+          "action": "assertContains",
+          "textValue": "The Phenom Intelligent Talent Experience Platform"
+        }
+      ]
+    }
+  }
+}

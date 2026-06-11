@@ -1,0 +1,99 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - link "QA Flow" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - link "Use Cases" [ref=e6] [cursor=pointer]:
+      - /url: /
+    - link "Traceability" [ref=e7] [cursor=pointer]:
+      - /url: /traceability
+    - link "Test Runs" [ref=e8] [cursor=pointer]:
+      - /url: /runs
+  - generic [ref=e9]:
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - link "←" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e13]:
+          - heading "Phenom Candidate Apply Journey ✎" [level=2] [ref=e33]:
+            - text: Phenom Candidate Apply Journey
+            - button "✎" [ref=e34] [cursor=pointer]
+          - generic [ref=e35]: phenom_candidate_apply
+        - generic [ref=e15]:
+          - button "Rename" [ref=e16] [cursor=pointer]
+          - button "Duplicate" [ref=e17] [cursor=pointer]
+          - button "Delete" [ref=e18] [cursor=pointer]
+        - generic [ref=e19]:
+          - button "Design" [ref=e20] [cursor=pointer]
+          - button "Run" [ref=e21] [cursor=pointer]
+      - generic [ref=e22]:
+        - button "Save" [disabled] [ref=e24]
+        - button "Start Run" [active] [ref=e25] [cursor=pointer]
+    - generic [ref=e175]:
+      - heading "Start a new run" [level=3] [ref=e176]
+      - paragraph [ref=e177]:
+        - text: Configure how this run of
+        - strong [ref=e178]: Phenom Candidate Apply Journey
+        - text: should execute.
+      - generic [ref=e179]:
+        - generic [ref=e180]: Environment
+        - combobox [ref=e181]:
+          - option "local"
+          - option "dev"
+          - option "qa"
+          - option "staging" [selected]
+          - option "production"
+      - generic [ref=e182]:
+        - generic [ref=e183]: Tag / label (optional)
+        - textbox "e.g. smoke, regression, release-2.4" [ref=e184]
+      - generic [ref=e185]:
+        - button "Cancel" [ref=e186] [cursor=pointer]
+        - button "Start run" [ref=e187] [cursor=pointer]
+    - generic [ref=e108]:
+      - link "Powered by bpmn.io" [ref=e109] [cursor=pointer]:
+        - /url: http://bpmn.io
+        - img [ref=e110]
+      - img [ref=e114]:
+        - generic [ref=e116]:
+          - generic [ref=e121]:
+            - generic:
+              - generic: Start
+          - generic [ref=e124]:
+            - generic:
+              - generic: Open Career Site
+          - generic [ref=e127]:
+            - generic:
+              - generic: Search Jobs
+          - generic [ref=e130]:
+            - generic:
+              - generic: Submit Application
+          - generic [ref=e136]:
+            - generic:
+              - generic: End
+    - complementary [ref=e27]:
+      - generic [ref=e146]:
+        - generic [ref=e148]: 0 passed · 0 failed · 0 running
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]: start
+            - generic [ref=e152]: executed
+          - generic [ref=e153]: serviceTask
+        - generic [ref=e154]:
+          - generic [ref=e155]:
+            - generic [ref=e156]: open_career_site
+            - generic [ref=e157]: executed
+          - generic [ref=e158]: serviceTask
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]: search_jobs
+            - generic [ref=e162]: executed
+          - generic [ref=e163]: serviceTask
+        - generic [ref=e164]:
+          - generic [ref=e165]:
+            - generic [ref=e166]: submit_application
+            - generic [ref=e167]: executed
+          - generic [ref=e168]: serviceTask
+        - generic [ref=e169]:
+          - generic [ref=e170]:
+            - generic [ref=e171]: end
+            - generic [ref=e172]: executed
+          - generic [ref=e173]: serviceTask

@@ -1,0 +1,370 @@
+{
+  "processKey": "phenom_book_a_demo_flow",
+  "version": 1,
+  "nodes": {
+    "Activity_bd1": {
+      "nodeId": "Activity_bd1",
+      "suites": [
+        {
+          "id": "b1c2d3e1",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "f1a2b3c1",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "d1e2f3a1",
+                  "name": "Open Phenom Homepage",
+                  "description": "Navigate to phenom.com and prepare the page for interaction",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "t1a2b3c1",
+                      "name": "Open https://www.phenom.com",
+                      "action": "Open https://www.phenom.com",
+                      "expectedResult": "Phenom corporate homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "t1a2b3c2",
+                      "name": "Accept or dismiss cookie consent banner",
+                      "action": "Accept or dismiss any cookie consent or privacy tracking banner if visible",
+                      "expectedResult": "Cookie consent banner is dismissed and no longer blocking the page",
+                      "fields": []
+                    },
+                    {
+                      "id": "t1a2b3c3",
+                      "name": "Close marketing overlays",
+                      "action": "Close any marketing overlays, webinar pop-ups, or chat prompts by clicking their close button or clicking outside the modal",
+                      "expectedResult": "The viewport is clear of dimmed backdrops and modal dialogs",
+                      "fields": []
+                    },
+                    {
+                      "id": "t1a2b3c4",
+                      "name": "Verify homepage header navigation",
+                      "action": "Verify the top navigation bar is visible with links such as Platform",
+                      "expectedResult": "Header navigation is fully visible and interactable",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i1b2c3d1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o1b2c3d1",
+                      "name": "page_ready",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Open Phenom Homepage",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Accept"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Accept"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Close"
+                        }
+                      },
+                      {
+                        "action": "assertContains",
+                        "textValue": "The viewport is clear of dimmed backdrops and modal dialogs"
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Platform"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "448c952dcb79"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_bd2": {
+      "nodeId": "Activity_bd2",
+      "suites": [
+        {
+          "id": "b1c2d3e2",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "f1a2b3c2",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "d1e2f3a2",
+                  "name": "Locate Book a Demo CTA",
+                  "description": "Find the Book a Demo call-to-action on the homepage",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "t2a2b3c1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "t2a2b3c2",
+                      "name": "Dismiss any overlays blocking the header",
+                      "action": "Dismiss cookie banners and close any modal overlays before interacting with the header",
+                      "expectedResult": "Header area is fully visible and not obscured",
+                      "fields": []
+                    },
+                    {
+                      "id": "t2a2b3c3",
+                      "name": "Locate Book a Demo link in header",
+                      "action": "Find the \"Book a Demo\" or \"Book Demo\" link in the top navigation or header area",
+                      "expectedResult": "A Book a Demo call-to-action link is visible in the header",
+                      "fields": []
+                    },
+                    {
+                      "id": "t2a2b3c4",
+                      "name": "Verify CTA is clickable",
+                      "action": "Verify the Book a Demo link is enabled and clickable",
+                      "expectedResult": "The Book a Demo link appears as an active, clickable element",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i2b2c3d1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o2b2c3d1",
+                      "name": "cta_found",
+                      "type": "boolean",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Locate Book a Demo CTA",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "{{site_url}}"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "button",
+                          "value": "Learn more"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "text",
+                          "value": "Header area"
+                        }
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book a Demo"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book a Demo"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book Demo"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book a Demo"
+                        }
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "d3152a11ed69"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Activity_bd3": {
+      "nodeId": "Activity_bd3",
+      "suites": [
+        {
+          "id": "b1c2d3e3",
+          "name": "Default Suite",
+          "executionMode": "agent",
+          "scenarios": [
+            {
+              "id": "f1a2b3c3",
+              "name": "Default Scenario",
+              "cases": [
+                {
+                  "id": "d1e2f3a3",
+                  "name": "Submit Demo Request",
+                  "description": "Click Book a Demo and verify the demo request page opens",
+                  "variables": {},
+                  "steps": [
+                    {
+                      "id": "t3a2b3c1",
+                      "name": "Navigate to https://www.phenom.com",
+                      "action": "Navigate to https://www.phenom.com",
+                      "expectedResult": "Phenom homepage loads successfully",
+                      "fields": []
+                    },
+                    {
+                      "id": "t3a2b3c2",
+                      "name": "Dismiss overlays before clicking",
+                      "action": "Dismiss cookie banners and close any modal overlays",
+                      "expectedResult": "Page is ready for interaction with no blocking overlays",
+                      "fields": []
+                    },
+                    {
+                      "id": "t3a2b3c3",
+                      "name": "Click Book a Demo link",
+                      "action": "Click the \"Book a Demo\" or \"Book Demo\" link in the header",
+                      "expectedResult": "A new page or tab opens for the demo request form",
+                      "fields": []
+                    },
+                    {
+                      "id": "t3a2b3c4",
+                      "name": "Verify demo request page loaded",
+                      "action": "Verify the demo request page loaded with a registration or request-demo form",
+                      "expectedResult": "The demo booking page is displayed with form fields for requesting a demo",
+                      "fields": []
+                    }
+                  ],
+                  "dataSets": [],
+                  "executionMode": "agent",
+                  "inputs": [
+                    {
+                      "id": "i3b2c3d1",
+                      "name": "site_url",
+                      "type": "url",
+                      "source": "",
+                      "value": "https://www.phenom.com"
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "o3b2c3d1",
+                      "name": "demo_page_url",
+                      "type": "url",
+                      "value": ""
+                    }
+                  ],
+                  "fields": [],
+                  "executable": {
+                    "name": "Submit Demo Request",
+                    "type": "browser.playwright",
+                    "steps": [
+                      {
+                        "action": "goto",
+                        "url": "https://www.phenom.com"
+                      },
+                      {
+                        "action": "click",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book a Demo"
+                        }
+                      },
+                      {
+                        "action": "assertVisible",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "textbox",
+                          "value": "Request a Demo"
+                        }
+                      },
+                      {
+                        "action": "extractText",
+                        "target": {
+                          "strategy": "role",
+                          "roleType": "link",
+                          "value": "Book a Demo"
+                        },
+                        "variable": "demo_page_url"
+                      }
+                    ]
+                  },
+                  "__autoStepsHash": "44657c641426"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-06-10T18:14:45.499Z"
+}

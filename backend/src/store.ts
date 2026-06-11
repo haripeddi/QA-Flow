@@ -1,5 +1,4 @@
 import { promises as fs } from "node:fs";
-import path from "node:path";
 import { DATA_DIR, RUNS_FILE } from "./config.ts";
 
 export type TaskStatus = "pending" | "running" | "passed" | "failed" | "executed";
